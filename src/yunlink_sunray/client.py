@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import dataclasses
 import ipaddress
-from typing import Self
 
 import yunlink
 
@@ -97,7 +96,7 @@ class Client:
     def close(self) -> None:
         self._transport.close()
 
-    def __enter__(self) -> Self:
+    def __enter__(self) -> Client:  # noqa: PYI034 - Python 3.10 has no typing.Self
         return self
 
     def __exit__(self, *_args: object) -> None:

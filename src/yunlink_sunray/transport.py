@@ -7,7 +7,6 @@ import threading
 import time
 import uuid
 from collections.abc import Callable
-from typing import Self
 
 import yunlink
 from yunlink.core_codec import (
@@ -290,7 +289,7 @@ class Transport:
             self.runtime.close_peer(self._peer)
         self.runtime.close()
 
-    def __enter__(self) -> Self:
+    def __enter__(self) -> Transport:  # noqa: PYI034 - Python 3.10 has no typing.Self
         return self
 
     def __exit__(self, *_args: object) -> None:
