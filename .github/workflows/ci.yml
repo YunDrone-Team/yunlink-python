@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout SDK
+        uses: actions/checkout@v6
+
+      - name: Checkout YunLink
+        uses: actions/checkout@v6
+        with:
+          repository: YunDrone-Team/yunlink
+          path: vendor/yunlink
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ./vendor/yunlink/bindings/python
+          python -m pip install -e '.[dev]'
+
+      - name: Lint
+        run: ruff check src tests examples
+
+      - name: Test
+        run: pytest -q
+
+      - name: Build wheel
+        run: python -m build
+
+      - name: Wheel install smoke
+        run: |
+          python -m pip uninstall -y yunlink-sunray
+          python -m pip install dist/yunlink_sunray-*.whl --no-deps
+          python -c "import yunlink_sunray; print(yunlink_sunray.__version__)"
