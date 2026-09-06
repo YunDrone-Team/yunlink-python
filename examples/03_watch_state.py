@@ -16,8 +16,13 @@ address = os.getenv("YUNLINK_ADDRESS")
 client = connect(address) if address else discover_and_connect(timeout=1.5)
 with client:
     vehicle = client.vehicle(os.getenv("YUNLINK_VEHICLE", "uav1"))
+    last_print = [0.0]
 
     def show(state) -> None:
+        now = time.monotonic()
+        if now - last_print[0] < 0.5:
+            return
+        last_print[0] = now
         p = state.position
         print(
             f"connected={state.connected} fresh={state.fresh} "
