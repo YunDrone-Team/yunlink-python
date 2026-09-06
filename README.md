@@ -111,7 +111,7 @@ for bridge in discover(timeout=1.0):
         print(entity.entity_uid, entity.kind, entity.attributes)
 ```
 
-搜索返回 Bridge 的 endpoint、Profiles、Entities 和 SIM 等属性。网络不允许广播时，直接使用
+搜索返回 Bridge 的 endpoint、Profiles、Entities 和设备属性（例如运行模式）。网络不允许广播时，直接使用
 `connect("host:9696")`。
 
 完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。

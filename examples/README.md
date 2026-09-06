@@ -98,6 +98,11 @@ python examples/08_errors.py
 连接失败、实体不存在、权限不足、服务拒绝、动作超时和连接断开都会以 SDK 异常或 `ActionHandle` 结果暴露，
 不会伪造成功。断线后 SDK 不会自动重放未完成的飞行动作，脚本必须明确决定是否重新提交。
 
+### 9. 真实设备接入清单
+
+运行真实飞行器前先阅读 [`09_real_device_checklist.md`](09_real_device_checklist.md)。仿真和真实设备使用同一套 SDK API，
+但仿真不能替代真实飞控、定位、传感器和物理安全验收。
+
 ## 常用 API 对照
 
 ```python
@@ -117,4 +122,3 @@ with connect("192.168.31.236:9696") as client:
 
 `discover_and_connect()` 适合网络中只有一个 Bridge 的情况；有多个 Bridge 时请使用搜索结果或 `connect(address)`
 明确选择目标。`client.entities()`、`client.vehicles()` 和 `client.ugvs()` 返回目录快照，`client.raw` 保留底层 YunLink 入口。
-
