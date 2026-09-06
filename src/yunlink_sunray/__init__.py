@@ -50,4 +50,4 @@ __all__ = [
     "discover_and_connect",
 ]
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"

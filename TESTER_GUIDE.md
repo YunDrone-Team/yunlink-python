@@ -11,12 +11,12 @@
 
 1. 从 YunLink 仓库构建或取得与操作系统匹配的 `yunlink` Python binding wheel。
 2. 安装 `yunlink` wheel。
-3. 打开本仓库的 GitHub Release 页面，下载 `yunlink_sunray-1.0.0-py3-none-any.whl`。
+3. 打开本仓库的 GitHub Release 页面，下载 `yunlink_sunray-1.1.1-py3-none-any.whl`。
 4. 安装 SDK wheel：
 
 ```bash
 python -m pip install /path/to/yunlink-*.whl
-python -m pip install /path/to/yunlink_sunray-1.0.0-py3-none-any.whl
+python -m pip install /path/to/yunlink_sunray-1.1.1-py3-none-any.whl
 python -c "import yunlink_sunray; print(yunlink_sunray.__version__)"
 ```
 
@@ -44,8 +44,8 @@ export YUNLINK_UGV=ugv1
 
 ```text
 Bridge: 192.168.31.236:9696
-UAV:    uav1
-UGV:    ugv1
+UAV:    uav1, uav2, uav3
+UGV:    ugv1, ugv2, ugv3
 ```
 
 ## 3. 推荐测试顺序

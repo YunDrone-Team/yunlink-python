@@ -17,11 +17,11 @@ SunrayV2
 
 ## 安装
 
-当前首个 GitHub Release 为 `v1.0.0`。由于 `yunlink` 依赖包含平台相关的原生运行库，
+当前 GitHub Release 为 `v1.1.1`。由于 `yunlink` 依赖包含平台相关的原生运行库，
 请先安装与系统和 Python 版本匹配的 YunLink wheel，再安装本仓库的
 `yunlink-sunray` wheel。两个包目前都不发布到 PyPI。
 
-SDK wheel 和源码包可从 [GitHub Releases](https://github.com/YunDrone-Team/yunlink-python/releases/tag/v1.0.0)
+SDK wheel 和源码包可从 [GitHub Releases](https://github.com/YunDrone-Team/yunlink-python/releases/latest)
 下载。
 
 开发环境可以从源码安装：
@@ -116,7 +116,6 @@ for bridge in discover(timeout=1.0):
 
 完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。
 局域网存在多个 Bridge 或多台 UAV 时，使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)：先按 `endpoint_uid` 选择 Bridge，再按 `entity_uid` 选择具体 UAV/UGV。
-多 Bridge 场景请使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)，按搜索结果中的 `endpoint_uid` 选择目标。
 该脚本会把全部搜索结果完整打印出来，再按 ID 或序号连接；不会默认连接搜索结果中的第一台设备。
 
 一个 Client 可以创建多个独立的 `Vehicle`/`Ugv` 对象。需要并行控制时由应用自己的线程或任务编排，
