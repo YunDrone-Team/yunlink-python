@@ -216,7 +216,9 @@ class Vehicle:
             or state.planner.task_state != sunray_pb2.UAV_PLANNING_TASK_IDLE
             or bool(state.planner.task_name)
         )
-        if not planner_ready(self.state):
+        # On the ground there is no takeoff-to-Planner handoff to wait for.
+        # Only an airborne vehicle can hit the short state-publication race.
+        if not planner_ready(self.state) and not self.state.landed:
             self._state.wait_for(planner_ready, min(timeout, 5.0))
         return self._run(
             WAYPOINT_MISSION,

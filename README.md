@@ -117,6 +117,13 @@ for bridge in discover(timeout=1.0):
 完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。
 局域网存在多个 Bridge 或多台 UAV 时，使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)：先按 `endpoint_uid` 选择 Bridge，再按 `entity_uid` 选择具体 UAV/UGV。
 多 Bridge 场景请使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)，按搜索结果中的 `endpoint_uid` 选择目标。
+该脚本会把全部搜索结果完整打印出来，再按 ID 或序号连接；不会默认连接搜索结果中的第一台设备。
+
+一个 Client 可以创建多个独立的 `Vehicle`/`Ugv` 对象。需要并行控制时由应用自己的线程或任务编排，
+参见 [`examples/11_multi_device_control.py`](examples/11_multi_device_control.py)、
+[`examples/12_multi_uav_waypoints.py`](examples/12_multi_uav_waypoints.py) 和
+[`examples/13_multi_device_state.py`](examples/13_multi_device_state.py)。SDK 不自动编队、不自动重放飞行动作，
+`endpoint_uid` 和 `entity_uid` 仍然是两级不同的选择 ID。
 测试人员可直接参考 [`TESTER_GUIDE.md`](TESTER_GUIDE.md)，其中包含安装、执行顺序和结果记录模板。
 
 ## MATLAB

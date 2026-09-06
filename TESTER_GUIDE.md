@@ -66,6 +66,22 @@ python examples/01_discover.py
 python examples/10_discover_select_connect.py --id <endpoint_uid> --entity <entity_uid>
 ```
 
+多人/多机局域网测试时，必须先保存脚本打印的 `endpoint_uid` 和每台设备的 `entity_uid`，再用 ID 选择，
+不要依赖默认第一台设备。只读检查可以运行：
+
+```bash
+python examples/13_multi_device_state.py --seconds 30
+```
+
+仿真多机控制可以运行：
+
+```bash
+python examples/11_multi_device_control.py
+python examples/12_multi_uav_waypoints.py
+```
+
+这两个脚本对每个设备独立提交动作并单独报告失败，不代表编队控制。
+
 脚本先完整打印搜索结果，再只连接指定的 `endpoint_uid`。`endpoint_uid` 是 Bridge 的选择 ID，
 `entity_uid` 是 Bridge 下具体 UAV/UGV 的选择 ID；两者都不是临时列表序号。序号只适合人工快速选择。
 如果不传 `--entity`，脚本会连接 Bridge 并打印完整实体目录，不会发送飞行动作。

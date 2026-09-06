@@ -64,6 +64,9 @@ python examples/10_discover_select_connect.py --id f97f96 --entity e-f97f96-2-1
 `entity_uid` 选择 Bridge 下的具体 UAV/UGV；两级 ID 都会完整打印。连接后也可以使用输出的实体 UID 或名称调用 `client.vehicle(...)`。
 搜索阶段不会控制任何设备。
 
+搜索结果分两级：`endpoint_uid` 是 Bridge ID，`entity_uid` 是 Bridge 下面具体 UAV/UGV 的 ID。
+不要把 IP 地址当作设备 ID；同一局域网可能有多台 Bridge，脚本会先列出全部结果，再让你选择。
+
 ### 3. 持续读取状态
 
 ```bash
@@ -107,6 +110,32 @@ python examples/07_ugv_control.py
 ```
 
 在现有协议支持范围内，示例演示无人车状态、MovePoint、速度租约和 Hold。它不会调用 UAV 的飞行接口。
+
+### 7.1 多设备并行控制
+
+```bash
+python examples/11_multi_device_control.py
+```
+
+脚本会发现全部 UAV/UGV，并用线程并行提交各自的小动作。每个对象仍使用自己的 `entity_uid`；
+SDK 不会自动编队、同步动作或把一台设备的失败传播给其他设备。
+
+### 7.2 多 UAV 航线
+
+```bash
+python examples/12_multi_uav_waypoints.py
+```
+
+每台 UAV 获得一条独立的两点小航线，使用 `ActionHandle` 分别等待。这个例子是多设备控制示范，
+不是 swarm/formation 控制器。
+
+### 7.3 多设备状态监控
+
+```bash
+python examples/13_multi_device_state.py --seconds 60
+```
+
+只读取状态，不发送起飞、移动或降落动作，适合先确认目录和遥测链路。
 
 ### 8. 异常、超时和断线
 
