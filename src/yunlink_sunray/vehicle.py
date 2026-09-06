@@ -208,6 +208,16 @@ class Vehicle:
         frame = frame_id or self.state.frame_id
         if not frame:
             raise ConnectionError("odometry frame is not available; wait for vehicle state or pass frame_id")
+        # Takeoff completion is reported by UAVControl before Planner's FSM has
+        # published its next WAIT_TASK state.  Wait for that bounded handoff so
+        # a normal takeoff -> move_to sequence is not rejected as a race.
+        planner_ready = lambda state: (
+            state.planner.main_state == sunray_pb2.UAV_PLANNING_MAIN_WAIT_MISSION
+            or state.planner.task_state != sunray_pb2.UAV_PLANNING_TASK_IDLE
+            or bool(state.planner.task_name)
+        )
+        if not planner_ready(self.state):
+            self._state.wait_for(planner_ready, min(timeout, 5.0))
         return self._run(
             WAYPOINT_MISSION,
             waypoint_payload(points, frame, task_name),
