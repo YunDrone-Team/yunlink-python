@@ -115,6 +115,7 @@ for bridge in discover(timeout=1.0):
 `connect("host:9696")`。
 
 完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。
+测试人员可直接参考 [`TESTER_GUIDE.md`](TESTER_GUIDE.md)，其中包含安装、执行顺序和结果记录模板。
 
 ## MATLAB
 
