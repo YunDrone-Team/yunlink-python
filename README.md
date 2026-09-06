@@ -114,7 +114,7 @@ for bridge in discover(timeout=1.0):
 搜索返回 Bridge 的 endpoint、Profiles、Entities 和 SIM 等属性。网络不允许广播时，直接使用
 `connect("host:9696")`。
 
-更多可直接运行的脚本见 [`examples`](examples)：实体搜索、状态读取、ActionHandle、基础速度控制和异常处理。
+完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。
 
 ## MATLAB
 
