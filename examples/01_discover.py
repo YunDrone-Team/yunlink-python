@@ -13,4 +13,3 @@ for bridge in bridges:
     for entity in bridge.entities:
         print(f"  entity: {entity.entity_uid} | {entity.display_name} | {entity.kind}")
         print(f"    attributes: {entity.attributes}")
-        print(f"    capabilities: {entity.capabilities}")
