@@ -52,6 +52,7 @@ class Transport:
         self._closed = False
         self._auto_reconnect = auto_reconnect
         self._reconnecting = False
+        self._connection_callbacks: list[Callable[[bool], None]] = []
         self._event_thread = threading.Thread(target=self._event_loop, name="yunlink-events", daemon=True)
         self._event_thread.start()
         try:
@@ -85,6 +86,21 @@ class Transport:
         if not self.runtime.session_supports_profile(peer, session_id, "com.yundrone.sunray", 2, 2):
             raise ConnectionError("Bridge did not negotiate a compatible Sunray Profile")
         self._remote_uid = self.runtime.session_endpoint_uid(peer, session_id)
+        self._notify_connection(True)
+
+    def on_connection_change(self, callback: Callable[[bool], None]) -> Callable[[], None]:
+        self._connection_callbacks.append(callback)
+        def unsubscribe() -> None:
+            if callback in self._connection_callbacks:
+                self._connection_callbacks.remove(callback)
+        return unsubscribe
+
+    def _notify_connection(self, connected: bool) -> None:
+        for callback in tuple(self._connection_callbacks):
+            try:
+                callback(connected)
+            except Exception:  # noqa: BLE001,S112
+                continue
 
     def _event_loop(self) -> None:
         while not self._closed:
@@ -150,6 +166,8 @@ class Transport:
             self._action_updates.clear()
             self._responses.clear()
             self._condition.notify_all()
+        self._notify_connection(False)
+        with self._condition:
             if not self._auto_reconnect or self._reconnecting:
                 return
             self._reconnecting = True
@@ -253,7 +271,14 @@ class Transport:
                   callback: Callable[[yunlink.Event, yunlink.StreamSample], None]) -> None:
         self._sample_callbacks.setdefault(stream_uid, []).append(callback)
 
-    def send_action(self, entity_uid: str, type_ref: yunlink.TypeRef, payload: bytes) -> ActionHandle:
+    def send_action(
+        self,
+        entity_uid: str,
+        type_ref: yunlink.TypeRef,
+        payload: bytes,
+        *,
+        authority_scope: str | None = None,
+    ) -> ActionHandle:
         with self._condition:
             peer, session_id = self._peer, self._session_id
         if peer is None or not self.runtime.session_supports_profile(
@@ -262,7 +287,7 @@ class Transport:
             raise ConnectionError(
                 f"Bridge does not support {type_ref.profile_id}@{type_ref.major}.{type_ref.minor}"
             )
-        self.claim_authority(entity_uid, type_ref.profile_id)
+        self.claim_authority(entity_uid, authority_scope or type_ref.profile_id)
         message = self._publish(yunlink.Family.ACTION, 1, yunlink.Target.entity(entity_uid), type_ref, payload)
         handle = ActionHandle(message.message_id, lambda: self.cancel_action(entity_uid, type_ref, message.message_id))
         with self._condition:
@@ -272,6 +297,43 @@ class Transport:
             if update is None or not update.phase.terminal:
                 self._actions[message.message_id] = handle
         return handle
+
+    def call_rpc(
+        self,
+        entity_uid: str,
+        type_ref: yunlink.TypeRef,
+        payload: bytes = b"",
+        *,
+        authority_scope: str | None = None,
+        timeout: float = 8.0,
+    ) -> yunlink.Event:
+        self.claim_authority(entity_uid, authority_scope or type_ref.profile_id)
+        return self.request(
+            yunlink.Family.RPC,
+            1,
+            2,
+            yunlink.Target.entity(entity_uid),
+            type_ref,
+            payload,
+            timeout,
+        )
+
+    def refresh_action(
+        self,
+        entity_uid: str,
+        type_ref: yunlink.TypeRef,
+        payload: bytes,
+        correlation_id: int,
+    ) -> None:
+        """Refresh a continuous goal; UAV direct control uses Goal semantics."""
+        self._publish(
+            yunlink.Family.ACTION,
+            1,
+            yunlink.Target.entity(entity_uid),
+            type_ref,
+            payload,
+            correlation_id=correlation_id,
+        )
 
     def cancel_action(self, entity_uid: str, type_ref: yunlink.TypeRef, action_id: int) -> None:
         self._publish(yunlink.Family.ACTION, 3, yunlink.Target.entity(entity_uid), type_ref,

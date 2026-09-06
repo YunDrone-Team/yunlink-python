@@ -7,21 +7,25 @@ import threading
 import time
 from collections.abc import Callable, Sequence
 
+import yunlink
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
 
 from .actions import ActionHandle, ActionResult
-from .errors import ConnectionError, TimeoutError
+from .errors import ActionFailedError, ConnectionError, TimeoutError
 from .profiles import (
     HOVER,
     LAND,
-    NAV_GOAL,
+    PLANNER_CANCEL,
     TAKEOFF,
+    UAV_DIRECT_CONTROL,
     WAYPOINT_MISSION,
     Waypoint,
+    direct_body_velocity_payload,
+    direct_world_velocity_payload,
     hover_payload,
     land_payload,
-    nav_payload,
+    planner_cancel_payload,
     takeoff_payload,
     waypoint_payload,
 )
@@ -36,6 +40,8 @@ class Vehicle:
         self._state = StateStore()
         self._last_action: ActionHandle | None = None
         self._action_lock = threading.Lock()
+        transport.on_connection_change(self._on_connection)
+        self._state.set_connected(True)
         transport.attach(uid)
         self._subscribe("odometry", self._on_odometry)
         self._subscribe("flight_control_state", self._on_flight_state)
@@ -48,6 +54,9 @@ class Vehicle:
     def on_state_changed(self, callback: Callable[[VehicleState], None]) -> Callable[[], None]:
         return self._state.on_change(callback)
 
+    def is_state_fresh(self, max_age_s: float = 1.5) -> bool:
+        return self.state.is_fresh(max_age_s)
+
     def takeoff(
         self, height_m: float = 1.5, timeout: float = 30.0, *, wait: bool = True
     ) -> ActionResult | ActionHandle:
@@ -58,6 +67,71 @@ class Vehicle:
 
     def land(self, timeout: float = 30.0, *, wait: bool = True) -> ActionResult | ActionHandle:
         return self._run(LAND, land_payload(), timeout, wait)
+
+    def velocity(
+        self,
+        vx: float,
+        vy: float,
+        vz: float = 0.0,
+        *,
+        duration_s: float | None = 1.0,
+        lease_ms: int = 1000,
+        frame_id: str | None = None,
+        height_lock_m: float | None = None,
+        timeout: float = 15.0,
+        wait: bool = True,
+    ) -> ActionResult | ActionHandle:
+        frame = frame_id or self.state.frame_id
+        if not frame:
+            raise ConnectionError("odometry frame is not available; pass frame_id")
+        if duration_s is not None and duration_s <= 0:
+            raise ValueError("duration_s must be positive or None")
+        payload = direct_world_velocity_payload(
+            vx, vy, vz, frame_id=frame, lease_ms=lease_ms, height_lock_m=height_lock_m
+        )
+        return self._run_continuous(payload, duration_s, timeout, wait)
+
+    def body_velocity(
+        self,
+        forward_mps: float,
+        left_mps: float,
+        *,
+        duration_s: float | None = 1.0,
+        lease_ms: int = 1000,
+        fixed_height_m: float | None = None,
+        timeout: float = 15.0,
+        wait: bool = True,
+    ) -> ActionResult | ActionHandle:
+        if fixed_height_m is None and not self.state.frame_id:
+            self._state.wait_for(lambda state: bool(state.frame_id), 2.0)
+        height = self.state.position.z if fixed_height_m is None else fixed_height_m
+        if not self.state.frame_id:
+            raise ConnectionError("vehicle odometry is not available")
+        payload = direct_body_velocity_payload(
+            forward_mps,
+            left_mps,
+            fixed_height_m=height,
+            lease_ms=lease_ms,
+        )
+        return self._run_continuous(payload, duration_s, timeout, wait)
+
+    def forward(self, speed_mps: float = 0.3, **kwargs):
+        return self.body_velocity(speed_mps, 0.0, **kwargs)
+
+    def backward(self, speed_mps: float = 0.3, **kwargs):
+        return self.body_velocity(-speed_mps, 0.0, **kwargs)
+
+    def left(self, speed_mps: float = 0.3, **kwargs):
+        return self.body_velocity(0.0, speed_mps, **kwargs)
+
+    def right(self, speed_mps: float = 0.3, **kwargs):
+        return self.body_velocity(0.0, -speed_mps, **kwargs)
+
+    def up(self, speed_mps: float = 0.2, **kwargs):
+        return self.velocity(0.0, 0.0, speed_mps, height_lock_m=None, **kwargs)
+
+    def down(self, speed_mps: float = 0.2, **kwargs):
+        return self.velocity(0.0, 0.0, -speed_mps, height_lock_m=None, **kwargs)
 
     def move_to(
         self,
@@ -77,7 +151,19 @@ class Vehicle:
         if not frame:
             raise ConnectionError("odometry frame is not available; wait for vehicle state or pass frame_id")
         started = time.monotonic()
-        result = self._run(NAV_GOAL, nav_payload(x, y, z, yaw_rad, frame), timeout, wait)
+        # A NavGoal only acknowledges publication to ROS.  The high-level
+        # move_to contract promises arrival, so use the existing Planner
+        # single-waypoint path instead.
+        result = self.waypoint(
+            x,
+            y,
+            z,
+            yaw_rad=yaw_rad,
+            timeout=timeout,
+            frame_id=frame,
+            hold_time_s=0.0,
+            wait=wait,
+        )
         if not wait:
             return result
         remaining = timeout - (time.monotonic() - started)
@@ -135,7 +221,19 @@ class Vehicle:
         if handle is not None and not handle.done:
             handle.cancel()
             return handle.wait(timeout)
-        return self.hover(timeout=timeout)
+        from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
+
+        event = self._transport.call_rpc(
+            self.uid,
+            PLANNER_CANCEL,
+            planner_cancel_payload(),
+            authority_scope="com.yundrone.sunray",
+            timeout=timeout,
+        )
+        response = sunray_pb2.PlannerCancelTaskResponse.FromString(event.payload)
+        if not response.accepted:
+            raise ActionFailedError(5, response.message or "Planner rejected cancellation")
+        return ActionResult(0, yunlink.ActionPhase.SUCCEEDED, 0, response.message)
 
     def _subscribe(self, suffix: str, callback) -> None:
         stream_uid = f"{self.uid}.{suffix}"
@@ -143,9 +241,31 @@ class Vehicle:
         self._transport.subscribe(self.uid, stream_uid)
 
     def _run(self, type_ref, payload: bytes, timeout: float, wait: bool):
-        handle = self._transport.send_action(self.uid, type_ref, payload)
+        handle = self._transport.send_action(self.uid, type_ref, payload, authority_scope="com.yundrone.sunray")
         with self._action_lock:
             self._last_action = handle
+        return handle.wait(timeout) if wait else handle
+
+    def _run_continuous(self, payload: bytes, duration_s: float | None, timeout: float, wait: bool):
+        handle = self._transport.send_action(
+            self.uid, UAV_DIRECT_CONTROL, payload, authority_scope="com.yundrone.sunray"
+        )
+        with self._action_lock:
+            self._last_action = handle
+
+        def refresh() -> None:
+            deadline = None if duration_s is None else time.monotonic() + duration_s
+            try:
+                while not handle.done and (deadline is None or time.monotonic() < deadline):
+                    time.sleep(0.2)
+                    if not handle.done:
+                        self._transport.refresh_action(self.uid, UAV_DIRECT_CONTROL, payload, handle.action_id)
+                if deadline is not None and not handle.done:
+                    handle.cancel()
+            except Exception:  # noqa: BLE001
+                handle._set_disconnected()
+
+        threading.Thread(target=refresh, name="yunlink-direct-refresh", daemon=True).start()
         return handle.wait(timeout) if wait else handle
 
     def _on_odometry(self, _event, sample) -> None:
@@ -156,6 +276,9 @@ class Vehicle:
             position=Vector3(message.pose.position.x, message.pose.position.y, message.pose.position.z),
             velocity=Vector3(message.twist.linear.x, message.twist.linear.y, message.twist.linear.z),
         )
+
+    def _on_connection(self, connected: bool) -> None:
+        self._state.set_connected(connected)
 
     def _on_flight_state(self, _event, sample) -> None:
         message = sunray_pb2.FlightControlState()

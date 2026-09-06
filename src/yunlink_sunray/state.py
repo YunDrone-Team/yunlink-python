@@ -42,6 +42,28 @@ class VehicleState:
     control_state: int = 0
     planner: PlannerState = PlannerState()
     received_at: float = 0.0
+    connected: bool = False
+
+    @property
+    def fresh(self) -> bool:
+        return self.is_fresh()
+
+    def is_fresh(self, max_age_s: float = 1.5) -> bool:
+        return self.connected and self.received_at > 0 and time.time() - self.received_at <= max_age_s
+
+
+@dataclasses.dataclass(frozen=True)
+class UgvState:
+    frame_id: str = ""
+    position: Vector3 = Vector3()
+    velocity: Vector3 = Vector3()
+    control_state: int = 0
+    planner_state: int = 0
+    received_at: float = 0.0
+    connected: bool = False
+
+    def is_fresh(self, max_age_s: float = 1.5) -> bool:
+        return self.connected and self.received_at > 0 and time.time() - self.received_at <= max_age_s
 
 
 class StateStore:
@@ -81,3 +103,6 @@ class StateStore:
                     raise TimeoutError("vehicle state condition timed out")
                 self._condition.wait(remaining)
             return self._state
+
+    def set_connected(self, connected: bool) -> None:
+        self.update(connected=connected)

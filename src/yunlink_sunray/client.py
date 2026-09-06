@@ -15,12 +15,15 @@ DEFAULT_DISCOVERY_PORT = 9697
 
 
 @dataclasses.dataclass(frozen=True)
-class VehicleInfo:
+class EntityInfo:
     uid: str
     name: str
     kind: str
     attributes: dict[str, str]
     capabilities: tuple[str, ...]
+
+
+VehicleInfo = EntityInfo
 
 
 def _parse_address(address: str, default_port: int = DEFAULT_TCP_PORT) -> tuple[str, int]:
@@ -59,15 +62,15 @@ class Client:
     ) -> None:
         host, port = _parse_address(address)
         self._transport = Transport(host, port, shared_secret, auto_reconnect)
-        self._vehicles: dict[str, object] = {}
+        self._entities: dict[str, object] = {}
 
     @property
     def raw(self) -> Transport:
         return self._transport
 
-    def vehicles(self) -> list[VehicleInfo]:
+    def entities(self) -> list[EntityInfo]:
         return [
-            VehicleInfo(
+            EntityInfo(
                 entity.entity_uid,
                 entity.display_name or entity.entity_uid,
                 entity.kind,
@@ -75,8 +78,13 @@ class Client:
                 entity.capabilities,
             )
             for entity in self._transport.directory().entities
-            if entity.kind == "sunray.uav"
         ]
+
+    def vehicles(self) -> list[EntityInfo]:
+        return [item for item in self.entities() if item.kind == "sunray.uav"]
+
+    def ugvs(self) -> list[EntityInfo]:
+        return [item for item in self.entities() if item.kind == "sunray.ugv"]
 
     def vehicle(self, uid: str | None = None):
         from .vehicle import Vehicle
@@ -87,11 +95,45 @@ class Client:
                 detail = "no Sunray UAV was found" if not available else "multiple UAVs found; specify uid"
                 raise EntityNotFoundError(detail)
             uid = available[0].uid
-        elif uid not in {item.uid for item in available}:
-            raise EntityNotFoundError(f"Sunray UAV not found: {uid}")
-        if uid not in self._vehicles:
-            self._vehicles[uid] = Vehicle(self._transport, uid)
-        return self._vehicles[uid]
+        else:
+            uid = self._resolve_entity_id(available, uid, "Sunray UAV")
+        if uid not in self._entities:
+            self._entities[uid] = Vehicle(self._transport, uid)
+        return self._entities[uid]
+
+    def ugv(self, uid: str | None = None):
+        from .ugv import Ugv
+
+        available = self.ugvs()
+        if uid is None:
+            if len(available) != 1:
+                detail = "no Sunray UGV was found" if not available else "multiple UGVs found; specify uid"
+                raise EntityNotFoundError(detail)
+            uid = available[0].uid
+        else:
+            uid = self._resolve_entity_id(available, uid, "Sunray UGV")
+        if uid not in self._entities:
+            self._entities[uid] = Ugv(self._transport, uid)
+        return self._entities[uid]
+
+    def entity(self, uid: str):
+        info = next((item for item in self.entities() if item.uid == uid), None)
+        if info is None:
+            matches = [item for item in self.entities() if item.name == uid]
+            if len(matches) == 1:
+                info = matches[0]
+        if info is None:
+            raise EntityNotFoundError(f"entity not found: {uid}")
+        return self.vehicle(uid) if info.kind == "sunray.uav" else self.ugv(uid)
+
+    @staticmethod
+    def _resolve_entity_id(items: list[EntityInfo], identifier: str, label: str) -> str:
+        matches = [item for item in items if item.uid == identifier or item.name == identifier]
+        if not matches:
+            raise EntityNotFoundError(f"{label} not found: {identifier}")
+        if len(matches) > 1:
+            raise EntityNotFoundError(f"{label} name is ambiguous: {identifier}")
+        return matches[0].uid
 
     def close(self) -> None:
         self._transport.close()

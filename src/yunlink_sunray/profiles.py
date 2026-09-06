@@ -10,15 +10,18 @@ import yunlink
 from yunlink.profiles import (
     validate_land_goal,
     validate_takeoff_goal,
+    validate_uav_direct_control_goal,
     validate_uav_nav_goal,
     validate_uav_waypoint_mission_goal,
+    validate_ugv_move_point_goal,
+    validate_ugv_velocity_goal,
 )
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
 
 MOBILITY = yunlink.Profile("org.yunlink.mobility", 1, 0, "mobility-v1")
 TELEMETRY = yunlink.Profile("org.yunlink.telemetry", 1, 0, "telemetry-summary-v1")
-SUNRAY = yunlink.Profile("com.yundrone.sunray", 2, 7, "sunray-v2.7")
+SUNRAY = yunlink.Profile("com.yundrone.sunray", 2, 8, "sunray-v2.8")
 OFFERED_PROFILES = (MOBILITY, TELEMETRY, SUNRAY)
 REQUIRED_PROFILES = (MOBILITY, SUNRAY)
 
@@ -32,6 +35,11 @@ LAND = type_ref("LandGoal")
 HOVER = type_ref("HoverGoal")
 NAV_GOAL = type_ref("UavNavGoal", 3)
 WAYPOINT_MISSION = type_ref("UavWaypointMissionGoal", 2)
+UAV_DIRECT_CONTROL = type_ref("UavDirectControlGoal")
+UGV_MOVE_POINT = type_ref("UgvMovePointGoal", 5)
+UGV_VELOCITY = type_ref("UgvVelocityGoal", 5)
+UGV_HOLD = type_ref("UgvHoldGoal", 5)
+PLANNER_CANCEL = type_ref("PlannerCancelTaskRequest", 1)
 
 
 @dataclass(frozen=True)
@@ -65,6 +73,123 @@ def land_payload(max_velocity_mps: float = 0.0) -> bytes:
 
 def hover_payload() -> bytes:
     return sunray_pb2.HoverGoal().SerializeToString()
+
+
+def direct_world_velocity_payload(
+    vx: float,
+    vy: float,
+    vz: float = 0.0,
+    *,
+    frame_id: str,
+    lease_ms: int = 1000,
+    height_lock_m: float | None = None,
+) -> bytes:
+    finite(vx, vy, vz)
+    if not frame_id:
+        raise ValueError("frame_id must not be empty")
+    if not 250 <= lease_ms <= 2000:
+        raise ValueError("lease_ms must be between 250 and 2000")
+    target = sunray_pb2.WorldVelocityTarget(
+        frame_id=frame_id,
+        velocity_mps=mobility_pb2.Vector3(x=vx, y=vy, z=vz),
+    )
+    if height_lock_m is not None:
+        finite(height_lock_m)
+        target.height_lock.height_m = height_lock_m
+    message = sunray_pb2.UavDirectControlGoal(
+        world_velocity=target,
+        yaw=sunray_pb2.YawTarget(mode=sunray_pb2.UAV_YAW_KEEP),
+        controller=sunray_pb2.UAV_CONTROLLER_DEFAULT,
+        lease_ms=lease_ms,
+    )
+    validate_uav_direct_control_goal(message)
+    return message.SerializeToString()
+
+
+def direct_body_velocity_payload(
+    forward_mps: float,
+    left_mps: float,
+    *,
+    fixed_height_m: float,
+    lease_ms: int = 1000,
+    yaw_rate: float = 0.0,
+) -> bytes:
+    finite(forward_mps, left_mps, fixed_height_m, yaw_rate)
+    if not 250 <= lease_ms <= 2000:
+        raise ValueError("lease_ms must be between 250 and 2000")
+    message = sunray_pb2.UavDirectControlGoal(
+        body_velocity=sunray_pb2.BodyVelocityTarget(
+            body_xy_velocity_mps=mobility_pb2.Vector2(x=forward_mps, y=left_mps),
+            fixed_height_m=fixed_height_m,
+        ),
+        yaw=sunray_pb2.YawTarget(
+            mode=sunray_pb2.UAV_YAW_SET_RATE,
+            value=yaw_rate,
+        ),
+        controller=sunray_pb2.UAV_CONTROLLER_DEFAULT,
+        lease_ms=lease_ms,
+    )
+    validate_uav_direct_control_goal(message)
+    return message.SerializeToString()
+
+
+def ugv_move_point_payload(
+    x: float,
+    y: float,
+    *,
+    frame_id: str,
+    yaw_rad: float = 0.0,
+    body: bool = False,
+) -> bytes:
+    finite(x, y, yaw_rad)
+    if not frame_id:
+        raise ValueError("frame_id must not be empty")
+    message = sunray_pb2.UgvMovePointGoal(
+        frame=(sunray_pb2.UGV_MOVE_BODY if body else sunray_pb2.UGV_MOVE_LOCAL),
+        point_m=mobility_pb2.Vector3(x=x, y=y, z=0.0),
+        yaw_mode=sunray_pb2.UGV_YAW_SET,
+        desired_yaw_rad=yaw_rad,
+        local_frame_id=frame_id if not body else "",
+    )
+    validate_ugv_move_point_goal(message)
+    return message.SerializeToString()
+
+
+def ugv_velocity_payload(
+    vx: float,
+    vy: float,
+    *,
+    lease_ms: int = 1000,
+    frame_id: str = "world",
+    body: bool = False,
+    yaw_rate_radps: float = 0.0,
+) -> bytes:
+    finite(vx, vy, yaw_rate_radps)
+    if not 250 <= lease_ms <= 2000:
+        raise ValueError("lease_ms must be between 250 and 2000")
+    if body:
+        target = sunray_pb2.UgvBodyVelocityTarget(
+            linear_mps=mobility_pb2.Vector2(x=vx, y=vy), yaw_rate_radps=yaw_rate_radps
+        )
+        message = sunray_pb2.UgvVelocityGoal(body=target, lease_ms=lease_ms)
+    else:
+        if not frame_id:
+            raise ValueError("frame_id must not be empty")
+        target = sunray_pb2.UgvLocalVelocityTarget(
+            frame_id=frame_id,
+            linear_mps=mobility_pb2.Vector2(x=vx, y=vy),
+        )
+        message = sunray_pb2.UgvVelocityGoal(local=target, lease_ms=lease_ms)
+    validate_ugv_velocity_goal(message)
+    return message.SerializeToString()
+
+
+def ugv_hold_payload() -> bytes:
+    return sunray_pb2.UgvHoldGoal().SerializeToString()
+
+
+def planner_cancel_payload() -> bytes:
+    return sunray_pb2.PlannerCancelTaskRequest().SerializeToString()
 
 
 def nav_payload(x: float, y: float, z: float, yaw_rad: float, frame_id: str) -> bytes:

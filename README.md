@@ -52,6 +52,7 @@ with discover_and_connect() as client:
 from yunlink_sunray import connect
 
 with connect("192.168.31.236:9696") as client:
+    # The display name (uav1) and the opaque entity UID are both accepted.
     vehicle = client.vehicle("uav1")
     vehicle.takeoff(1.5)
     vehicle.move_to(2.0, 0.0, 1.5)
@@ -77,6 +78,7 @@ with connect("192.168.31.236:9696") as client:
 ```
 
 `vehicle.state` 是最新的不可变快照，包含位置、速度、飞行状态、电池和 Planner 状态。
+`move_to()` 使用现有 Planner 的单航点任务，会等待 Planner 确认任务完成；它不是只把目标发布到 ROS。
 
 ## 非阻塞动作
 
@@ -88,7 +90,8 @@ print(handle.progress)
 result = handle.wait(timeout=30)
 ```
 
-`vehicle.cancel()` 取消最近仍在执行的 Action；没有待执行 Action 时会发送 Hover。
+`vehicle.cancel()` 取消最近仍在执行的 Action；没有本地句柄时会调用 Planner 的幂等取消接口，
+因此也可以停止由其他会话提交的当前 Planner 任务。
 
 断线后 SDK 会恢复 Session、Attach、权限和状态订阅，但不会重放未完成的飞行动作。
 原 Action 会以 `DisconnectedError` 结束，必须由脚本明确决定是否重新提交。
@@ -106,6 +109,8 @@ for bridge in discover(timeout=1.0):
 
 搜索返回 Bridge 的 endpoint、Profiles、Entities 和 SIM 等属性。网络不允许广播时，直接使用
 `connect("host:9696")`。
+
+更多可直接运行的脚本见 [`examples`](examples)：实体搜索、状态读取、ActionHandle、基础速度控制和异常处理。
 
 ## MATLAB
 
@@ -127,8 +132,9 @@ MATLAB 必须配置到已经安装 `yunlink-sunray` 的 Python 3.10 至 3.12 环
 
 ## API 边界
 
-第一版只包含 UAV 状态、起飞、MoveTo、航点、悬停、取消和降落。不包含相机、云台、
-点云、UGV、编队、任务编排或 ROS 接口。高级用户可通过 `client.raw` 访问通用 YunLink
-Transport；普通脚本不需要理解 Wire、Session、TypeRef 或 Protobuf。
+SDK 提供 UAV 的起飞、MoveTo、航点、悬停、取消、降落和基础速度控制，也提供现有协议
+支持范围内的 UGV 实体、点位、速度和 Hold。它不包含相机、云台、点云、编队或任务编排，
+也不连接 ROS。高级用户可通过 `client.raw` 访问通用 YunLink Transport；普通脚本不需要
+理解 Wire、Session、TypeRef 或 Protobuf。
 
 兼容版本见 [COMPATIBILITY.md](COMPATIBILITY.md)。

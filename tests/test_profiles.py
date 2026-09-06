@@ -3,7 +3,16 @@ import math
 import pytest
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 
-from yunlink_sunray.profiles import Waypoint, nav_payload, takeoff_payload, waypoint_payload
+from yunlink_sunray.profiles import (
+    Waypoint,
+    direct_body_velocity_payload,
+    direct_world_velocity_payload,
+    nav_payload,
+    takeoff_payload,
+    ugv_move_point_payload,
+    ugv_velocity_payload,
+    waypoint_payload,
+)
 
 
 def test_navigation_payload_uses_profile_units():
@@ -30,3 +39,20 @@ def test_navigation_rejects_non_finite_coordinates(value):
 def test_takeoff_uses_profile_validation():
     with pytest.raises(ValueError):
         takeoff_payload(-1)
+
+
+def test_direct_and_ugv_payloads_use_expected_targets():
+    direct = sunray_pb2.UavDirectControlGoal.FromString(
+        direct_world_velocity_payload(1.0, 0.0, frame_id="world", height_lock_m=1.5)
+    )
+    assert direct.WhichOneof("target") == "world_velocity"
+    body = sunray_pb2.UavDirectControlGoal.FromString(
+        direct_body_velocity_payload(0.3, 0.0, fixed_height_m=1.5)
+    )
+    assert body.WhichOneof("target") == "body_velocity"
+    move = sunray_pb2.UgvMovePointGoal.FromString(
+        ugv_move_point_payload(1.0, 2.0, frame_id="world")
+    )
+    assert move.local_frame_id == "world"
+    velocity = sunray_pb2.UgvVelocityGoal.FromString(ugv_velocity_payload(0.2, 0.0, body=True))
+    assert velocity.WhichOneof("target") == "body"

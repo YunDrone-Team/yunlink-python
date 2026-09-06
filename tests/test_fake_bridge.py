@@ -30,7 +30,7 @@ def test_complete_uav_control_flow_without_ros(bridge):
         vehicle.land()
         assert bridge.action_goals == [
             "TakeoffGoal",
-            "UavNavGoal",
+            "UavWaypointMissionGoal",
             "UavWaypointMissionGoal",
             "HoverGoal",
             "LandGoal",
@@ -69,3 +69,18 @@ def test_cancel_stops_the_latest_pending_action(bridge):
         assert result is not None
         assert result.phase.name == "CANCELLED"
         assert handle.done
+
+
+def test_cancel_without_local_action_uses_planner_rpc(bridge):
+    with connect(f"127.0.0.1:{bridge.port}") as client:
+        result = client.vehicle().cancel()
+        assert result.action_id == 0
+        assert result.phase.name == "SUCCEEDED"
+
+
+def test_direct_control_and_ugv_use_their_protocol_contract(bridge):
+    with connect(f"127.0.0.1:{bridge.port}") as client:
+        result = client.vehicle("uav1").forward(speed_mps=0.2, duration_s=0.2, fixed_height_m=1.0)
+        assert result.phase.name == "SUCCEEDED"
+        assert [item.uid for item in client.ugvs()] == ["ugv1"]
+        assert client.ugv().state.frame_id == "world"
