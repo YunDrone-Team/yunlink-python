@@ -60,6 +60,16 @@ python examples/01_discover.py
 
 应看到 Bridge 地址、`com.yundrone.sunray` Profile，以及 UAV/UGV 实体目录。
 
+如果局域网有多台 Bridge，使用按 ID 选择脚本：
+
+```bash
+python examples/10_discover_select_connect.py --id <endpoint_uid> --entity <entity_uid>
+```
+
+脚本先完整打印搜索结果，再只连接指定的 `endpoint_uid`。`endpoint_uid` 是 Bridge 的选择 ID，
+`entity_uid` 是 Bridge 下具体 UAV/UGV 的选择 ID；两者都不是临时列表序号。序号只适合人工快速选择。
+如果不传 `--entity`，脚本会连接 Bridge 并打印完整实体目录，不会发送飞行动作。
+
 ### 3.2 建立连接并读取目录
 
 ```bash

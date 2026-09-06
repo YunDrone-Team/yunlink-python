@@ -115,6 +115,8 @@ for bridge in discover(timeout=1.0):
 `connect("host:9696")`。
 
 完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。
+局域网存在多个 Bridge 或多台 UAV 时，使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)：先按 `endpoint_uid` 选择 Bridge，再按 `entity_uid` 选择具体 UAV/UGV。
+多 Bridge 场景请使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)，按搜索结果中的 `endpoint_uid` 选择目标。
 测试人员可直接参考 [`TESTER_GUIDE.md`](TESTER_GUIDE.md)，其中包含安装、执行顺序和结果记录模板。
 
 ## MATLAB

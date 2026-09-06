@@ -1,7 +1,15 @@
 """Simple Python control for Sunray vehicles through YunLink."""
 
 from .actions import ActionHandle, ActionResult
-from .client import Client, EntityInfo, VehicleInfo, connect, discover, discover_and_connect
+from .client import (
+    Client,
+    EntityInfo,
+    VehicleInfo,
+    connect,
+    connect_discovered,
+    discover,
+    discover_and_connect,
+)
 from .errors import (
     ActionFailedError,
     AuthorityError,
@@ -37,6 +45,7 @@ __all__ = [
     "Waypoint",
     "YunLinkSunrayError",
     "connect",
+    "connect_discovered",
     "discover",
     "discover_and_connect",
 ]

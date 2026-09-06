@@ -45,6 +45,25 @@ python examples/02_connect_and_inspect.py
 这个脚本建立 YunLink Session，读取实体目录，选择 UAV，并等待第一份状态快照。它还演示了 `client.raw`：
 普通程序不需要使用它，但高级程序可以通过它访问底层 Transport。
 
+### 2.1 多 Bridge 搜索、按 ID 选择连接
+
+现实局域网中可能同时有很多台无人机或多个 Bridge。使用：
+
+```bash
+python examples/10_discover_select_connect.py
+```
+
+脚本会打印全部 Bridge，每个 Bridge 有唯一的 `endpoint_uid`，并列出其下挂的 UAV/UGV 及各自的 `entity_uid`。
+交互输入 Bridge ID 或序号即可连接指定设备。自动化测试可以直接传 ID：
+
+```bash
+python examples/10_discover_select_connect.py --id f97f96 --entity e-f97f96-2-1
+```
+
+也可以设置 `YUNLINK_BRIDGE_ID` 和 `YUNLINK_ENTITY_ID`，避免交互输入。`endpoint_uid` 选择 Bridge，
+`entity_uid` 选择 Bridge 下的具体 UAV/UGV；两级 ID 都会完整打印。连接后也可以使用输出的实体 UID 或名称调用 `client.vehicle(...)`。
+搜索阶段不会控制任何设备。
+
 ### 3. 持续读取状态
 
 ```bash
@@ -120,5 +139,7 @@ with connect("192.168.31.236:9696") as client:
     uav.land(timeout=30)
 ```
 
-`discover_and_connect()` 适合网络中只有一个 Bridge 的情况；有多个 Bridge 时请使用搜索结果或 `connect(address)`
-明确选择目标。`client.entities()`、`client.vehicles()` 和 `client.ugvs()` 返回目录快照，`client.raw` 保留底层 YunLink 入口。
+`discover_and_connect()` 适合网络中只有一个 Bridge 的情况。多 Bridge 场景请运行
+[`10_discover_select_connect.py`](10_discover_select_connect.py)，按搜索结果中的 `endpoint_uid`
+选择目标，再调用 `connect_discovered()`；不要依赖模糊的 IP 或默认第一台设备。
+`client.entities()`、`client.vehicles()` 和 `client.ugvs()` 返回目录快照，`client.raw` 保留底层 YunLink 入口。

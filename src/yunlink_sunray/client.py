@@ -154,6 +154,22 @@ def connect(
     return Client(address, shared_secret=shared_secret, auto_reconnect=auto_reconnect)
 
 
+def connect_discovered(
+    bridge: yunlink.Advertisement,
+    *,
+    shared_secret: str = "yunlink-default-secret",
+    auto_reconnect: bool = True,
+) -> Client:
+    """Connect to one advertisement returned by :func:`discover`.
+
+    The advertisement's ``endpoint_uid`` is the stable Bridge selection ID;
+    callers do not need to reconstruct an address from the discovery result.
+    """
+    host = bridge.ip
+    address = f"[{host}]:{bridge.tcp_port}" if ":" in host else f"{host}:{bridge.tcp_port}"
+    return connect(address, shared_secret=shared_secret, auto_reconnect=auto_reconnect)
+
+
 def discover(
     *,
     host: str = "255.255.255.255",
@@ -179,9 +195,4 @@ def discover_and_connect(
         endpoints = ", ".join(item.endpoint_uid for item in bridges)
         raise ConnectionError(f"multiple YunLink Bridges discovered: {endpoints}; use connect(address)")
     bridge = bridges[0]
-    address = f"[{bridge.ip}]:{bridge.tcp_port}" if ":" in bridge.ip else f"{bridge.ip}:{bridge.tcp_port}"
-    return connect(
-        address,
-        shared_secret=shared_secret,
-        auto_reconnect=auto_reconnect,
-    )
+    return connect_discovered(bridge, shared_secret=shared_secret, auto_reconnect=auto_reconnect)
