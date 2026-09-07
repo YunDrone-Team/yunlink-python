@@ -17,10 +17,41 @@ matlab -desktop
 matlab -batch "run('matlab/examples/basic_flight_demo.m')"
 ```
 
+R2026a 推荐使用 `-batch` 做自动化验证和打包。它不启动桌面，不需要
+Computer Use，并会把错误作为非零退出码返回：
+
+```bash
+MATLAB=/Applications/MATLAB_R2026a.app/bin/matlab
+cd /absolute/path/to/yunlink-python
+
+# 只检查 MATLAB 包装文件，不连接 Bridge，也不发送飞行动作。
+"$MATLAB" -batch "run('matlab/tests/run_tests.m')"
+
+# 构建 MATLAB Toolbox。
+"$MATLAB" -batch "addpath('matlab'); build_toolbox"
+```
+
+也可以指定输出文件：
+
+```bash
+"$MATLAB" -batch "addpath('matlab'); build_toolbox('/tmp/yunlink-sunray.mltbx')"
+```
+
+R2026a 还提供 `matlab.addons.toolbox.ToolboxOptions`、
+`matlab.addons.toolbox.packageToolbox`、`matlab.addons.install` 和
+`matlab.addons.uninstall`，适合在 CI 或脚本中完成 Toolbox 的构建、安装和清理。
+
 第一次在 MATLAB 中加载 Python 前，选择一个 Python 3.10、3.11 或 3.12 环境：
 
 ```matlab
 pyenv(Version="/absolute/path/to/python3.12");
+```
+
+R2026a 本机默认 Python 版本可能是 3.14；本 SDK 当前验证范围是 Python 3.10、3.11、
+3.12，因此应显式指定受支持的解释器。也可以在 `-batch` 中验证 Python 边界：
+
+```bash
+"$MATLAB" -batch "pyenv('Version','/absolute/path/to/python3.12'); sdk=py.importlib.import_module('yunlink_python'); disp(string(py.getattr(sdk,'__version__')))"
 ```
 
 Python 环境一旦进入 `Loaded` 状态，切换解释器需要重启 MATLAB。
@@ -83,6 +114,7 @@ uav = yunlink_vehicle(client, "uav1");
 
 state = yunlink_state(uav);
 disp(state);
+disp(state.frameId);
 disp(state.armed);      % 只读状态，不是控制调用
 disp(state.disarmed);   % state.armed 的取反
 
@@ -114,6 +146,17 @@ history = yunlink_monitor(uav, 10, struct('period_s', 0.2));
 ```bash
 matlab -batch "run('matlab/tests/run_tests.m')"
 ```
+
+连接正在运行的测试 Bridge 做非 Planner 联通验证（不发送航点、不调用紧急上锁）：
+
+```bash
+YUNLINK_ADDRESS=192.168.31.236:9696 \
+YUNLINK_ENTITY=uav1 \
+"$MATLAB" -batch "addpath('matlab'); run('matlab/tests/home_connectivity.m')"
+```
+
+脚本会依次读取状态、起飞到 1 m、执行一次短距离直接位置控制、悬停并降落，
+最后要求 `landed=true`。实体和地址通过环境变量覆盖，避免把设备选择写死在测试命令中。
 
 构建 Toolbox：
 

@@ -4,6 +4,7 @@ raw = yunlink_state_raw(vehicle);
 
 state = struct();
 state.uavId = char(string(vehicle.uid));
+state.frameId = char(string(raw.frame_id));
 state.connected = logical(raw.connected);
 state.fresh = logical(raw.fresh);
 state.position = vector3_struct(raw.position);
