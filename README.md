@@ -21,7 +21,7 @@ SunrayV2
 请先安装与系统和 Python 版本匹配的 YunLink wheel，再安装本仓库的
 `yunlink-python` wheel。两个包目前都不发布到 PyPI。
 
-SDK wheel 和源码包可从 [GitHub Releases](https://github.com/YunDrone-Team/yunlink-python/releases/latest)
+SDK wheel 和源码包可从 [GitHub Release v1.0.0](https://github.com/YunDrone-Team/yunlink-python/releases/tag/v1.0.0)
 下载。
 
 开发环境可以从源码安装：
