@@ -75,3 +75,10 @@ def test_direct_and_ugv_payloads_use_expected_targets():
     assert move.local_frame_id == "world"
     velocity = sunray_pb2.UgvVelocityGoal.FromString(ugv_velocity_payload(0.2, 0.0, body=True))
     assert velocity.WhichOneof("target") == "body"
+
+
+def test_velocity_lease_accepts_matlab_float_integer_and_rejects_fraction():
+    payload = direct_world_velocity_payload(0.1, 0.0, frame_id="world", lease_ms=1000.0)
+    assert sunray_pb2.UavDirectControlGoal.FromString(payload).lease_ms == 1000
+    with pytest.raises(ValueError, match="integer"):
+        direct_world_velocity_payload(0.1, 0.0, frame_id="world", lease_ms=1000.5)

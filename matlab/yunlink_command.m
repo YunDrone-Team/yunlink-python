@@ -14,11 +14,11 @@ switch kind
         result = yunlink_velocity_control(vehicle, options.vx, options.vy, ...
             option(options, 'vz', 0), options);
     case "hover"
-        result = yunlink_hover(vehicle);
+        result = yunlink_hover(vehicle, option(options, 'timeout', 15));
     case "return_home"
         result = yunlink_return_home(vehicle, option(options, 'timeout', 120));
     case "land"
-        result = yunlink_land(vehicle);
+        result = yunlink_land(vehicle, option(options, 'timeout', 30));
     case "emergency_lock"
         result = yunlink_emergency_lock(vehicle, option(options, 'confirm', false), ...
             option(options, 'timeout', 20));

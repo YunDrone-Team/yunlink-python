@@ -64,6 +64,16 @@ def finite(*values: float) -> None:
         raise ValueError("coordinates and flight parameters must be finite")
 
 
+def _lease_ms(value: int) -> int:
+    numeric = float(value)
+    if not math.isfinite(numeric) or not numeric.is_integer():
+        raise ValueError("lease_ms must be an integer")
+    lease = int(numeric)
+    if not 250 <= lease <= 2000:
+        raise ValueError("lease_ms must be between 250 and 2000")
+    return lease
+
+
 def takeoff_payload(height_m: float, max_velocity_mps: float = 0.0) -> bytes:
     message = sunray_pb2.TakeoffGoal(
         takeoff_relative_height_m=height_m,
@@ -128,8 +138,7 @@ def direct_world_velocity_payload(
     finite(vx, vy, vz)
     if not frame_id:
         raise ValueError("frame_id must not be empty")
-    if not 250 <= lease_ms <= 2000:
-        raise ValueError("lease_ms must be between 250 and 2000")
+    lease_ms = _lease_ms(lease_ms)
     target = sunray_pb2.WorldVelocityTarget(
         frame_id=frame_id,
         velocity_mps=mobility_pb2.Vector3(x=vx, y=vy, z=vz),
@@ -156,8 +165,7 @@ def direct_body_velocity_payload(
     yaw_rate: float = 0.0,
 ) -> bytes:
     finite(forward_mps, left_mps, fixed_height_m, yaw_rate)
-    if not 250 <= lease_ms <= 2000:
-        raise ValueError("lease_ms must be between 250 and 2000")
+    lease_ms = _lease_ms(lease_ms)
     message = sunray_pb2.UavDirectControlGoal(
         body_velocity=sunray_pb2.BodyVelocityTarget(
             body_xy_velocity_mps=mobility_pb2.Vector2(x=forward_mps, y=left_mps),
@@ -206,8 +214,7 @@ def ugv_velocity_payload(
     yaw_rate_radps: float = 0.0,
 ) -> bytes:
     finite(vx, vy, yaw_rate_radps)
-    if not 250 <= lease_ms <= 2000:
-        raise ValueError("lease_ms must be between 250 and 2000")
+    lease_ms = _lease_ms(lease_ms)
     if body:
         target = sunray_pb2.UgvBodyVelocityTarget(
             linear_mps=mobility_pb2.Vector2(x=vx, y=vy), yaw_rate_radps=yaw_rate_radps

@@ -152,7 +152,7 @@ matlab -batch "run('matlab/tests/run_tests.m')"
 ```bash
 YUNLINK_ADDRESS=192.168.31.236:9696 \
 YUNLINK_ENTITY=uav1 \
-"$MATLAB" -batch "addpath('matlab'); run('matlab/tests/home_connectivity.m')"
+"$MATLAB" -batch "pyenv('Version','/absolute/path/to/python3.12'); addpath('matlab'); run('matlab/tests/home_connectivity.m')"
 ```
 
 脚本会依次读取状态、起飞到 1 m、执行一次短距离直接位置控制、悬停并降落，
