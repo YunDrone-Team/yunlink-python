@@ -33,6 +33,7 @@ class FakeBridge:
         self.runtime.set_entity_uids(("uav1", "ugv1"))
         self.port = self.runtime.listening_port
         self.action_goals: list[str] = []
+        self.attach_requests = 0
         self.reject_actions = False
         self.hold_actions = False
         self._closed = False
@@ -102,6 +103,7 @@ class FakeBridge:
             self._reply(event, yunlink.Family.ENTITY_DIRECTORY, 2, core_type("entity_directory"),
                         yunlink.encode_core(directory))
         elif event.family == yunlink.Family.ENTITY_DIRECTORY and event.operation == 4:
+            self.attach_requests += 1
             request = decode_attachment_request(event.payload)
             response = yunlink.AttachmentResponse(True, "r1", request.entity_uids, "attached")
             self._reply(event, yunlink.Family.ENTITY_DIRECTORY, 5, core_type("attachment.response"),

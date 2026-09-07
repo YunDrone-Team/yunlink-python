@@ -6,6 +6,8 @@ import argparse
 import os
 import time
 
+from _session import print_device_catalog
+
 from yunlink_python import connect, discover_and_connect
 
 parser = argparse.ArgumentParser(description="Watch every discovered device")
@@ -15,6 +17,8 @@ args = parser.parse_args()
 address = os.getenv("YUNLINK_ADDRESS")
 client = connect(address) if address else discover_and_connect(timeout=1.5)
 with client:
+    # 这是只读监控：先打印目录，再按每个明确 UID attach 并订阅状态。
+    print_device_catalog(client)
     devices = [client.entity(item.uid) for item in client.entities()]
     if not devices:
         raise SystemExit("没有发现设备")

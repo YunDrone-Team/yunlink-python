@@ -45,3 +45,14 @@ def test_vehicle_and_ugv_accept_display_names():
             assert client.ugv("ugv1").uid == "ugv1"
     finally:
         bridge.close()
+
+
+def test_bridge_uid_is_remote_endpoint_without_attaching():
+    bridge = FakeBridge()
+    try:
+        with connect(f"127.0.0.1:{bridge.port}") as client:
+            assert client.bridge_uid == "bridge.fake"
+            assert [item.uid for item in client.entities()] == ["uav1", "ugv1"]
+            assert bridge.attach_requests == 0
+    finally:
+        bridge.close()

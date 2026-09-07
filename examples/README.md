@@ -1,7 +1,10 @@
 # YunLink Python SDK 完整教程
 
-这组示例从搜索 Bridge 开始，逐步完成连接、实体选择、状态读取、起飞、基础移动、目标移动、航点任务、取消和降落。
+这组示例严格按照“搜索 Bridge、连接 Bridge、打印设备目录、显式选择设备、attach、读取状态、控制”的顺序组织。
 示例使用普通 Python，不连接 ROS；Python 只通过 YunLink 连接 SunrayV2 的 Bridge。
+
+最重要的边界：`connect()` 只连接 Bridge，`client.entities()` 只读取目录，只有
+`client.vehicle(entity_uid)` 或 `client.ugv(entity_uid)` 才会 attach 具体设备。
 
 ## 运行前准备
 
@@ -16,12 +19,12 @@ python -m pip install ./yunlink-python
 
 ```bash
 export YUNLINK_ADDRESS=192.168.31.236:9696
-export YUNLINK_VEHICLE=uav1
-export YUNLINK_UGV=ugv1
+export YUNLINK_VEHICLE=<entity_uid>
+export YUNLINK_UGV=<entity_uid>
 ```
 
 不设置 `YUNLINK_ADDRESS` 时，搜索示例会使用 YunLink UDP discovery。网络不允许广播时，请直接设置地址。
-设备名称既可以写 `uav1` 这样的显示名，也可以写目录返回的完整实体 UID。
+设备名称可以写目录返回的显示名，但推荐记录并使用完整的 `entity_uid`。
 
 **安全提醒：** `04_flight_basics.py`、`05_waypoints.py`、`06_cancel_action.py` 和 `07_ugv_control.py`
 会发送真实控制动作。第一次运行请只连接仿真实体，确认周围没有人员和障碍物，并准备好随时停止仿真。
@@ -36,14 +39,14 @@ python examples/01_discover.py
 
 它只发送 discovery 查询，不连接、不 attach、不控制设备。输出包含 Bridge 地址、Profile 和实体目录。
 
-### 2. 连接并查看设备目录
+### 2. 连接 Bridge 并打印设备目录
 
 ```bash
 python examples/02_connect_and_inspect.py
 ```
 
-这个脚本建立 YunLink Session，读取实体目录，选择 UAV，并等待第一份状态快照。它还演示了 `client.raw`：
-普通程序不需要使用它，但高级程序可以通过它访问底层 Transport。
+这个脚本只建立 YunLink Session 并读取实时实体目录，不 attach、不申请设备权限、不发送控制动作。
+请记录输出的 `entity_uid`，作为下一步选择设备的明确 ID。
 
 ### 2.1 多 Bridge 搜索、按 ID 选择连接
 
@@ -54,15 +57,15 @@ python examples/10_discover_select_connect.py
 ```
 
 脚本会打印全部 Bridge，每个 Bridge 有唯一的 `endpoint_uid`，并列出其下挂的 UAV/UGV 及各自的 `entity_uid`。
-交互输入 Bridge ID 或序号即可连接指定设备。自动化测试可以直接传 ID：
+自动化测试必须通过 Bridge 的 `endpoint_uid` 选择目标：
 
 ```bash
 python examples/10_discover_select_connect.py --id f97f96 --entity e-f97f96-2-1
 ```
 
-也可以设置 `YUNLINK_BRIDGE_ID` 和 `YUNLINK_ENTITY_ID`，避免交互输入。`endpoint_uid` 选择 Bridge，
-`entity_uid` 选择 Bridge 下的具体 UAV/UGV；两级 ID 都会完整打印。连接后也可以使用输出的实体 UID 或名称调用 `client.vehicle(...)`。
-搜索阶段不会控制任何设备。
+也可以设置 `YUNLINK_BRIDGE_ID` 和 `YUNLINK_ENTITY_ID`。`endpoint_uid` 选择 Bridge，
+`entity_uid` 选择 Bridge 下的具体 UAV/UGV；两级 ID 都会完整打印。缺少 ID 时脚本会退出，
+不会猜测目标或连接列表中的第一台设备。搜索和目录阶段不会控制任何设备。
 
 搜索结果分两级：`endpoint_uid` 是 Bridge ID，`entity_uid` 是 Bridge 下面具体 UAV/UGV 的 ID。
 不要把 IP 地址当作设备 ID；同一局域网可能有多台 Bridge，脚本会先列出全部结果，再让你选择。
@@ -70,7 +73,7 @@ python examples/10_discover_select_connect.py --id f97f96 --entity e-f97f96-2-1
 ### 3. 持续读取状态
 
 ```bash
-python examples/03_watch_state.py --seconds 10
+python examples/03_watch_state.py --address 192.168.31.236:9696 --entity <entity_uid> --seconds 10
 ```
 
 状态快照包含连接状态、位置、速度、解锁/着地状态、电池、飞控状态和 Planner 状态。也可以注册回调，
@@ -79,7 +82,7 @@ python examples/03_watch_state.py --seconds 10
 ### 4. 起飞、前进、后退、左右/上下移动、目标移动、悬停、降落
 
 ```bash
-python examples/04_flight_basics.py
+python examples/04_flight_basics.py --address 192.168.31.236:9696 --entity <entity_uid>
 ```
 
 流程是：起飞到安全高度，前进，后退，左移，右移，上移，下移，使用 Planner 移动到目标位置，悬停，最后降落。
@@ -88,7 +91,7 @@ python examples/04_flight_basics.py
 ### 5. 多航点任务
 
 ```bash
-python examples/05_waypoints.py
+python examples/05_waypoints.py --address 192.168.31.236:9696 --entity <entity_uid>
 ```
 
 `Waypoint` 使用当前 odometry frame，任务会等待 Planner 完成全部航点。脚本同时订阅状态，打印当前航点、距离、
@@ -97,7 +100,7 @@ python examples/05_waypoints.py
 ### 6. 非阻塞 Action 和取消
 
 ```bash
-python examples/06_cancel_action.py --after 2
+python examples/06_cancel_action.py --address 192.168.31.236:9696 --entity <entity_uid> --after 2
 ```
 
 传入 `wait=False` 会得到 `ActionHandle`。可以查询 `phase`、`progress` 和 `detail`，也可以在任务执行中调用
@@ -106,7 +109,7 @@ python examples/06_cancel_action.py --after 2
 ### 7. 无人车
 
 ```bash
-python examples/07_ugv_control.py
+python examples/07_ugv_control.py --address 192.168.31.236:9696 --entity <entity_uid>
 ```
 
 在现有协议支持范围内，示例演示无人车状态、MovePoint、速度租约和 Hold。它不会调用 UAV 的飞行接口。
@@ -158,7 +161,8 @@ from yunlink_python import Waypoint, connect, discover, discover_and_connect
 
 bridges = discover(timeout=1.0)
 with connect("192.168.31.236:9696") as client:
-    uav = client.vehicle("uav1")
+    # 这里必须填入前面目录中确认过的 UAV entity_uid。
+    uav = client.vehicle("<entity_uid>")
     uav.takeoff(height_m=1.5, timeout=30)
     uav.forward(speed_mps=0.2, duration_s=1.0)
     uav.backward(speed_mps=0.2, duration_s=1.0)
@@ -168,7 +172,7 @@ with connect("192.168.31.236:9696") as client:
     uav.land(timeout=30)
 ```
 
-`discover_and_connect()` 适合网络中只有一个 Bridge 的情况。多 Bridge 场景请运行
+`discover_and_connect()` 适合网络中只有一个 Bridge 的高级场景。多 Bridge 场景请运行
 [`10_discover_select_connect.py`](10_discover_select_connect.py)，按搜索结果中的 `endpoint_uid`
 选择目标，再调用 `connect_discovered()`；不要依赖模糊的 IP 或默认第一台设备。
 `client.entities()`、`client.vehicles()` 和 `client.ugvs()` 返回目录快照，`client.raw` 保留底层 YunLink 入口。

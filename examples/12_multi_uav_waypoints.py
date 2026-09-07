@@ -7,6 +7,8 @@ import concurrent.futures
 import os
 import time
 
+from _session import print_device_catalog
+
 from yunlink_python import Waypoint, connect, discover_and_connect
 
 
@@ -20,8 +22,8 @@ def wait_for_odometry(uav, timeout: float = 5.0) -> None:
 
 def run_route(uav, index: int, height: float) -> tuple[str, str]:
     try:
-        # Keep the example deterministic across Planner implementations: make
-        # the takeoff handoff explicit before submitting the route.
+        # 为了让不同 Planner 实现下的示例行为一致，先明确等待起飞完成，
+        # 再提交这台 UAV 自己的航线。
         uav.takeoff(height_m=height, timeout=45)
         wait_for_odometry(uav)
         start = uav.state.position
@@ -47,6 +49,8 @@ args = parser.parse_args()
 address = os.getenv("YUNLINK_ADDRESS")
 client = connect(address) if address else discover_and_connect(timeout=1.5)
 with client:
+    # 这里是有意遍历全部 UAV，不是默认选择第一台；每个 UID 都会先显示在目录中。
+    print_device_catalog(client)
     uavs = [client.vehicle(item.uid) for item in client.vehicles()]
     if not uavs:
         raise SystemExit("没有发现 UAV")

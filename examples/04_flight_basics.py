@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-import os
+import argparse
 
-from yunlink_python import connect, discover_and_connect
+from _session import add_connection_arguments, open_bridge, select_uav
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
-    vehicle = client.vehicle(os.getenv("YUNLINK_VEHICLE", "uav1"))
+parser = argparse.ArgumentParser(description="执行 UAV 基础控制动作")
+add_connection_arguments(parser)
+args = parser.parse_args()
+
+with open_bridge(args.address) as client:
+    # 从这里开始才会 attach UAV；后面的 takeoff/move/land 会发送真实控制命令。
+    vehicle = select_uav(client, args.entity)
     height = 1.0
     try:
         print("1) takeoff:", vehicle.takeoff(height, timeout=30))

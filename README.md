@@ -36,32 +36,46 @@ python -m pip install ./yunlink-python
 
 支持 Python 3.10、3.11 和 3.12。
 
-## 第一个飞行脚本
+完整中文使用手册见 [`docs/USAGE_GUIDE_CN.md`](docs/USAGE_GUIDE_CN.md)，文档索引见
+[`docs/README.md`](docs/README.md)。
 
-以下动作会真实发送控制命令。请先确认连接的是仿真实体，并确保飞行区域安全。
+## 第一个完整流程
 
-```python
-from yunlink_python import discover_and_connect
-
-with discover_and_connect() as client:
-    vehicle = client.vehicle()
-    vehicle.takeoff(height_m=1.5, timeout=30)
-    vehicle.move_to(x=2.0, y=0.0, z=1.5, timeout=60)
-    vehicle.land(timeout=30)
-```
-
-已知 Bridge 地址时不需要搜索：
+先搜索 Bridge，再连接 Bridge 并打印设备目录，最后使用明确的 `entity_uid` 选择 UAV。
+连接 Bridge 本身不会 attach 或控制任何设备。
 
 ```python
 from yunlink_python import connect
 
 with connect("192.168.31.236:9696") as client:
-    # The display name (uav1) and the opaque entity UID are both accepted.
-    vehicle = client.vehicle("uav1")
-    vehicle.takeoff(1.5)
-    vehicle.move_to(2.0, 0.0, 1.5)
-    vehicle.land()
+    # 这里只连接 Bridge，并读取当前设备目录；不会 attach 或控制设备。
+    for device in client.entities():
+        print(device.uid, device.name, device.kind)
+
+    # 将这里替换为上面确认过的 entity_uid 或设备名称。
+    uav = client.vehicle("<entity_uid>")
+
+    # 从这里开始才会 attach UAV，并在后续动作中申请控制权限。
+    uav.takeoff(height_m=1.5, timeout=30)
+    uav.move_to(x=2.0, y=0.0, z=1.5, timeout=60)
+    uav.land(timeout=30)
 ```
+
+搜索全部 Bridge：
+
+```python
+from yunlink_python import discover
+
+for bridge in discover(timeout=1.5):
+    print(f"Bridge ID: {bridge.endpoint_uid}")
+    print(f"Address: {bridge.ip}:{bridge.tcp_port}")
+    for device in bridge.entities:
+        print(f"  Device ID: {device.entity_uid} ({device.kind})")
+```
+
+如果局域网中有多个 Bridge，请先运行
+[`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)，用
+`endpoint_uid` 选择 Bridge，再用 `entity_uid` 选择设备。SDK 不会默认选择第一台设备。
 
 ## 航点和状态
 
@@ -69,7 +83,8 @@ with connect("192.168.31.236:9696") as client:
 from yunlink_python import Waypoint, connect
 
 with connect("192.168.31.236:9696") as client:
-    vehicle = client.vehicle("uav1")
+    # 这里使用目录中确认过的实体 ID；不要把 Bridge ID 当成设备 ID。
+    vehicle = client.vehicle("<entity_uid>")
 
     unsubscribe = vehicle.on_state_changed(
         lambda state: print(state.position, state.battery_percent, state.planner)
@@ -100,7 +115,7 @@ result = handle.wait(timeout=30)
 断线后 SDK 会恢复 Session、Attach、权限和状态订阅，但不会重放未完成的飞行动作。
 原 Action 会以 `DisconnectedError` 结束，必须由脚本明确决定是否重新提交。
 
-## 搜索
+## 搜索与连接边界
 
 ```python
 from yunlink_python import discover
@@ -111,12 +126,16 @@ for bridge in discover(timeout=1.0):
         print(entity.entity_uid, entity.kind, entity.attributes)
 ```
 
-搜索返回 Bridge 的 endpoint、Profiles、Entities 和设备属性（例如运行模式）。网络不允许广播时，直接使用
-`connect("host:9696")`。
+搜索返回 Bridge 的 `endpoint_uid`、Profiles、Entities 和设备属性。`connect()` 只建立
+Bridge Session；`client.entities()` 读取目录；`client.vehicle(entity_uid)` 或
+`client.entity(entity_uid)` 才会 attach 具体设备。
+
+`discover_and_connect()` 仍然可用，但只建议在确认网络中只有一个 Bridge 时使用。它不应作为多机网络的
+默认入口，因为它不会替用户决定要控制哪一个设备。
 
 完整的中文教程和按步骤编号的可运行脚本见 [`examples`](examples)：搜索连接、实体查看、状态订阅、UAV 基础移动、多航点规划、Action 取消、UGV 控制和异常处理。
 局域网存在多个 Bridge 或多台 UAV 时，使用 [`examples/10_discover_select_connect.py`](examples/10_discover_select_connect.py)：先按 `endpoint_uid` 选择 Bridge，再按 `entity_uid` 选择具体 UAV/UGV。
-该脚本会把全部搜索结果完整打印出来，再按 ID 或序号连接；不会默认连接搜索结果中的第一台设备。
+该脚本会把全部搜索结果完整打印出来，再按稳定的 Bridge ID 和设备 ID 连接；不会默认连接搜索结果中的第一台设备。
 
 一个 Client 可以创建多个独立的 `Vehicle`/`Ugv` 对象。需要并行控制时由应用自己的线程或任务编排，
 参见 [`examples/11_multi_device_control.py`](examples/11_multi_device_control.py)、

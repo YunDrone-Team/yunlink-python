@@ -53,6 +53,13 @@ def _validate_port(port: int) -> int:
 
 
 class Client:
+    """已连接到一个 YunLink Bridge 的客户端。
+
+    创建 Client 只建立 Bridge Session，不会自动选择、attach 或控制任何设备。
+    先调用 :meth:`entities` 查看目录，再把明确的 entity UID 或设备名称传给
+    :meth:`vehicle`、:meth:`ugv` 或 :meth:`entity`。
+    """
+
     def __init__(
         self,
         address: str,
@@ -66,9 +73,16 @@ class Client:
 
     @property
     def raw(self) -> Transport:
+        """返回底层 Transport，仅供需要 YunLink 原始能力的高级用户使用。"""
         return self._transport
 
+    @property
+    def bridge_uid(self) -> str:
+        """返回当前连接的远端 Bridge ``endpoint_uid``。"""
+        return self._transport.endpoint_uid
+
     def entities(self) -> list[EntityInfo]:
+        """读取 Bridge 的实时设备目录，不 attach 设备，也不申请控制权限。"""
         return [
             EntityInfo(
                 entity.entity_uid,
@@ -87,12 +101,20 @@ class Client:
         return [item for item in self.entities() if item.kind == "sunray.ugv"]
 
     def vehicle(self, uid: str | None = None):
+        """按明确的 UAV UID 或名称 attach 一个 UAV 并订阅其状态。
+
+        多台 UAV 同时存在时必须显式传入 ``uid``，不会默认选择第一台设备。
+        """
         from .vehicle import Vehicle
 
         available = self.vehicles()
         if uid is None:
             if len(available) != 1:
-                detail = "no Sunray UAV was found" if not available else "multiple UAVs found; specify uid"
+                detail = (
+                    "no Sunray UAV was found"
+                    if not available
+                    else "multiple UAVs found; specify uid"
+                )
                 raise EntityNotFoundError(detail)
             uid = available[0].uid
         else:
@@ -102,12 +124,17 @@ class Client:
         return self._entities[uid]
 
     def ugv(self, uid: str | None = None):
+        """按明确的 UGV UID 或名称 attach 一个 UGV 并订阅其状态。"""
         from .ugv import Ugv
 
         available = self.ugvs()
         if uid is None:
             if len(available) != 1:
-                detail = "no Sunray UGV was found" if not available else "multiple UGVs found; specify uid"
+                detail = (
+                    "no Sunray UGV was found"
+                    if not available
+                    else "multiple UGVs found; specify uid"
+                )
                 raise EntityNotFoundError(detail)
             uid = available[0].uid
         else:
@@ -117,6 +144,7 @@ class Client:
         return self._entities[uid]
 
     def entity(self, uid: str):
+        """按 UID 或名称选择并 attach 一个已列出的 UAV 或 UGV。"""
         info = next((item for item in self.entities() if item.uid == uid), None)
         if info is None:
             matches = [item for item in self.entities() if item.name == uid]
@@ -151,6 +179,7 @@ def connect(
     shared_secret: str = "yunlink-default-secret",
     auto_reconnect: bool = True,
 ) -> Client:
+    """连接 YunLink Bridge；不会自动选择或 attach 任何设备。"""
     return Client(address, shared_secret=shared_secret, auto_reconnect=auto_reconnect)
 
 
@@ -193,6 +222,8 @@ def discover_and_connect(
         raise ConnectionError("no YunLink Bridge was discovered")
     if len(bridges) > 1:
         endpoints = ", ".join(item.endpoint_uid for item in bridges)
-        raise ConnectionError(f"multiple YunLink Bridges discovered: {endpoints}; use connect(address)")
+        raise ConnectionError(
+            f"multiple YunLink Bridges discovered: {endpoints}; use connect(address)"
+        )
     bridge = bridges[0]
     return connect_discovered(bridge, shared_secret=shared_secret, auto_reconnect=auto_reconnect)

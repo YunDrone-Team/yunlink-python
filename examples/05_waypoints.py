@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
-import os
+import argparse
 
-from yunlink_python import Waypoint, connect, discover_and_connect
+from _session import add_connection_arguments, open_bridge, select_uav
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
-    vehicle = client.vehicle(os.getenv("YUNLINK_VEHICLE", "uav1"))
+from yunlink_python import Waypoint
+
+parser = argparse.ArgumentParser(description="执行 UAV 多航点 Planner 任务")
+add_connection_arguments(parser)
+args = parser.parse_args()
+
+with open_bridge(args.address) as client:
+    # 必须先从目录确认目标 UAV，再 attach 后提交航点任务。
+    vehicle = select_uav(client, args.entity)
     height = 1.0
     try:
         vehicle.takeoff(height, timeout=30)

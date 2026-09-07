@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-import os
+import argparse
 
-from yunlink_python import connect, discover_and_connect
+from _session import add_connection_arguments, open_bridge, select_ugv
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
-    ugvs = client.ugvs()
-    if not ugvs:
-        raise SystemExit("没有发现 Sunray UGV")
-    ugv = client.ugv(os.getenv("YUNLINK_UGV", ugvs[0].name))
+parser = argparse.ArgumentParser(description="执行 UGV MovePoint、速度租约和 Hold")
+add_connection_arguments(parser, entity_env="YUNLINK_UGV")
+args = parser.parse_args()
+
+with open_bridge(args.address) as client:
+    # 这里使用明确的 UGV entity_uid；不会从目录中自动挑选第一台无人车。
+    ugv = select_ugv(client, args.entity)
     print("initial:", ugv.state)
     start = ugv.state.position
     print("move_to:", ugv.move_to(start.x + 0.3, start.y, timeout=45))

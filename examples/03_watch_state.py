@@ -3,19 +3,18 @@
 from __future__ import annotations
 
 import argparse
-import os
 import time
 
-from yunlink_python import connect, discover_and_connect
+from _session import add_connection_arguments, open_bridge, select_uav
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--seconds", type=float, default=10.0)
+add_connection_arguments(parser)
 args = parser.parse_args()
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
-    vehicle = client.vehicle(os.getenv("YUNLINK_VEHICLE", "uav1"))
+# 先连接 Bridge 并打印目录，再用用户明确指定的 entity_uid attach UAV。
+with open_bridge(args.address) as client:
+    vehicle = select_uav(client, args.entity)
     last_print = [0.0]
 
     def show(state) -> None:

@@ -1,31 +1,20 @@
-"""连接 Bridge，列出实体并读取第一份 UAV 状态。"""
+"""连接 Bridge，只打印实时设备目录，不 attach 或控制设备。"""
 
 from __future__ import annotations
 
+import argparse
 import os
-import time
 
-from yunlink_python import connect, discover_and_connect
+from _session import open_bridge
 
+parser = argparse.ArgumentParser(description="连接 Bridge 并打印设备目录，不控制设备")
+parser.add_argument(
+    "--address",
+    default=os.getenv("YUNLINK_ADDRESS"),
+    help="Bridge 地址，例如 192.168.31.236:9696；也可用 YUNLINK_ADDRESS",
+)
+args = parser.parse_args()
 
-def open_client():
-    address = os.getenv("YUNLINK_ADDRESS")
-    return connect(address) if address else discover_and_connect(timeout=1.5)
-
-
-with open_client() as client:
-    print(f"Bridge endpoint: {client.raw.endpoint_uid}")
-    print("All entities:")
-    for entity in client.entities():
-        print(f"  {entity.name} -> {entity.uid} ({entity.kind})")
-
-    uavs = client.vehicles()
-    if not uavs:
-        raise SystemExit("没有发现 Sunray UAV")
-    vehicle = client.vehicle(os.getenv("YUNLINK_VEHICLE", uavs[0].name))
-    print(f"Selected UAV: {vehicle.uid}")
-    deadline = time.monotonic() + 5.0
-    while not vehicle.state.frame_id and time.monotonic() < deadline:
-        time.sleep(0.05)
-    print("Initial state:", vehicle.state)
-    print("Raw YunLink transport:", type(client.raw).__name__)
+# 这里建立的只是 Bridge Session。client.entities() 只读目录，不会 attach 任何 UAV/UGV。
+with open_bridge(args.address) as client:
+    print("目录检查完成。下一步请从上面的 entity_uid 中选择设备，再运行 03_watch_state.py。")
