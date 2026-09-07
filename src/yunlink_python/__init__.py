@@ -17,7 +17,7 @@ from .errors import (
     DisconnectedError,
     EntityNotFoundError,
     TimeoutError,
-    YunLinkSunrayError,
+    YunLinkPythonError,
 )
 from .profiles import Waypoint
 from .state import PlannerState, UgvState, Vector3, VehicleState
@@ -43,11 +43,11 @@ __all__ = [
     "VehicleInfo",
     "VehicleState",
     "Waypoint",
-    "YunLinkSunrayError",
+    "YunLinkPythonError",
     "connect",
     "connect_discovered",
     "discover",
     "discover_and_connect",
 ]
 
-__version__ = "1.1.1"
+__version__ = "1.0.0"

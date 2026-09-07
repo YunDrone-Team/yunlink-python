@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 
-from yunlink_sunray import (
+from yunlink_python import (
     ActionFailedError,
     ConnectionError,
     EntityNotFoundError,

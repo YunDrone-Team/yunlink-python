@@ -6,7 +6,7 @@ import argparse
 import os
 import time
 
-from yunlink_sunray import connect, discover_and_connect
+from yunlink_python import connect, discover_and_connect
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--after", type=float, default=2.0, help="开始任务后等待多少秒再取消")

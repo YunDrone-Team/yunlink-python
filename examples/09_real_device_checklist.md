@@ -9,7 +9,7 @@ Python SDK -> YunLink Session -> Attach/Authority -> Bridge -> SunrayV2 -> 控�
 真实设备使用同一套代码：
 
 ```python
-from yunlink_sunray import connect
+from yunlink_python import connect
 
 with connect("真实 Bridge 的地址:9696") as client:
     uav = client.vehicle("目录中的 UAV 名称或 entity UID")

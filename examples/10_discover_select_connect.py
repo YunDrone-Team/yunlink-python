@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import os
 
-from yunlink_sunray import connect_discovered, discover
+from yunlink_python import connect_discovered, discover
 
 parser = argparse.ArgumentParser(description="Discover Bridges and connect by endpoint ID")
 parser.add_argument("--id", dest="endpoint_id", help="要连接的 Bridge endpoint_uid；省略时交互式选择序号")

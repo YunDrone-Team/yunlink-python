@@ -1,11 +1,11 @@
 """Public SDK errors."""
 
 
-class YunLinkSunrayError(RuntimeError):
+class YunLinkPythonError(RuntimeError):
     pass
 
 
-class ConnectionError(YunLinkSunrayError):
+class ConnectionError(YunLinkPythonError):
     pass
 
 
@@ -13,19 +13,19 @@ class DisconnectedError(ConnectionError):
     pass
 
 
-class TimeoutError(YunLinkSunrayError):
+class TimeoutError(YunLinkPythonError):
     pass
 
 
-class EntityNotFoundError(YunLinkSunrayError):
+class EntityNotFoundError(YunLinkPythonError):
     pass
 
 
-class AuthorityError(YunLinkSunrayError):
+class AuthorityError(YunLinkPythonError):
     pass
 
 
-class ActionFailedError(YunLinkSunrayError):
+class ActionFailedError(YunLinkPythonError):
     def __init__(self, result_code: int, detail: str) -> None:
         self.result_code = result_code
         self.detail = detail

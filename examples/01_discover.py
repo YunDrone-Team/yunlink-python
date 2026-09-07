@@ -1,6 +1,6 @@
 """搜索 YunLink Bridge，只读，不连接也不发送控制命令。"""
 
-from yunlink_sunray import discover
+from yunlink_python import discover
 
 bridges = discover(timeout=1.5)
 if not bridges:

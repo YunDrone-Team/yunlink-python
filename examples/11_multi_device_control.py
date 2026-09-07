@@ -7,7 +7,7 @@ import concurrent.futures
 import os
 import time
 
-from yunlink_sunray import connect, discover_and_connect
+from yunlink_python import connect, discover_and_connect
 
 
 def wait_until_ready(device, timeout: float = 5.0) -> None:

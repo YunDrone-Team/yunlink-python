@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 
-from yunlink_sunray import Waypoint, connect, discover_and_connect
+from yunlink_python import Waypoint, connect, discover_and_connect
 
 address = os.getenv("YUNLINK_ADDRESS")
 client = connect(address) if address else discover_and_connect(timeout=1.5)

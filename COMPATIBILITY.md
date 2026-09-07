@@ -1,6 +1,6 @@
 # 兼容性
 
-| yunlink-sunray | yunlink | Sunray Profile | Python |
+| yunlink-python | yunlink | Sunray Profile | Python |
 | --- | --- | --- | --- |
 | 1.0.x | >= 2.0.1 | com.yundrone.sunray 2.2 至 2.8 | 3.10-3.12 |
 

@@ -3,8 +3,8 @@ from types import SimpleNamespace
 import pytest
 from conftest import FakeBridge
 
-from yunlink_sunray import connect, connect_discovered
-from yunlink_sunray.client import _parse_address
+from yunlink_python import connect, connect_discovered
+from yunlink_python.client import _parse_address
 
 
 @pytest.mark.parametrize(
@@ -31,7 +31,7 @@ def test_connect_discovered_uses_selected_advertisement(monkeypatch):
         calls.append((address, kwargs))
         return "client"
 
-    monkeypatch.setattr("yunlink_sunray.client.connect", fake_connect)
+    monkeypatch.setattr("yunlink_python.client.connect", fake_connect)
     bridge = SimpleNamespace(ip="2001:db8::10", tcp_port=9696, endpoint_uid="bridge-10")
     assert connect_discovered(bridge, shared_secret="test", auto_reconnect=False) == "client"
     assert calls == [("[2001:db8::10]:9696", {"shared_secret": "test", "auto_reconnect": False})]

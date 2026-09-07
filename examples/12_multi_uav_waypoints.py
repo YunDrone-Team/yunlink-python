@@ -7,7 +7,7 @@ import concurrent.futures
 import os
 import time
 
-from yunlink_sunray import Waypoint, connect, discover_and_connect
+from yunlink_python import Waypoint, connect, discover_and_connect
 
 
 def wait_for_odometry(uav, timeout: float = 5.0) -> None:

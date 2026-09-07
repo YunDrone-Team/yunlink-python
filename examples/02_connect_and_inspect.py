@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import time
 
-from yunlink_sunray import connect, discover_and_connect
+from yunlink_python import connect, discover_and_connect
 
 
 def open_client():

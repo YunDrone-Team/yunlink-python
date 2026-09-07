@@ -3,7 +3,7 @@ import time
 import pytest
 from conftest import FakeBridge
 
-from yunlink_sunray import ActionFailedError, DisconnectedError, Waypoint, connect
+from yunlink_python import ActionFailedError, DisconnectedError, Waypoint, connect
 
 
 @pytest.fixture

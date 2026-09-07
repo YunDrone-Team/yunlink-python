@@ -12,7 +12,7 @@ python -m pip install ./yunlink/bindings/python
 python -m pip install ./yunlink-python
 ```
 
-或者使用已经安装的 `yunlink-sunray` wheel。示例默认读取以下环境变量：
+或者使用已经安装的 `yunlink-python` wheel。示例默认读取以下环境变量：
 
 ```bash
 export YUNLINK_ADDRESS=192.168.31.236:9696
@@ -154,7 +154,7 @@ python examples/08_errors.py
 ## 常用 API 对照
 
 ```python
-from yunlink_sunray import Waypoint, connect, discover, discover_and_connect
+from yunlink_python import Waypoint, connect, discover, discover_and_connect
 
 bridges = discover(timeout=1.0)
 with connect("192.168.31.236:9696") as client:

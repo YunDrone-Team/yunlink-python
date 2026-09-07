@@ -1,12 +1,12 @@
-# yunlink-sunray
+# yunlink-python
 
-`yunlink-sunray` 是面向 SunrayV2 的简洁 Python 控制 SDK。它通过 YunLink Bridge
+`yunlink-python` 是面向 SunrayV2 的简洁 Python 控制 SDK。它通过 YunLink Bridge
 连接无人机，不依赖 ROS，也不替代 Bridge。
 
 ```text
 Python / MATLAB
       |
-yunlink-sunray       Sunray 便捷接口
+yunlink-python       Sunray 便捷接口
       |
 yunlink              通用 YunLink Wire v2 Python 绑定
       |
@@ -17,9 +17,9 @@ SunrayV2
 
 ## 安装
 
-当前 GitHub Release 为 `v1.1.1`。由于 `yunlink` 依赖包含平台相关的原生运行库，
+当前 GitHub Release 为 `v1.0.0`。由于 `yunlink` 依赖包含平台相关的原生运行库，
 请先安装与系统和 Python 版本匹配的 YunLink wheel，再安装本仓库的
-`yunlink-sunray` wheel。两个包目前都不发布到 PyPI。
+`yunlink-python` wheel。两个包目前都不发布到 PyPI。
 
 SDK wheel 和源码包可从 [GitHub Releases](https://github.com/YunDrone-Team/yunlink-python/releases/latest)
 下载。
@@ -41,7 +41,7 @@ python -m pip install ./yunlink-python
 以下动作会真实发送控制命令。请先确认连接的是仿真实体，并确保飞行区域安全。
 
 ```python
-from yunlink_sunray import discover_and_connect
+from yunlink_python import discover_and_connect
 
 with discover_and_connect() as client:
     vehicle = client.vehicle()
@@ -53,7 +53,7 @@ with discover_and_connect() as client:
 已知 Bridge 地址时不需要搜索：
 
 ```python
-from yunlink_sunray import connect
+from yunlink_python import connect
 
 with connect("192.168.31.236:9696") as client:
     # The display name (uav1) and the opaque entity UID are both accepted.
@@ -66,7 +66,7 @@ with connect("192.168.31.236:9696") as client:
 ## 航点和状态
 
 ```python
-from yunlink_sunray import Waypoint, connect
+from yunlink_python import Waypoint, connect
 
 with connect("192.168.31.236:9696") as client:
     vehicle = client.vehicle("uav1")
@@ -103,7 +103,7 @@ result = handle.wait(timeout=30)
 ## 搜索
 
 ```python
-from yunlink_sunray import discover
+from yunlink_python import discover
 
 for bridge in discover(timeout=1.0):
     print(bridge.endpoint_uid, bridge.ip, bridge.tcp_port, bridge.profiles)
@@ -141,7 +141,7 @@ yunlink_land(uav);
 yunlink_close(client);
 ```
 
-MATLAB 必须配置到已经安装 `yunlink-sunray` 的 Python 3.10 至 3.12 环境。
+MATLAB 必须配置到已经安装 `yunlink-python` 的 Python 3.10 至 3.12 环境。
 
 ## API 边界
 

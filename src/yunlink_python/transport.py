@@ -32,7 +32,7 @@ class Transport:
     def __init__(self, host: str, port: int, shared_secret: str, auto_reconnect: bool = True) -> None:
         endpoint_uid = f"python.{uuid.uuid4().hex}"
         self.runtime = yunlink.Runtime(yunlink.RuntimeConfig(
-            endpoint_uid, 0, "yunlink-sunray", shared_secret,
+            endpoint_uid, 0, "yunlink-python", shared_secret,
             OFFERED_PROFILES, REQUIRED_PROFILES,
         ))
         self._host, self._port = host, port

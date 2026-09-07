@@ -45,6 +45,6 @@ jobs:
 
       - name: Wheel install smoke
         run: |
-          python -m pip uninstall -y yunlink-sunray
-          python -m pip install dist/yunlink_sunray-*.whl --no-deps
-          python -c "import yunlink_sunray; print(yunlink_sunray.__version__)"
+          python -m pip uninstall -y yunlink-python
+          python -m pip install dist/yunlink_python-*.whl --no-deps
+          python -c "import yunlink_python; print(yunlink_python.__version__)"

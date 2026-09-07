@@ -13,7 +13,7 @@ from yunlink.core_codec import (
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
 
-from yunlink_sunray.profiles import MOBILITY, SUNRAY, TELEMETRY
+from yunlink_python.profiles import MOBILITY, SUNRAY, TELEMETRY
 
 
 def core_type(name: str) -> yunlink.TypeRef:

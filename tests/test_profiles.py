@@ -3,7 +3,7 @@ import math
 import pytest
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 
-from yunlink_sunray.profiles import (
+from yunlink_python.profiles import (
     Waypoint,
     direct_body_velocity_payload,
     direct_world_velocity_payload,
