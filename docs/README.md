@@ -18,6 +18,7 @@
 - [测试人员使用指南](../TESTER_GUIDE.md)
 - [兼容性说明](../COMPATIBILITY.md)
 - [MATLAB 包装说明](../matlab)
+- [MATLAB 安装、更新与体验说明](../matlab/README.md)
 
 ## 最重要的连接边界
 

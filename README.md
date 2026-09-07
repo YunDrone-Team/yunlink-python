@@ -17,12 +17,11 @@ SunrayV2
 
 ## 安装
 
-当前 GitHub Release 为 `v1.0.0`。由于 `yunlink` 依赖包含平台相关的原生运行库，
+当前 SDK 版本为 `1.1.0`。由于 `yunlink` 依赖包含平台相关的原生运行库，
 请先安装与系统和 Python 版本匹配的 YunLink wheel，再安装本仓库的
 `yunlink-python` wheel。两个包目前都不发布到 PyPI。
 
-SDK wheel 和源码包可从 [GitHub Release v1.0.0](https://github.com/YunDrone-Team/yunlink-python/releases/tag/v1.0.0)
-下载。
+SDK wheel 和源码包可从 GitHub Release 下载；本地开发也可以直接按下方命令从源码安装。
 
 开发环境可以从源码安装：
 
@@ -99,6 +98,41 @@ with connect("192.168.31.236:9696") as client:
 `vehicle.state` 是最新的不可变快照，包含位置、速度、飞行状态、电池和 Planner 状态。
 `move_to()` 使用现有 Planner 的单航点任务，会等待 Planner 确认任务完成；它不是只把目标发布到 ROS。
 
+状态还包括姿态四元数、角速度、定位状态、PX4 模式、控制模式、移动模式以及：
+
+```python
+state.armed       # Bridge 报告的只读状态
+state.disarmed    # 只读派生属性，等于 not state.armed
+state.landed
+state.landing
+```
+
+`arm()` 和 `disarm()` 不作为 SDK 控制接口；SDK 不伪造或覆盖飞控的真实解锁状态。
+
+## 直接控制与任务控制
+
+```python
+with connect("192.168.31.236:9696") as client:
+    uav = client.vehicle("<entity_uid>")
+    uav.takeoff(1.5)
+    uav.position_control(2.0, 0.0, 1.5)  # 直接位置控制
+    uav.velocity(0.2, 0.0, 0.0, duration_s=1.0)
+    uav.hover()
+    uav.return_home()
+    uav.land()
+```
+
+`move_to()` 和 `waypoint()` 是 Planner 型任务；`position_control()` 是现有
+`UavDirectControlGoal` 的直接位置控制，两者保持明确区分。`emergency_lock()` 是高风险动作，
+必须显式传入 `confirm=True`：
+
+```python
+uav.emergency_lock(confirm=True)
+```
+
+为了便于脚本分发，`vehicle.command()` 只接受 `takeoff`、`position`、`velocity`、`hover`、
+`return_home`、`land` 和 `emergency_lock` 七个命令名；未知命令会立即抛出 `ValueError`。
+
 ## 非阻塞动作
 
 控制方法默认等待最终结果。传入 `wait=False` 可取得 `ActionHandle`：
@@ -161,10 +195,11 @@ yunlink_close(client);
 ```
 
 MATLAB 必须配置到已经安装 `yunlink-python` 的 Python 3.10 至 3.12 环境。
+完整的安装、更新、Toolbox 打包和状态字段说明见 [`matlab/README.md`](matlab/README.md)。
 
 ## API 边界
 
-SDK 提供 UAV 的起飞、MoveTo、航点、悬停、取消、降落和基础速度控制，也提供现有协议
+SDK 提供 UAV 的起飞、MoveTo、航点、直接位置/速度控制、悬停、返航、取消、降落和明确确认的紧急上锁，也提供现有协议
 支持范围内的 UGV 实体、点位、速度和 Hold。它不包含相机、云台、点云、编队或任务编排，
 也不连接 ROS。高级用户可通过 `client.raw` 访问通用 YunLink Transport；普通脚本不需要
 理解 Wire、Session、TypeRef 或 Protobuf。

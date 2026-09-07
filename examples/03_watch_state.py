@@ -23,10 +23,18 @@ with open_bridge(args.address) as client:
             return
         last_print[0] = now
         p = state.position
+        q = state.attitude
+        v = state.velocity
         print(
             f"connected={state.connected} fresh={state.fresh} "
             f"pos=({p.x:.2f}, {p.y:.2f}, {p.z:.2f}) "
-            f"landed={state.landed} battery={state.battery_percent}% "
+            f"vel=({v.x:.2f}, {v.y:.2f}, {v.z:.2f}) "
+            f"attitude=({q.x:.2f}, {q.y:.2f}, {q.z:.2f}, {q.w:.2f}) "
+            f"armed={state.armed} landed={state.landed} landing={state.landing} "
+            f"battery={state.battery_percent}%/{state.battery_voltage_v:.1f}V "
+            f"px4={state.px4_mode or '-'} control={state.control_mode_name or '-'} "
+            f"movement={state.movement_mode or '-'} "
+            f"localization={state.localization.source}:{state.localization.valid} "
             f"planner={state.planner.task_state} distance={state.planner.distance_to_goal_m:.2f}"
         )
 

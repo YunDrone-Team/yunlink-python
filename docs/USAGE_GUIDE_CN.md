@@ -18,7 +18,7 @@ SDK 不连接 ROS，不复制 ROS 服务，不自动选择第一台设备，也�
 
 1. YunLink Bridge 已启动并监听 TCP 端口，默认端口是 `9696`。
 2. 仿真或真实设备已经注册到 Bridge 的设备目录。
-3. Python 版本为 3.10、3.11 或 3.12。
+3. Python 版本为 3.10、3.11 或 3.12，SDK 版本为 `1.1.0`。
 4. 第一次测试优先使用仿真实体，真实设备必须遵守现场安全规定。
 
 控制脚本会发送真实动作。只读搜索、目录查看和状态查看不会起飞或移动设备。
@@ -59,7 +59,7 @@ YunLink binding 包含平台相关运行库，需要先安装与操作系统匹�
 python -m pip install /path/to/yunlink-*.whl
 
 # 再安装本 SDK 的 wheel。
-python -m pip install /path/to/yunlink_python-1.0.0-py3-none-any.whl
+python -m pip install /path/to/yunlink_python-1.1.0-py3-none-any.whl
 
 # 确认 Python import 名称和版本。
 python -c "import yunlink_python; print(yunlink_python.__version__)"
@@ -176,6 +176,10 @@ print("velocity:", state.velocity)
 print("landed:", state.landed)
 print("battery:", state.battery_percent)
 print("planner:", state.planner)
+print("armed/disarmed:", state.armed, state.disarmed)
+print("landed/landing:", state.landed, state.landing)
+print("PX4 mode:", state.px4_mode)
+print("localization:", state.localization)
 ```
 
 持续监听状态：
@@ -328,6 +332,11 @@ python examples/08_errors.py --address 192.168.31.236:9696 --entity <entity_uid>
 | `vehicle.move_to()` | Planner 单目标移动 | 已 attach 后申请权限 |
 | `vehicle.waypoints()` | Planner 航点任务 | 已 attach 后申请权限 |
 | `vehicle.cancel()` | 取消当前实体任务 | 已 attach 后申请权限 |
+| `vehicle.position_control()` | 直接位置控制 | 已 attach 后申请权限 |
+| `vehicle.velocity()` | 直接速度控制 | 已 attach 后申请权限 |
+| `vehicle.return_home()` | 返航任务 | 已 attach 后申请权限 |
+| `vehicle.emergency_lock(confirm=True)` | 明确确认的紧急上锁 | 已 attach 后申请权限 |
+| `vehicle.command(kind, **kwargs)` | 七个命令的有限分发 | 取决于命令 |
 | `vehicle.land()` | 降落 Action | 已 attach 后申请权限 |
 
 ## 17. 常见问题排查

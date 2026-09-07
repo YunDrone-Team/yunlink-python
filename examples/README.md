@@ -79,6 +79,9 @@ python examples/03_watch_state.py --address 192.168.31.236:9696 --entity <entity
 状态快照包含连接状态、位置、速度、解锁/着地状态、电池、飞控状态和 Planner 状态。也可以注册回调，
 让状态变化主动推送到自己的程序中。
 
+`state.armed` 和 `state.disarmed` 是只读状态，`state.landed`/`state.landing` 表示落地和降落阶段；
+SDK 不提供 `arm()` 或 `disarm()` 控制调用。
+
 ### 4. 起飞、前进、后退、左右/上下移动、目标移动、悬停、降落
 
 ```bash
@@ -170,6 +173,14 @@ with connect("192.168.31.236:9696") as client:
     uav.waypoints([Waypoint(1.0, 0.0, 1.5), Waypoint(1.0, 1.0, 1.5)])
     uav.hover(timeout=15)
     uav.land(timeout=30)
+```
+
+直接位置控制、返航和明确确认的紧急上锁：
+
+```python
+uav.position_control(1.0, 0.0, 1.5)
+uav.return_home(timeout=120)
+uav.emergency_lock(confirm=True)
 ```
 
 `discover_and_connect()` 适合网络中只有一个 Bridge 的高级场景。多 Bridge 场景请运行

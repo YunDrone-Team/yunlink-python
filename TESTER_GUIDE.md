@@ -11,12 +11,12 @@
 
 1. 从 YunLink 仓库构建或取得与操作系统匹配的 `yunlink` Python binding wheel。
 2. 安装 `yunlink` wheel。
-3. 打开本仓库的 GitHub Release 页面，下载 `yunlink_python-1.0.0-py3-none-any.whl`。
+3. 打开本仓库的 GitHub Release 页面，下载 `yunlink_python-1.1.0-py3-none-any.whl`。
 4. 安装 SDK wheel：
 
 ```bash
 python -m pip install /path/to/yunlink-*.whl
-python -m pip install /path/to/yunlink_python-1.0.0-py3-none-any.whl
+python -m pip install /path/to/yunlink_python-1.1.0-py3-none-any.whl
 python -c "import yunlink_python; print(yunlink_python.__version__)"
 ```
 
