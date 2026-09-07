@@ -10,26 +10,32 @@ from collections.abc import Callable, Sequence
 import yunlink
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
+from yunlink.profiles.org.yunlink.telemetry.v1 import telemetry_pb2
 
 from .actions import ActionHandle, ActionResult
 from .errors import ActionFailedError, ConnectionError, TimeoutError
 from .profiles import (
+    EMERGENCY_KILL,
     HOVER,
     LAND,
     PLANNER_CANCEL,
+    RETURN_HOME,
     TAKEOFF,
     UAV_DIRECT_CONTROL,
     WAYPOINT_MISSION,
     Waypoint,
     direct_body_velocity_payload,
+    direct_world_position_payload,
     direct_world_velocity_payload,
+    emergency_kill_payload,
     hover_payload,
     land_payload,
     planner_cancel_payload,
+    return_home_payload,
     takeoff_payload,
     waypoint_payload,
 )
-from .state import PlannerState, StateStore, Vector3, VehicleState
+from .state import LocalizationState, PlannerState, Quaternion, StateStore, Vector3, VehicleState
 from .transport import Transport
 
 
@@ -44,8 +50,10 @@ class Vehicle:
         self._state.set_connected(True)
         transport.attach(uid)
         self._subscribe("odometry", self._on_odometry)
+        self._subscribe("odom_status", self._on_odom_status)
         self._subscribe("flight_control_state", self._on_flight_state)
         self._subscribe("uav_planning_state", self._on_planning_state)
+        self._subscribe("status_summary", self._on_status_summary)
 
     @property
     def state(self) -> VehicleState:
@@ -67,6 +75,60 @@ class Vehicle:
 
     def land(self, timeout: float = 30.0, *, wait: bool = True) -> ActionResult | ActionHandle:
         return self._run(LAND, land_payload(), timeout, wait)
+
+    def return_home(self, timeout: float = 120.0, *, wait: bool = True) -> ActionResult | ActionHandle:
+        return self._run(RETURN_HOME, return_home_payload(), timeout, wait)
+
+    def emergency_lock(
+        self,
+        *,
+        confirm: bool = False,
+        timeout: float = 20.0,
+        wait: bool = True,
+    ) -> ActionResult | ActionHandle:
+        return self._run(EMERGENCY_KILL, emergency_kill_payload(confirm), timeout, wait)
+
+    def position_control(
+        self,
+        x: float,
+        y: float,
+        z: float,
+        yaw_rad: float = 0.0,
+        timeout: float = 120.0,
+        *,
+        frame_id: str | None = None,
+        wait: bool = True,
+    ) -> ActionResult | ActionHandle:
+        frame = frame_id or self.state.frame_id
+        if not frame:
+            raise ConnectionError("odometry frame is not available; wait for vehicle state or pass frame_id")
+        return self._run(
+            UAV_DIRECT_CONTROL,
+            direct_world_position_payload(x, y, z, frame_id=frame, yaw_rad=yaw_rad),
+            timeout,
+            wait,
+        )
+
+    def command(self, kind: str, **kwargs):
+        """Dispatch one of the small, user-facing Sunray command set."""
+        if kind == "takeoff":
+            return self.takeoff(**kwargs)
+        if kind == "position":
+            return self.position_control(**kwargs)
+        if kind == "velocity":
+            return self.velocity(**kwargs)
+        if kind == "hover":
+            return self.hover(**kwargs)
+        if kind == "return_home":
+            return self.return_home(**kwargs)
+        if kind == "land":
+            return self.land(**kwargs)
+        if kind == "emergency_lock":
+            return self.emergency_lock(**kwargs)
+        raise ValueError(
+            "unsupported command; use takeoff, position, velocity, hover, "
+            "return_home, land, or emergency_lock"
+        )
 
     def velocity(
         self,
@@ -283,10 +345,29 @@ class Vehicle:
     def _on_odometry(self, _event, sample) -> None:
         message = mobility_pb2.Odometry()
         message.ParseFromString(sample.data)
+        orientation = message.pose.orientation
         self._state.update(
             frame_id=message.frame_id,
             position=Vector3(message.pose.position.x, message.pose.position.y, message.pose.position.z),
             velocity=Vector3(message.twist.linear.x, message.twist.linear.y, message.twist.linear.z),
+            attitude=Quaternion(orientation.x, orientation.y, orientation.z, orientation.w),
+            angular_velocity=Vector3(
+                message.twist.angular.x,
+                message.twist.angular.y,
+                message.twist.angular.z,
+            ),
+        )
+
+    def _on_odom_status(self, _event, sample) -> None:
+        message = sunray_pb2.OdomStatus()
+        message.ParseFromString(sample.data)
+        self._state.update(
+            localization=LocalizationState(
+                valid=message.valid,
+                source=message.source,
+                update_hz=float(message.quality),
+                message=message.message,
+            )
         )
 
     def _on_connection(self, connected: bool) -> None:
@@ -302,6 +383,8 @@ class Vehicle:
             battery_percent=message.battery_percent,
             control_mode=message.control_mode,
             control_state=message.control_state,
+            manual_override=message.manual_override,
+            controller_type=message.controller_type,
         )
 
     def _on_planning_state(self, _event, sample) -> None:
@@ -318,6 +401,24 @@ class Vehicle:
                 hold_remaining_s=message.hold_remaining_s,
                 failure_reason=message.failure_reason,
             )
+        )
+
+    def _on_status_summary(self, _event, sample) -> None:
+        message = telemetry_pb2.SummarySnapshot()
+        message.ParseFromString(sample.data)
+        values: dict[str, str] = {}
+        for metric in message.metrics:
+            if metric.quality != telemetry_pb2.METRIC_VALID or not metric.HasField("value"):
+                continue
+            kind = metric.value.WhichOneof("value")
+            if kind == "enum_token":
+                values[metric.key] = metric.value.enum_token
+            elif kind == "text_value":
+                values[metric.key] = metric.value.text_value
+        self._state.update(
+            px4_mode=values.get("com.yundrone.sunray.flight_controller.mode", ""),
+            control_mode_name=values.get("com.yundrone.sunray.uav.control.mode", ""),
+            movement_mode=values.get("com.yundrone.sunray.uav.control.state", ""),
         )
 
     @staticmethod

@@ -6,8 +6,11 @@ from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink_python.profiles import (
     Waypoint,
     direct_body_velocity_payload,
+    direct_world_position_payload,
     direct_world_velocity_payload,
+    emergency_kill_payload,
     nav_payload,
+    return_home_payload,
     takeoff_payload,
     ugv_move_point_payload,
     ugv_velocity_payload,
@@ -39,6 +42,22 @@ def test_navigation_rejects_non_finite_coordinates(value):
 def test_takeoff_uses_profile_validation():
     with pytest.raises(ValueError):
         takeoff_payload(-1)
+
+
+def test_return_home_and_position_payloads():
+    assert return_home_payload() == b""
+    position = sunray_pb2.UavDirectControlGoal.FromString(
+        direct_world_position_payload(1.0, 2.0, 1.5, frame_id="world")
+    )
+    assert position.HasField("world_position")
+    assert position.world_position.position_m.z == 1.5
+
+
+def test_emergency_kill_requires_confirmation():
+    with pytest.raises(ValueError, match="explicit confirmation"):
+        emergency_kill_payload(False)
+    goal = sunray_pb2.EmergencyKillGoal.FromString(emergency_kill_payload(True))
+    assert goal.confirmed
 
 
 def test_direct_and_ugv_payloads_use_expected_targets():

@@ -20,7 +20,7 @@ from .errors import (
     YunLinkPythonError,
 )
 from .profiles import Waypoint
-from .state import PlannerState, UgvState, Vector3, VehicleState
+from .state import LocalizationState, PlannerState, Quaternion, UgvState, Vector3, VehicleState
 from .ugv import Ugv
 from .vehicle import Vehicle
 
@@ -34,7 +34,9 @@ __all__ = [
     "DisconnectedError",
     "EntityInfo",
     "EntityNotFoundError",
+    "LocalizationState",
     "PlannerState",
+    "Quaternion",
     "TimeoutError",
     "Ugv",
     "UgvState",
@@ -50,4 +52,4 @@ __all__ = [
     "discover_and_connect",
 ]
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"

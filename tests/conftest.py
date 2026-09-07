@@ -5,6 +5,11 @@ import threading
 import time
 
 import yunlink
+
+from yunlink_python._binding_compat import prepare_profile_imports
+
+prepare_profile_imports()
+
 from yunlink.core_codec import (
     decode_attachment_request,
     decode_authority_request,
@@ -12,6 +17,7 @@ from yunlink.core_codec import (
 )
 from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
+from yunlink.profiles.org.yunlink.telemetry.v1 import telemetry_pb2
 
 from yunlink_python.profiles import MOBILITY, SUNRAY, TELEMETRY
 
@@ -137,6 +143,11 @@ class FakeBridge:
             if event.type_ref.type_name == "UavNavGoal":
                 goal = sunray_pb2.UavNavGoal.FromString(event.payload)
                 self._publish_odometry(event, goal.position_m.x, goal.position_m.y, goal.position_m.z)
+            elif event.type_ref.type_name == "UavDirectControlGoal":
+                goal = sunray_pb2.UavDirectControlGoal.FromString(event.payload)
+                if goal.HasField("world_position"):
+                    position = goal.world_position.position_m
+                    self._publish_odometry(event, position.x, position.y, position.z)
             elif event.type_ref.type_name == "UavWaypointMissionGoal":
                 goal = sunray_pb2.UavWaypointMissionGoal.FromString(event.payload)
                 waypoint = goal.waypoints[0]
@@ -193,6 +204,16 @@ class FakeBridge:
             "protobuf",
         )
         yield yunlink.StreamDescriptor(
+            "uav1.odom_status",
+            yunlink.TypeRef("com.yundrone.sunray", 2, "OdomStatus"),
+            "protobuf",
+        )
+        yield yunlink.StreamDescriptor(
+            "uav1.status_summary",
+            yunlink.TypeRef("org.yunlink.telemetry", 1, "SummarySnapshot"),
+            "protobuf",
+        )
+        yield yunlink.StreamDescriptor(
             "ugv1.odometry", yunlink.TypeRef("org.yunlink.mobility", 1, "Odometry"), "protobuf"
         )
         yield yunlink.StreamDescriptor(
@@ -215,6 +236,19 @@ class FakeBridge:
                 armed=False, landed=True, battery_voltage_v=16.2, battery_percent=90
             )
             self._publish_sample(event, stream_uid, message.SerializeToString())
+        elif stream_uid.endswith(".odom_status"):
+            message = sunray_pb2.OdomStatus(valid=True, source=5, quality=120, message="sim")
+            self._publish_sample(event, stream_uid, message.SerializeToString())
+        elif stream_uid.endswith(".status_summary"):
+            message = telemetry_pb2.SummarySnapshot()
+            for key, value in (
+                ("com.yundrone.sunray.flight_controller.mode", "OFFBOARD"),
+                ("com.yundrone.sunray.uav.control.mode", "offboard"),
+                ("com.yundrone.sunray.uav.control.state", "hover"),
+            ):
+                metric = message.metrics.add(key=key, quality=telemetry_pb2.METRIC_VALID)
+                metric.value.enum_token = value
+            self._publish_sample(event, stream_uid, message.SerializeToString())
         elif stream_uid.endswith(".uav_planning_state"):
             message = sunray_pb2.UavPlanningState(
                 main_state=sunray_pb2.UAV_PLANNING_MAIN_WAIT_MISSION,
@@ -233,7 +267,14 @@ class FakeBridge:
         message = mobility_pb2.Odometry(
             frame_id="world",
             child_frame_id="base_link",
-            pose=mobility_pb2.Pose(position=mobility_pb2.Vector3(x=x, y=y, z=z)),
+            pose=mobility_pb2.Pose(
+                position=mobility_pb2.Vector3(x=x, y=y, z=z),
+                orientation=mobility_pb2.Quaternion(w=1.0),
+            ),
+            twist=mobility_pb2.Twist(
+                linear=mobility_pb2.Vector3(x=0.1, y=0.2, z=0.3),
+                angular=mobility_pb2.Vector3(x=0.01, y=0.02, z=0.03),
+            ),
         )
         self._publish_sample(event, "uav1.odometry", message.SerializeToString())
 

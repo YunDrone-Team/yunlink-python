@@ -37,6 +37,51 @@ def test_complete_uav_control_flow_without_ros(bridge):
         ]
 
 
+def test_extended_uav_actions_and_state_projection(bridge):
+    with connect(f"127.0.0.1:{bridge.port}") as client:
+        vehicle = client.vehicle()
+        deadline = time.monotonic() + 2
+        while not vehicle.state.px4_mode and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert vehicle.state.attitude.w == 1.0
+        assert vehicle.state.angular_velocity.z == 0.03
+        assert vehicle.state.localization.valid
+        assert vehicle.state.localization.source == 5
+        assert vehicle.state.px4_mode == "OFFBOARD"
+        assert vehicle.state.control_mode_name == "offboard"
+        assert vehicle.state.movement_mode == "hover"
+        assert vehicle.state.disarmed
+        assert not vehicle.state.landing
+
+        vehicle.return_home()
+        vehicle.emergency_lock(confirm=True)
+        vehicle.position_control(1.0, 0.0, 1.5)
+        vehicle.command("hover")
+
+        assert bridge.action_goals[-4:] == [
+            "UavReturnHomeGoal",
+            "EmergencyKillGoal",
+            "UavDirectControlGoal",
+            "HoverGoal",
+        ]
+
+
+def test_emergency_lock_requires_explicit_confirmation(bridge):
+    with (
+        connect(f"127.0.0.1:{bridge.port}") as client,
+        pytest.raises(ValueError, match="explicit confirmation"),
+    ):
+        client.vehicle().emergency_lock()
+
+
+def test_command_rejects_unknown_kind(bridge):
+    with (
+        connect(f"127.0.0.1:{bridge.port}") as client,
+        pytest.raises(ValueError, match="unsupported command"),
+    ):
+        client.vehicle().command("raw")
+
+
 def test_action_rejection_is_public_error(bridge):
     bridge.reject_actions = True
     with (

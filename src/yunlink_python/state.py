@@ -18,6 +18,22 @@ class Vector3:
 
 
 @dataclasses.dataclass(frozen=True)
+class Quaternion:
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+    w: float = 1.0
+
+
+@dataclasses.dataclass(frozen=True)
+class LocalizationState:
+    valid: bool = False
+    source: int = 0
+    update_hz: float = 0.0
+    message: str = ""
+
+
+@dataclasses.dataclass(frozen=True)
 class PlannerState:
     main_state: int = 0
     task_state: int = 0
@@ -34,15 +50,33 @@ class VehicleState:
     frame_id: str = ""
     position: Vector3 = Vector3()
     velocity: Vector3 = Vector3()
+    attitude: Quaternion = Quaternion()
+    angular_velocity: Vector3 = Vector3()
     armed: bool = False
     landed: bool = True
     battery_voltage_v: float = 0.0
     battery_percent: int = 0
     control_mode: int = 0
+    control_mode_name: str = ""
     control_state: int = 0
+    movement_mode: str = ""
+    px4_mode: str = ""
+    manual_override: bool = False
+    controller_type: int = 0
+    localization: LocalizationState = LocalizationState()
     planner: PlannerState = PlannerState()
     received_at: float = 0.0
     connected: bool = False
+
+    @property
+    def disarmed(self) -> bool:
+        """Read-only inverse of the controller-reported arm state."""
+        return not self.armed
+
+    @property
+    def landing(self) -> bool:
+        """Whether the controller reports an active landing phase."""
+        return not self.landed and self.movement_mode == "land"
 
     @property
     def fresh(self) -> bool:

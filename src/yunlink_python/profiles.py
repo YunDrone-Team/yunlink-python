@@ -7,7 +7,13 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import yunlink
+
+from ._binding_compat import prepare_profile_imports
+
+prepare_profile_imports()
+
 from yunlink.profiles import (
+    validate_emergency_kill_goal,
     validate_land_goal,
     validate_takeoff_goal,
     validate_uav_direct_control_goal,
@@ -33,6 +39,8 @@ def type_ref(name: str, minor: int = 0) -> yunlink.TypeRef:
 TAKEOFF = type_ref("TakeoffGoal")
 LAND = type_ref("LandGoal")
 HOVER = type_ref("HoverGoal")
+EMERGENCY_KILL = type_ref("EmergencyKillGoal")
+RETURN_HOME = type_ref("UavReturnHomeGoal")
 NAV_GOAL = type_ref("UavNavGoal", 3)
 WAYPOINT_MISSION = type_ref("UavWaypointMissionGoal", 2)
 UAV_DIRECT_CONTROL = type_ref("UavDirectControlGoal")
@@ -73,6 +81,39 @@ def land_payload(max_velocity_mps: float = 0.0) -> bytes:
 
 def hover_payload() -> bytes:
     return sunray_pb2.HoverGoal().SerializeToString()
+
+
+def emergency_kill_payload(confirm: bool) -> bytes:
+    message = sunray_pb2.EmergencyKillGoal(confirmed=bool(confirm))
+    validate_emergency_kill_goal(message)
+    return message.SerializeToString()
+
+
+def return_home_payload() -> bytes:
+    return sunray_pb2.UavReturnHomeGoal().SerializeToString()
+
+
+def direct_world_position_payload(
+    x: float,
+    y: float,
+    z: float,
+    *,
+    frame_id: str,
+    yaw_rad: float = 0.0,
+) -> bytes:
+    finite(x, y, z, yaw_rad)
+    if not frame_id:
+        raise ValueError("frame_id must not be empty")
+    message = sunray_pb2.UavDirectControlGoal(
+        world_position=sunray_pb2.WorldPositionTarget(
+            frame_id=frame_id,
+            position_m=mobility_pb2.Vector3(x=x, y=y, z=z),
+        ),
+        yaw=sunray_pb2.YawTarget(mode=sunray_pb2.UAV_YAW_SET_ANGLE, value=yaw_rad),
+        controller=sunray_pb2.UAV_CONTROLLER_DEFAULT,
+    )
+    validate_uav_direct_control_goal(message)
+    return message.SerializeToString()
 
 
 def direct_world_velocity_payload(
