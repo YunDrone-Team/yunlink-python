@@ -1,4 +1,7 @@
-function result = yunlink_waypoint(vehicle, x, y, z)
+function result = yunlink_waypoint(vehicle, x, y, z, timeout)
 %YUNLINK_WAYPOINT Execute one Planner waypoint and finish in hover.
-result = vehicle.waypoint(double(x), double(y), double(z));
+if nargin < 5
+    timeout = 120;
+end
+result = vehicle.waypoint(double(x), double(y), double(z), pyargs('timeout', double(timeout)));
 end

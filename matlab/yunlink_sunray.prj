@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Source manifest for the YunLink Sunray MATLAB wrapper.
+  build_toolbox.m is the authoritative packaging entry point; this small
+  manifest keeps the public toolbox identity and source location explicit.
+-->
+<yunlinkSunrayToolbox>
+  <name>YunLink Sunray MATLAB Support</name>
+  <version>1.1.0</version>
+  <sourceDirectory>matlab</sourceDirectory>
+  <buildScript>matlab/build_toolbox.m</buildScript>
+</yunlinkSunrayToolbox>
