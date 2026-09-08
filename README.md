@@ -180,17 +180,12 @@ Bridge Session；`client.entities()` 读取目录；`client.vehicle(entity_uid)`
 
 ## MATLAB
 
-MATLAB 用户通过 Add-On 安装 `.mltbx`，然后在命令窗口调用函数。用户指南见
-[`matlab/README.md`](matlab/README.md)。开发者打包和 CLI 测试见
-[`matlab/developer/README.md`](matlab/developer/README.md)。
+MATLAB 用户请下载发布包，不要克隆本仓库：
 
-```matlab
-yunlink_setup
-client = yunlink_connect("192.168.31.236:9696");
-uav = yunlink_vehicle(client, "uav1");
-state = yunlink_state(uav);
-yunlink_close(client);
-```
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
+
+安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
+[`matlab/developer/README.md`](matlab/developer/README.md)。
 
 ## API 边界
 

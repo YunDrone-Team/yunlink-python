@@ -1,10 +1,7 @@
 function bundleDir = build_release_bundle(bundleDir, bindingDir)
-%BUILD_RELEASE_BUNDLE Assemble the user MATLAB install zip contents.
-%   build_release_bundle(DIR, BINDING_DIR) builds the .mltbx, copies the
-%   pure-Python SDK wheel, copies platform binding wheels from BINDING_DIR,
-%   and writes a short INSTALL.txt. BINDING_DIR is optional.
-
+%BUILD_RELEASE_BUNDLE Assemble the user MATLAB install directory.
 repoRoot = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+matlabRoot = fullfile(repoRoot, 'matlab');
 if nargin < 1 || strlength(string(bundleDir)) == 0
     bundleDir = fullfile(repoRoot, 'dist', 'yunlink-sunray-matlab-1.1.0-bundle');
 else
@@ -16,50 +13,45 @@ else
     bindingDir = char(string(bindingDir));
 end
 
-if ~isfolder(bundleDir)
-    mkdir(bundleDir);
+if isfolder(bundleDir)
+    rmdir(bundleDir, 's');
 end
+mkdir(bundleDir);
 
 mltbx = fullfile(bundleDir, 'yunlink-sunray-matlab-1.1.0.mltbx');
 sdkWheel = fullfile(repoRoot, 'dist', 'yunlink_python-1.1.0-py3-none-any.whl');
-addpath(fullfile(repoRoot, 'matlab'));
+addpath(matlabRoot);
 build_toolbox(mltbx, sdkWheel);
 
-if isfile(sdkWheel)
-    copyfile(sdkWheel, fullfile(bundleDir, 'yunlink_python-1.1.0-py3-none-any.whl'));
+if ~isfile(sdkWheel)
+    error('yunlink:MissingSdkWheel', 'SDK wheel does not exist: %s', sdkWheel);
+end
+copyfile(sdkWheel, fullfile(bundleDir, 'yunlink_python-1.1.0-py3-none-any.whl'));
+copyfile(fullfile(matlabRoot, 'INSTALL.txt'), fullfile(bundleDir, 'INSTALL.txt'));
+copyfile(fullfile(matlabRoot, 'README.md'), fullfile(bundleDir, 'README.md'));
+
+if strlength(string(bindingDir)) == 0
+    error('yunlink:MissingBindingDir', 'A directory of YunLink binding wheels is required.');
+end
+if ~isfolder(bindingDir)
+    error('yunlink:InvalidBindingDir', 'Binding directory does not exist: %s', bindingDir);
 end
 
-if strlength(string(bindingDir)) > 0
-    if ~isfolder(bindingDir)
-        error('yunlink:InvalidBindingDir', 'Binding directory does not exist: %s', bindingDir);
+wheelDir = fullfile(bundleDir, 'wheels');
+mkdir(wheelDir);
+wheels = dir(fullfile(bindingDir, 'yunlink-*.whl'));
+copied = 0;
+for index = 1:numel(wheels)
+    if startsWith(wheels(index).name, 'yunlink_python-')
+        continue;
     end
-    wheels = dir(fullfile(bindingDir, 'yunlink-*.whl'));
-    copied = 0;
-    for index = 1:numel(wheels)
-        if startsWith(wheels(index).name, 'yunlink_python-')
-            continue;
-        end
-        copyfile(fullfile(wheels(index).folder, wheels(index).name), ...
-            fullfile(bundleDir, wheels(index).name));
-        copied = copied + 1;
-    end
-    if copied == 0
-        warning('yunlink:NoBindingWheels', 'No YunLink binding wheels were copied from %s.', bindingDir);
-    end
+    copyfile(fullfile(wheels(index).folder, wheels(index).name), ...
+        fullfile(wheelDir, wheels(index).name));
+    copied = copied + 1;
+end
+if copied == 0
+    error('yunlink:NoBindingWheels', 'No YunLink binding wheels were copied from %s.', bindingDir);
 end
 
-installFile = fullfile(bundleDir, 'INSTALL.txt');
-fid = fopen(installFile, 'w');
-if fid < 0
-    error('yunlink:WriteFailed', 'Could not write %s', installFile);
-end
-cleaner = onCleanup(@() fclose(fid));
-fprintf(fid, ['Install yunlink-sunray-matlab-1.1.0.mltbx from MATLAB:\n', ...
-    'Home -> Add-Ons -> Install from File.\n\n', ...
-    'Then run yunlink_setup in the MATLAB command window.\n', ...
-    'Select Python 3.10/3.11/3.12 and the YunLink binding wheel for this computer.\n', ...
-    'The wizard does not connect to a vehicle.\n']);
-clear cleaner;
-
-fprintf('Release bundle ready in %s\n', bundleDir);
+fprintf('Release bundle ready in %s (%d binding wheels)\n', bundleDir, copied);
 end

@@ -1,32 +1,38 @@
 # YunLink Sunray MATLAB 用户指南
 
-这个 Toolbox 让 MATLAB 通过 YunLink Bridge 连接 Sunray 无人机。安装后直接在命令窗口调用函数即可，不需要理解 ROS、Wire 或 Protobuf。
+用 MATLAB 控制 Sunray 无人机时，只需要下载发布包，不要克隆代码仓库。
+
+发布包：
+
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
+
+## 你需要准备什么
+
+- MATLAB R2026a 或更新版本
+- 本机已安装 Python 3.10、3.11 或 3.12
+- 已经运行的 YunLink Bridge 地址，例如 `192.168.31.236:9696`
 
 ## 安装
 
-1. 打开 MATLAB。
-2. 选择 **Home → Add-Ons → Install from File**。
-3. 选择 `yunlink-sunray-matlab-1.1.0.mltbx`。
-4. 安装完成后，在命令窗口运行：
+1. 下载并解压 `yunlink-sunray-matlab-1.1.0-bundle.zip`。
+2. 打开 MATLAB，选择 **Home → Add-Ons → Install from File**。
+3. 选择解压目录里的 `yunlink-sunray-matlab-1.1.0.mltbx`。
+4. 在命令窗口运行：
 
 ```matlab
 yunlink_setup
 ```
 
-向导会引导你完成这些步骤：
+5. 选择本机 Python。
+6. 选择 **Select bundle folder**，并选中刚才解压出来的目录。
 
-1. 选择 Python 3.10、3.11 或 3.12 解释器。
-2. 选择平台对应的 YunLink binding wheel，或选择发布 bundle 目录让向导自动匹配。
-3. 安装 Toolbox 自带的 `yunlink-python` wheel。如果安装包里没有该 wheel，向导会让你手动选择。
-4. 验证 `yunlink` 和 `yunlink_python` 可以导入。
+向导会自动安装匹配当前系统和 Python 版本的通信库。它不会连接无人机，也不会发送飞行指令。
 
-向导只安装依赖，不会连接设备，也不会发送飞行指令。
+如果 MATLAB 已经加载了别的 Python，先重启 MATLAB，再运行 `yunlink_setup`。
 
-MATLAB 已经加载 Python 后，不能在当前进程切换解释器。如果提示 `PythonAlreadyLoaded`，请重启 MATLAB 再运行 `yunlink_setup`。
+## 使用
 
-## 连接和读取状态
-
-把地址和实体 ID 换成你的 Bridge 实际值：
+把地址和飞机 ID 换成你的实际值：
 
 ```matlab
 client = yunlink_connect("192.168.31.236:9696");
@@ -35,44 +41,29 @@ uav = yunlink_vehicle(client, "uav1");
 state = yunlink_state(uav);
 disp(state.position);
 disp(state.batteryPercent);
-disp(state.px4Mode);
 disp(state.armed);
-disp(state.disarmed);
 disp(state.landed);
-```
 
-`state.armed` 和 `state.disarmed` 只表示飞控当前状态。Toolbox 不提供 `yunlink_arm` 或 `yunlink_disarm`。
-
-只读示例见 `examples/read_state_demo.m`。
-
-## 基础控制
-
-```matlab
 yunlink_takeoff(uav, 1.5);
-yunlink_velocity_control(uav, 0.2, 0.0, 0.0, struct("duration_s", 1.0));
 yunlink_position_control(uav, 2.0, 0.0, 1.5);
 yunlink_hover(uav);
 yunlink_land(uav);
+
 yunlink_close(client);
 ```
 
-`position_control` 是直接位置控制。`move_to` 和 `waypoint` 会走 Planner，不属于第一次体验。
+只读示例：`examples/read_state_demo.m`。
+会发送飞行指令的示例：`examples/basic_flight_demo.m`。
 
-会发送飞行指令的完整示例见 `examples/basic_flight_demo.m`。运行前请确认连接的是允许测试的设备。
-
-状态监视：
-
-```matlab
-history = yunlink_monitor(uav, 10, struct("period_s", 0.2, "print", true));
-```
+`state.armed` 和 `state.disarmed` 只表示状态，没有解锁/上锁控制函数。
 
 ## 常用函数
 
 | 函数 | 作用 |
 | --- | --- |
-| `yunlink_setup` | 首次配置 Python 和依赖 |
+| `yunlink_setup` | 首次配置 |
 | `yunlink_connect` | 连接 Bridge |
-| `yunlink_vehicle` | 选择 UAV |
+| `yunlink_vehicle` | 选择无人机 |
 | `yunlink_state` | 读取状态 |
 | `yunlink_takeoff` | 起飞 |
 | `yunlink_position_control` | 直接位置控制 |
@@ -80,9 +71,9 @@ history = yunlink_monitor(uav, 10, struct("period_s", 0.2, "print", true));
 | `yunlink_hover` | 悬停 |
 | `yunlink_land` | 降落 |
 | `yunlink_cancel` | 取消当前动作 |
-| `yunlink_monitor` | 轮询状态 |
+| `yunlink_monitor` | 监视状态 |
 | `yunlink_close` | 关闭连接 |
-| `yunlink_update` | 更新 Python 依赖 |
+| `yunlink_update` | 更新依赖 |
 
 返航和紧急上锁需要明确调用。紧急上锁必须确认：
 
@@ -93,18 +84,18 @@ yunlink_emergency_lock(uav, true);
 
 ## 更新
 
-安装新的 Toolbox 后，再运行一次配置：
+下载新的发布包，重新安装 `.mltbx`，然后运行：
 
 ```matlab
 yunlink_update
 ```
 
-它会打开和 `yunlink_setup` 相同的向导。
+再次选择解压后的新目录即可。
 
 ## 常见问题
 
-- `PythonAlreadyLoaded`：重启 MATLAB，再选择目标 Python。
-- 无法导入 `yunlink`：binding wheel 必须匹配当前操作系统、CPU 和 Python 版本。
-- 连接失败：检查 Bridge 地址、网络和实体 ID。
-- 状态不是最新：确认 Bridge 仍在发布 Mobility 状态。
-- 无参数 `yunlink_setup` 需要 MATLAB 桌面。没有桌面时，使用 `yunlink_setup(python, sdk, binding)` 并传入三个路径。
+- 找不到 Python：先安装 Python 3.10、3.11 或 3.12，不要使用 MATLAB 自带的 3.14。
+- `PythonAlreadyLoaded`：重启 MATLAB 后再配置。
+- 无法导入 `yunlink`：确认选择的是解压后的整个 bundle 目录，且 Python 版本是 3.10 到 3.12。
+- 当前 macOS 包支持 Apple Silicon；Linux 支持 x86_64；Windows 支持 64 位。
+- 连接失败：检查 Bridge 是否已启动，以及地址、端口、飞机 ID 是否正确。

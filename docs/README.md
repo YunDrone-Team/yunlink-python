@@ -17,7 +17,7 @@
 - [按步骤示例教程](../examples/README.md)
 - [测试人员使用指南](../TESTER_GUIDE.md)
 - [兼容性说明](../COMPATIBILITY.md)
-- [MATLAB 用户指南](../matlab/README.md)
+- [MATLAB 用户指南](../matlab/README.md)（下载发布包，不要克隆仓库）
 - [MATLAB 开发与打包](../matlab/developer/README.md)
 
 ## 最重要的连接边界
