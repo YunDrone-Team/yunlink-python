@@ -1,186 +1,110 @@
-# YunLink Sunray MATLAB 支持
+# YunLink Sunray MATLAB 用户指南
 
-本目录是轻量 MATLAB 包装层。它通过 MATLAB Python Interface 调用
-`yunlink-python`，不复制 YunLink Wire，也不连接 ROS。
-
-## 启动 MATLAB
-
-桌面模式：
-
-```bash
-matlab -desktop
-```
-
-无界面执行示例：
-
-```bash
-matlab -batch "run('matlab/examples/basic_flight_demo.m')"
-```
-
-R2026a 推荐使用 `-batch` 做自动化验证和打包。它不启动桌面，不需要
-Computer Use，并会把错误作为非零退出码返回：
-
-```bash
-MATLAB=/Applications/MATLAB_R2026a.app/bin/matlab
-cd /absolute/path/to/yunlink-python
-
-# 只检查 MATLAB 包装文件，不连接 Bridge，也不发送飞行动作。
-"$MATLAB" -batch "run('matlab/tests/run_tests.m')"
-
-# 构建 MATLAB Toolbox。
-"$MATLAB" -batch "addpath('matlab'); build_toolbox"
-```
-
-也可以指定输出文件：
-
-```bash
-"$MATLAB" -batch "addpath('matlab'); build_toolbox('/tmp/yunlink-sunray.mltbx')"
-```
-
-R2026a 还提供 `matlab.addons.toolbox.ToolboxOptions`、
-`matlab.addons.toolbox.packageToolbox`、`matlab.addons.install` 和
-`matlab.addons.uninstall`，适合在 CI 或脚本中完成 Toolbox 的构建、安装和清理。
-
-第一次在 MATLAB 中加载 Python 前，选择一个 Python 3.10、3.11 或 3.12 环境：
-
-```matlab
-pyenv(Version="/absolute/path/to/python3.12");
-```
-
-R2026a 本机默认 Python 版本可能是 3.14；本 SDK 当前验证范围是 Python 3.10、3.11、
-3.12，因此应显式指定受支持的解释器。也可以在 `-batch` 中验证 Python 边界：
-
-```bash
-"$MATLAB" -batch "pyenv('Version','/absolute/path/to/python3.12'); sdk=py.importlib.import_module('yunlink_python'); disp(string(py.getattr(sdk,'__version__')))"
-```
-
-Python 环境一旦进入 `Loaded` 状态，切换解释器需要重启 MATLAB。
+这个 Toolbox 让 MATLAB 通过 YunLink Bridge 连接 Sunray 无人机。安装后直接在命令窗口调用函数即可，不需要理解 ROS、Wire 或 Protobuf。
 
 ## 安装
 
-先安装与当前平台匹配的 YunLink binding，再安装本 SDK：
+1. 打开 MATLAB。
+2. 选择 **Home → Add-Ons → Install from File**。
+3. 选择 `yunlink-sunray-matlab-1.1.0.mltbx`。
+4. 安装完成后，在命令窗口运行：
 
 ```matlab
-yunlink_setup( ...
-    "/absolute/path/to/python3.12", ...
-    "/absolute/path/to/yunlink-python", ...
-    "/absolute/path/to/yunlink/bindings/python");
+yunlink_setup
 ```
 
-如果 YunLink binding 已经安装：
+向导会引导你完成这些步骤：
 
-```matlab
-yunlink_setup( ...
-    "/absolute/path/to/python3.12", ...
-    "/absolute/path/to/yunlink-python");
-```
+1. 选择 Python 3.10、3.11 或 3.12 解释器。
+2. 选择平台对应的 YunLink binding wheel，或选择发布 bundle 目录让向导自动匹配。
+3. 安装 Toolbox 自带的 `yunlink-python` wheel。如果安装包里没有该 wheel，向导会让你手动选择。
+4. 验证 `yunlink` 和 `yunlink_python` 可以导入。
 
-也可以直接在 shell 中执行：
+向导只安装依赖，不会连接设备，也不会发送飞行指令。
 
-```bash
-python -m pip install /path/to/yunlink/bindings/python
-python -m pip install /path/to/yunlink-python
-```
+MATLAB 已经加载 Python 后，不能在当前进程切换解释器。如果提示 `PythonAlreadyLoaded`，请重启 MATLAB 再运行 `yunlink_setup`。
 
-安装 Toolbox 发布包：
+## 连接和读取状态
 
-```matlab
-matlab.addons.install("/path/to/yunlink-sunray.mltbx");
-```
-
-## 更新
-
-更新源码或 wheel 后，在重启的 MATLAB 中执行：
-
-```matlab
-yunlink_update( ...
-    "/absolute/path/to/python3.12", ...
-    "/absolute/path/to/new/yunlink-python", ...
-    "/absolute/path/to/new/yunlink/bindings/python");
-```
-
-更新后验证版本：
-
-```matlab
-sdk = py.importlib.import_module("yunlink_python");
-disp(string(sdk.__version__));
-```
-
-## 最小控制示例
+把地址和实体 ID 换成你的 Bridge 实际值：
 
 ```matlab
 client = yunlink_connect("192.168.31.236:9696");
 uav = yunlink_vehicle(client, "uav1");
 
 state = yunlink_state(uav);
-disp(state);
-disp(state.frameId);
-disp(state.armed);      % 只读状态，不是控制调用
-disp(state.disarmed);   % state.armed 的取反
+disp(state.position);
+disp(state.batteryPercent);
+disp(state.px4Mode);
+disp(state.armed);
+disp(state.disarmed);
+disp(state.landed);
+```
 
+`state.armed` 和 `state.disarmed` 只表示飞控当前状态。Toolbox 不提供 `yunlink_arm` 或 `yunlink_disarm`。
+
+只读示例见 `examples/read_state_demo.m`。
+
+## 基础控制
+
+```matlab
 yunlink_takeoff(uav, 1.5);
+yunlink_velocity_control(uav, 0.2, 0.0, 0.0, struct("duration_s", 1.0));
 yunlink_position_control(uav, 2.0, 0.0, 1.5);
 yunlink_hover(uav);
-yunlink_return_home(uav);
 yunlink_land(uav);
-
 yunlink_close(client);
 ```
 
-紧急上锁必须显式确认：
+`position_control` 是直接位置控制。`move_to` 和 `waypoint` 会走 Planner，不属于第一次体验。
+
+会发送飞行指令的完整示例见 `examples/basic_flight_demo.m`。运行前请确认连接的是允许测试的设备。
+
+状态监视：
 
 ```matlab
+history = yunlink_monitor(uav, 10, struct("period_s", 0.2, "print", true));
+```
+
+## 常用函数
+
+| 函数 | 作用 |
+| --- | --- |
+| `yunlink_setup` | 首次配置 Python 和依赖 |
+| `yunlink_connect` | 连接 Bridge |
+| `yunlink_vehicle` | 选择 UAV |
+| `yunlink_state` | 读取状态 |
+| `yunlink_takeoff` | 起飞 |
+| `yunlink_position_control` | 直接位置控制 |
+| `yunlink_velocity_control` | 速度控制 |
+| `yunlink_hover` | 悬停 |
+| `yunlink_land` | 降落 |
+| `yunlink_cancel` | 取消当前动作 |
+| `yunlink_monitor` | 轮询状态 |
+| `yunlink_close` | 关闭连接 |
+| `yunlink_update` | 更新 Python 依赖 |
+
+返航和紧急上锁需要明确调用。紧急上锁必须确认：
+
+```matlab
+yunlink_return_home(uav);
 yunlink_emergency_lock(uav, true);
 ```
 
-状态监视返回 MATLAB struct 数组：
+## 更新
+
+安装新的 Toolbox 后，再运行一次配置：
 
 ```matlab
-history = yunlink_monitor(uav, 10, struct('period_s', 0.2));
+yunlink_update
 ```
 
-`yunlink_state_raw(uav)` 可用于需要访问原始 Python 对象的高级脚本。
+它会打开和 `yunlink_setup` 相同的向导。
 
-没有连接设备的 MATLAB 包装层 smoke check：
+## 常见问题
 
-```bash
-matlab -batch "run('matlab/tests/run_tests.m')"
-```
-
-连接正在运行的测试 Bridge 做非 Planner 联通验证（不发送航点、不调用紧急上锁）：
-
-```bash
-YUNLINK_ADDRESS=192.168.31.236:9696 \
-YUNLINK_ENTITY=uav1 \
-"$MATLAB" -batch "pyenv('Version','/absolute/path/to/python3.12'); addpath('matlab'); run('matlab/tests/home_connectivity.m')"
-```
-
-脚本会依次读取状态、起飞到 1 m、执行一次短距离直接位置控制、悬停并降落，
-最后要求 `landed=true`。实体和地址通过环境变量覆盖，避免把设备选择写死在测试命令中。
-
-构建 Toolbox：
-
-```bash
-matlab -batch "addpath('matlab'); build_toolbox"
-```
-
-输出文件默认为 `dist/yunlink-sunray-matlab.mltbx`。
-
-## 控制接口
-
-| MATLAB 函数 | 作用 |
-| --- | --- |
-| `yunlink_takeoff` | 起飞 |
-| `yunlink_position_control` | 直接位置控制 |
-| `yunlink_move_to` | Planner 单航点移动 |
-| `yunlink_velocity_control` | 速度控制 |
-| `yunlink_waypoint` | 单航点任务 |
-| `yunlink_hover` | 悬停 |
-| `yunlink_return_home` | 返航任务 |
-| `yunlink_land` | 降落 |
-| `yunlink_cancel` | 取消当前动作 |
-| `yunlink_emergency_lock` | 已确认的紧急上锁 |
-| `yunlink_monitor` | 轮询状态 |
-
-`yunlink_command` 只接受 `takeoff`、`position`、`velocity`、`hover`、
-`return_home`、`land` 和 `emergency_lock`，不允许任意底层命令透传。
+- `PythonAlreadyLoaded`：重启 MATLAB，再选择目标 Python。
+- 无法导入 `yunlink`：binding wheel 必须匹配当前操作系统、CPU 和 Python 版本。
+- 连接失败：检查 Bridge 地址、网络和实体 ID。
+- 状态不是最新：确认 Bridge 仍在发布 Mobility 状态。
+- 无参数 `yunlink_setup` 需要 MATLAB 桌面。没有桌面时，使用 `yunlink_setup(python, sdk, binding)` 并传入三个路径。

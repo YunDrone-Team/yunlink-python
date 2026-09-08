@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>YunLink Sunray MATLAB 快速开始</title>
+  <style>
+    body { font-family: Helvetica, Arial, sans-serif; max-width: 760px; margin: 24px auto; line-height: 1.5; color: #222; }
+    code, pre { font-family: Menlo, Consolas, monospace; }
+    pre { background: #f5f5f5; padding: 12px; overflow: auto; }
+    h1, h2 { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>YunLink Sunray MATLAB 快速开始</h1>
+  <p>安装 Toolbox 后，先配置 Python，再连接 Bridge 读取状态。下面的步骤不需要理解 YunLink 协议或 ROS。</p>
+
+  <h2>1. 安装 Toolbox</h2>
+  <p>在 MATLAB 中选择 <strong>Home → Add-Ons → Install from File</strong>，然后打开 <code>yunlink-sunray-matlab-1.1.0.mltbx</code>。</p>
+
+  <h2>2. 配置 Python</h2>
+  <pre>yunlink_setup</pre>
+  <p>向导会选择 Python 3.10/3.11/3.12，安装平台对应的 YunLink binding，并安装随 Toolbox 提供的 <code>yunlink-python</code>。它不会连接设备，也不会发送飞行指令。</p>
+
+  <h2>3. 连接并选择 UAV</h2>
+  <pre>client = yunlink_connect("192.168.31.236:9696");
+uav = yunlink_vehicle(client, "uav1");</pre>
+  <p>把地址和实体 ID 换成你的 Bridge 实际值。</p>
+
+  <h2>4. 读取状态</h2>
+  <pre>state = yunlink_state(uav);
+disp(state.position);
+disp(state.batteryPercent);
+disp(state.armed);
+disp(state.landed);</pre>
+  <p><code>armed</code> 和 <code>disarmed</code> 是只读状态。完整只读示例见 <code>examples/read_state_demo.m</code>。</p>
+
+  <h2>5. 基础控制</h2>
+  <pre>yunlink_takeoff(uav, 1.5);
+yunlink_position_control(uav, 2.0, 0.0, 1.5);
+yunlink_hover(uav);
+yunlink_land(uav);
+yunlink_close(client);</pre>
+  <p>第一次联通请使用直接位置、速度、悬停和降落。<code>move_to</code> 和 <code>waypoint</code> 属于 Planner 路径。会发送飞行指令的示例见 <code>examples/basic_flight_demo.m</code>。</p>
+
+  <h2>6. 状态监视</h2>
+  <pre>history = yunlink_monitor(uav, 10, struct("period_s", 0.2, "print", true));</pre>
+
+  <h2>7. 关闭连接</h2>
+  <pre>yunlink_close(client);
+clear client uav;</pre>
+
+  <h2>常见问题</h2>
+  <ul>
+    <li>切换 Python 前需要重启 MATLAB。</li>
+    <li>YunLink binding wheel 必须匹配当前操作系统、CPU 和 Python 版本。</li>
+    <li>连接失败时检查 Bridge 地址和实体 ID。</li>
+  </ul>
+  <p>更完整的说明见 Toolbox 中的 <code>README.md</code>，或在 MATLAB 中运行 <code>help yunlink_setup</code>。</p>
+</body>
+</html>

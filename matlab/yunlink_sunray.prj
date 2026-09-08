@@ -7,6 +7,10 @@
 <yunlinkSunrayToolbox>
   <name>YunLink Sunray MATLAB Support</name>
   <version>1.1.0</version>
+  <minimumRelease>R2026a</minimumRelease>
   <sourceDirectory>matlab</sourceDirectory>
   <buildScript>matlab/build_toolbox.m</buildScript>
+  <gettingStarted>matlab/getting_started.m</gettingStarted>
+  <userGuide>matlab/README.md</userGuide>
+  <developerGuide>matlab/developer/README.md</developerGuide>
 </yunlinkSunrayToolbox>

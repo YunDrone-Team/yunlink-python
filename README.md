@@ -180,22 +180,17 @@ Bridge Session；`client.entities()` 读取目录；`client.vehicle(entity_uid)`
 
 ## MATLAB
 
-MATLAB 包装位于 [`matlab`](matlab)，内部只调用 MATLAB Python Interface，不实现 Wire 或 MEX。
+MATLAB 用户通过 Add-On 安装 `.mltbx`，然后在命令窗口调用函数。用户指南见
+[`matlab/README.md`](matlab/README.md)。开发者打包和 CLI 测试见
+[`matlab/developer/README.md`](matlab/developer/README.md)。
 
 ```matlab
+yunlink_setup
 client = yunlink_connect("192.168.31.236:9696");
 uav = yunlink_vehicle(client, "uav1");
-
-yunlink_takeoff(uav, 1.5);
-yunlink_move_to(uav, 2.0, 0.0, 1.5);
 state = yunlink_state(uav);
-yunlink_land(uav);
-
 yunlink_close(client);
 ```
-
-MATLAB 必须配置到已经安装 `yunlink-python` 的 Python 3.10 至 3.12 环境。
-完整的安装、更新、Toolbox 打包和状态字段说明见 [`matlab/README.md`](matlab/README.md)。
 
 ## API 边界
 
