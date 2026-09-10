@@ -15,14 +15,25 @@
   <p>不要克隆代码仓库。下载发布包即可：</p>
   <p><a href="https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip">yunlink-sunray-matlab-1.1.0-bundle.zip</a></p>
 
-  <h2>1. 安装 Toolbox</h2>
+  <h2>1. 准备 Python</h2>
+  <p>Windows 和 macOS 需要先安装 Python 3.10、3.11 或 3.12。MATLAB 不会自动安装 Python。</p>
+  <p>macOS 终端检查：</p>
+  <pre>python3 --version
+which python3</pre>
+  <p>Windows PowerShell 检查：</p>
+  <pre>python --version
+where python</pre>
+  <p>记下 Python <strong>可执行文件路径</strong>，不是安装目录。</p>
+
+  <h2>2. 安装 Toolbox</h2>
   <p>解压发布包。在 MATLAB 中选择 <strong>Home → Add-Ons → Install from File</strong>，打开目录里的 <code>yunlink-sunray-matlab-1.1.0.mltbx</code>。</p>
 
-  <h2>2. 配置一次</h2>
+  <h2>3. 配置一次</h2>
   <pre>yunlink_setup</pre>
-  <p>选择 Python 3.10/3.11/3.12，再选择 <strong>Select bundle folder</strong>，选中解压后的目录。向导不会连接无人机。</p>
+  <p>选择刚才确认过的 Python 可执行文件，再选择 <strong>Select bundle folder</strong>，选中解压后的目录。向导不会连接无人机。</p>
+  <p>配置后可运行 <code>pyenv</code>，确认 MATLAB 的 <code>Version</code> 和 <code>Executable</code> 与终端检查结果一致。</p>
 
-  <h2>3. 连接并读取状态</h2>
+  <h2>4. 连接并读取状态</h2>
   <pre>client = yunlink_connect("192.168.31.236:9696");
 uav = yunlink_vehicle(client, "uav1");
 state = yunlink_state(uav);
@@ -31,7 +42,7 @@ disp(state.batteryPercent);
 disp(state.armed);
 disp(state.landed);</pre>
 
-  <h2>4. 基础控制</h2>
+  <h2>5. 基础控制</h2>
   <pre>yunlink_takeoff(uav, 1.5);
 yunlink_position_control(uav, 2.0, 0.0, 1.5);
 yunlink_hover(uav);

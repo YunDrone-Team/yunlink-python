@@ -7,11 +7,26 @@
 % 解压发布包。在 MATLAB 中选择 Home → Add-Ons → Install from File，
 % 然后打开目录里的 yunlink-sunray-matlab-1.1.0.mltbx。
 
+%% 准备 Python
+% Windows 和 macOS 需要先安装 Python 3.10、3.11 或 3.12。
+% MATLAB 不会自动安装 Python。
+%
+% macOS 终端：
+%   python3 --version
+%   which python3
+%
+% Windows PowerShell：
+%   python --version
+%   where python
+%
+% 记下 Python 可执行文件路径，不是安装目录。
+
 %% 配置一次
 %   yunlink_setup
 %
-% 选择 Python 3.10、3.11 或 3.12，再选择 Select bundle folder，
+% 选择刚才确认过的 Python 可执行文件，再选择 Select bundle folder，
 % 选中解压后的目录。向导不会连接无人机。
+% 配置后运行 pyenv，确认 Version 和 Executable 与终端检查结果一致。
 
 %% 连接并读取状态
 %   client = yunlink_connect("192.168.31.236:9696");
