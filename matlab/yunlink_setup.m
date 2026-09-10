@@ -45,6 +45,7 @@ else
 end
 
 pythonExecutable = string(pyenv().Executable);
+check_supported_python(pythonExecutable);
 if strlength(bindingSource) > 0
     install_package(pythonExecutable, bindingSource, 'YunLink binding');
 end
@@ -71,7 +72,7 @@ if string(environment.Status) == "Loaded"
 end
 if strlength(pythonExecutable) == 0
     [name, folder] = uigetfile({'python*;*.exe', 'Python executable'}, ...
-        'Select a Python 3.10, 3.11, or 3.12 executable');
+        'Select a Python 3.10, 3.11, 3.12, or 3.13 executable');
     if isequal(name, 0)
         error('yunlink:SetupCancelled', 'YunLink setup was cancelled.');
     end
@@ -222,6 +223,15 @@ elseif ismac
     end
 else
     matched = contains(name, "manylinux") || contains(name, "linux");
+end
+end
+
+function check_supported_python(pythonExecutable)
+tag = python_abi_tag(pythonExecutable);
+allowed = ["cp310", "cp311", "cp312", "cp313"];
+if ~any(tag == allowed)
+    error('yunlink:UnsupportedPython', ...
+        'YunLink MATLAB supports Python 3.10, 3.11, 3.12, and 3.13. Selected %s.', tag);
 end
 end
 

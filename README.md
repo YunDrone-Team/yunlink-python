@@ -33,7 +33,7 @@ git clone https://github.com/YunDrone-Team/yunlink-python.git
 python -m pip install ./yunlink-python
 ```
 
-支持 Python 3.10、3.11 和 3.12。
+支持 Python 3.10、3.11、3.12 和 3.13。
 
 完整中文使用手册见 [`docs/USAGE_GUIDE_CN.md`](docs/USAGE_GUIDE_CN.md)，文档索引见
 [`docs/README.md`](docs/README.md)。

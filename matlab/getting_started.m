@@ -8,7 +8,7 @@
 % 然后打开目录里的 yunlink-sunray-matlab-1.1.0.mltbx。
 
 %% 准备 Python
-% Windows 和 macOS 需要先安装 Python 3.10、3.11 或 3.12。
+% Windows 和 macOS 需要先安装 Python 3.10、3.11、3.12 或 3.13。
 % MATLAB 不会自动安装 Python。
 %
 % macOS 终端：

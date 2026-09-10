@@ -19,7 +19,7 @@ zip 内包含 Toolbox、纯 Python SDK wheel、各平台 YunLink binding wheel �
 ## 环境
 
 - MATLAB R2026a 或更新版本
-- Python 3.10、3.11 或 3.12
+- Python 3.10、3.11、3.12 或 3.13
 - `gh`，用于下载 YunLink binding wheel 并创建 Release
 
 ```bash

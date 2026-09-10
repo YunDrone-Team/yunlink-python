@@ -9,7 +9,7 @@ https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/y
 ## 你需要准备什么
 
 - MATLAB R2026a 或更新版本
-- Windows 或 macOS 本机已安装 Python 3.10、3.11 或 3.12
+- Windows 或 macOS 本机已安装 Python 3.10、3.11、3.12 或 3.13
 - 已经运行的 YunLink Bridge 地址，例如 `192.168.31.236:9696`
 
 MATLAB 不会替你安装 Python。请先在系统终端确认版本和路径：
@@ -28,7 +28,7 @@ python --version
 where python
 ```
 
-确认版本为 3.10、3.11 或 3.12，并记下 **Python 可执行文件路径**，例如
+确认版本为 3.10、3.11、3.12 或 3.13，并记下 **Python 可执行文件路径**，例如
 `/opt/homebrew/bin/python3.12` 或
 `C:\Users\你的用户名\AppData\Local\Programs\Python\Python312\python.exe`。
 向导中选择这个可执行文件，不是选择 Python 安装目录。
@@ -55,7 +55,7 @@ yunlink_setup
 pyenv
 ```
 
-确认 `Version` 是 3.10、3.11 或 3.12，`Executable` 与终端中检查的路径一致。
+确认 `Version` 是 3.10、3.11、3.12 或 3.13，`Executable` 与终端中检查的路径一致。
 
 如果 MATLAB 已经加载了别的 Python，先重启 MATLAB，再运行 `yunlink_setup`。
 
@@ -123,9 +123,9 @@ yunlink_update
 
 ## 常见问题
 
-- 找不到 Python：先在 Windows 或 macOS 安装 Python 3.10、3.11 或 3.12；不要使用 MATLAB 自带的 3.14。
+- 找不到 Python：先在 Windows 或 macOS 安装 Python 3.10、3.11、3.12 或 3.13；不要使用 MATLAB 自带的 3.14。
 - 版本或路径不一致：在终端重新运行 `python --version`/`which python3`（Windows 使用 `where python`），并在向导中选择同一个可执行文件。
 - `PythonAlreadyLoaded`：重启 MATLAB 后再配置。
-- 无法导入 `yunlink`：确认选择的是解压后的整个 bundle 目录，且 Python 版本是 3.10 到 3.12。
+- 无法导入 `yunlink`：确认选择的是解压后的整个 bundle 目录，且 Python 版本是 3.10、3.11、3.12 或 3.13。
 - 当前 macOS 包支持 Apple Silicon；Linux 支持 x86_64；Windows 支持 64 位。
 - 连接失败：检查 Bridge 是否已启动，以及地址、端口、飞机 ID 是否正确。

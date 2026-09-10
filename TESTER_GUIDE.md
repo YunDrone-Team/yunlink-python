@@ -7,7 +7,7 @@
 
 ## 1. 安装
 
-建议使用 Python 3.10、3.11 或 3.12 的虚拟环境。当前版本不从 PyPI 安装，使用 GitHub Release 附件：
+建议使用 Python 3.10、3.11、3.12 或 3.13 的虚拟环境。当前版本不从 PyPI 安装，使用 GitHub Release 附件：
 
 1. 从 YunLink 仓库构建或取得与操作系统匹配的 `yunlink` Python binding wheel。
 2. 安装 `yunlink` wheel。

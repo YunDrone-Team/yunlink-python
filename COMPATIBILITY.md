@@ -2,7 +2,7 @@
 
 | yunlink-python | yunlink | Sunray Profile | Python |
 | --- | --- | --- | --- |
-| 1.1.x | >= 2.0.1 | com.yundrone.sunray 2.2 至 2.8 | 3.10-3.12 |
+| 1.1.x | >= 2.0.1 | com.yundrone.sunray 2.2 至 2.8 | 3.10、3.11、3.12、3.13 |
 
 SDK 当前宣告 `com.yundrone.sunray@2.8`，第一版使用的飞行类型为：
 
