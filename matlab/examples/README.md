@@ -5,6 +5,35 @@
 
 `yunlink_connect` 只连接 Bridge。`yunlink_entities` 只读目录。只有 `yunlink_vehicle` / `yunlink_ugv` 才会 attach 设备。
 
+## 如何运行脚本
+
+可以按终端习惯理解 MATLAB 桌面：
+
+| MATLAB | 对应习惯 |
+| --- | --- |
+| 左侧 Current Folder | `pwd` 里的文件列表 |
+| 中间 Editor | 打开的源文件 |
+| 下方 Command Window | 交互式 shell |
+| 左下 Workspace | 当前环境里的变量 |
+| 绿色 **Run** | 在当前目录执行这个脚本 |
+
+推荐做法：
+
+1. 在左侧双击 `.m` 文件，在编辑器中打开。
+2. 先改脚本开头的 `address` / `uavUid` / `ugvUid`，按 Ctrl-S 保存。
+3. 点编辑器工具栏绿色 **Run**，或按 F5。输出出现在下方 Command Window。
+4. 需要停止时点红色 **Stop**，或在 Command Window 里 Ctrl-C。
+
+也可以不打开编辑器，直接在 Command Window 输入脚本名（不要带 `.m`）：
+
+```matlab
+01_discover
+```
+
+这要求 Current Folder 已经是 `examples` 目录。若刚打开 MATLAB，先运行 `yunlink_examples`。
+
+`.m` 脚本从上到下执行，类似一段 shell 脚本。`yunlink_connect`、`yunlink_examples` 这类是函数，在 Command Window 里当命令调用。修改后必须保存再 Run，否则跑的还是磁盘上的旧内容。
+
 ## 0. 配置 Python 与通信库
 
 打开 `00_setup.m`，填写本机 Python 3.10–3.13 可执行文件路径，以及解压后的发布包目录，然后 Run。这一步不连接无人机。

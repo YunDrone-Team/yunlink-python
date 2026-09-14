@@ -73,7 +73,9 @@ yunlink_examples
 2. 填写 `bundleDir`（解压后的发布包目录）。若留空，脚本会在用户下载目录中查找。
 3. 点击编辑器中的 **Run**。
 
-`00_setup.m` 会安装匹配当前系统和 Python 版本的通信库，然后打开 `read_state_demo.m`。这一步不连接无人机。
+`00_setup.m` 会安装匹配当前系统和 Python 版本的通信库，然后打开 `01_discover.m`。这一步不连接无人机。
+
+在编辑器中打开 `.m` 文件后，先保存，再点绿色 **Run**（或 F5）。输出在下方 Command Window。也可以在 Command Window 直接输入脚本名，例如 `01_discover`。需要停止时用红色 **Stop** 或 Ctrl-C。详细对应关系见 [`examples/README.md`](examples/README.md)。
 
 配置完成后可用下面命令检查：
 
