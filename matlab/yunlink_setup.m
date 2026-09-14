@@ -60,6 +60,15 @@ function [pythonExecutable, sdkSource, bindingSource] = select_sources()
 environment = pyenv;
 pythonExecutable = "";
 if string(environment.Status) == "Loaded"
+    loaded = string(environment.Executable);
+    if ~python_is_supported(loaded)
+        error('yunlink:UnsupportedPython', ...
+            ['MATLAB 已经加载了不支持的 Python：\n%s\n当前版本是 %s。\n\n', ...
+             'YunLink 只支持 3.10、3.11、3.12、3.13，不能用 MATLAB 或 Homebrew 默认的 3.14。\n', ...
+             '请完全退出 MATLAB 后重新打开，再运行 yunlink_setup，\n', ...
+             '选择例如 /opt/homebrew/bin/python3.13 或 Windows 上的 python.exe（3.10-3.13）。'], ...
+            loaded, python_abi_tag(loaded));
+    end
     choice = questdlg(sprintf('MATLAB is already using %s. Use it?', ...
         char(environment.Executable)), 'YunLink Python', ...
         'Use current', 'Choose another', 'Use current');
@@ -67,17 +76,23 @@ if string(environment.Status) == "Loaded"
         error('yunlink:SetupCancelled', 'YunLink setup was cancelled.');
     end
     if strcmp(choice, 'Use current')
-        pythonExecutable = string(environment.Executable);
+        pythonExecutable = loaded;
     end
 end
 if strlength(pythonExecutable) == 0
-    [name, folder] = uigetfile({'python*;*.exe', 'Python executable'}, ...
-        'Select a Python 3.10, 3.11, 3.12, or 3.13 executable');
+    if ispc
+        filterSpec = {'*.exe', 'Python executable (*.exe)'};
+    else
+        filterSpec = {'*', 'Python executable'};
+    end
+    [name, folder] = uigetfile(filterSpec, ...
+        'Select Python 3.10-3.13 (not MATLAB 3.14), e.g. /opt/homebrew/bin/python3.13');
     if isequal(name, 0)
         error('yunlink:SetupCancelled', 'YunLink setup was cancelled.');
     end
     pythonExecutable = string(fullfile(folder, name));
 end
+check_supported_python(pythonExecutable);
 
 root = fileparts(mfilename('fullpath'));
 embedded = dir(fullfile(root, 'vendor', 'yunlink_python-*.whl'));
@@ -88,8 +103,12 @@ else
 end
 bindingSource = "";
 
-choice = questdlg('How do you want to provide the platform YunLink binding?', ...
-    'YunLink binding', 'Select wheel', 'Select bundle folder', 'Skip');
+choice = questdlg(sprintf([ ...
+    'Install the YunLink native library next.\n\n', ...
+    'Choose Select bundle folder and pick the unzipped release directory.\n', ...
+    'Do not choose Skip.']), ...
+    'YunLink binding', ...
+    'Select bundle folder', 'Select wheel', 'Skip', 'Select bundle folder');
 if isempty(choice)
     error('yunlink:SetupCancelled', 'YunLink setup was cancelled.');
 elseif strcmp(choice, 'Select wheel')
@@ -190,7 +209,8 @@ end
 files = files(keep);
 if numel(files) == 0
     error('yunlink:BindingNotFound', ...
-        'No YunLink binding wheel matching this computer and %s was found in %s.', ...
+        ['No YunLink binding wheel matching this computer and %s was found in %s.\n', ...
+         'Python 3.14 (cp314) is not supported. Use 3.10, 3.11, 3.12, or 3.13.'], ...
         abi, directory);
 elseif numel(files) > 1
     error('yunlink:MultipleBindingWheels', ...
@@ -226,12 +246,19 @@ else
 end
 end
 
+function supported = python_is_supported(pythonExecutable)
+tag = python_abi_tag(pythonExecutable);
+supported = any(tag == ["cp310", "cp311", "cp312", "cp313"]);
+end
+
 function check_supported_python(pythonExecutable)
 tag = python_abi_tag(pythonExecutable);
-allowed = ["cp310", "cp311", "cp312", "cp313"];
-if ~any(tag == allowed)
+if ~python_is_supported(pythonExecutable)
     error('yunlink:UnsupportedPython', ...
-        'YunLink MATLAB supports Python 3.10, 3.11, 3.12, and 3.13. Selected %s.', tag);
+        ['YunLink MATLAB supports Python 3.10, 3.11, 3.12, and 3.13.\n', ...
+         'Selected %s (%s).\nDo not use MATLAB''s bundled Python 3.14.\n', ...
+         'On this Mac pick /opt/homebrew/bin/python3.13'], ...
+        pythonExecutable, tag);
 end
 end
 

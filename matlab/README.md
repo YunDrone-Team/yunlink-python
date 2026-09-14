@@ -176,6 +176,7 @@ yunlink_update
 
 ## 常见问题
 
+- 报错 `cp314` 或 `No YunLink binding wheel matching this computer and cp314`：选成了 Python 3.14。本机 Homebrew 的 `python3` 也是 3.14。请完全退出 MATLAB，重新运行 `yunlink_setup`，文件选择时选 **`/opt/homebrew/bin/python3.13`**，不要选 `python3` 或 MATLAB 自带解释器。
 - 找不到 Python：先在 Windows 或 macOS 安装 Python 3.10、3.11、3.12 或 3.13；不要使用 MATLAB 自带的 3.14。
 - 版本或路径不一致：在终端重新运行 `python --version`/`which python3`（Windows 使用 `where python`），并在向导中选择同一个可执行文件。
 - `PythonAlreadyLoaded`：重启 MATLAB 后再配置。
