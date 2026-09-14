@@ -2,9 +2,10 @@ YunLink Sunray MATLAB 1.1.0
 
 1. 在 Windows 或 macOS 安装 Python 3.10、3.11、3.12 或 3.13。
 2. 在系统终端运行 python --version（macOS 也可运行 python3 --version）确认版本。
-3. 打开 MATLAB，选择 Home -> Add-Ons -> Install from File。
-4. 选择这个目录里的 yunlink-sunray-matlab-1.1.0.mltbx。
-5. 在命令窗口运行 yunlink_setup。
-6. 选择刚才确认过的 Python 可执行文件，再选择这个解压目录。
+3. 解压本 zip，在 Finder 或 Windows 资源管理器中双击 yunlink-sunray-matlab-1.1.0.mltbx。
+4. 在 MATLAB Toolbox 安装器中点击 Install/安装。
+5. 回到 MATLAB 命令窗口运行 yunlink_setup。
+6. 选择刚才确认过的 Python 可执行文件，再选择本 zip 解压后的目录。
 
+不要在 MATLAB Add-Ons 面板中选择 Add Package Repository；它不是 .mltbx 安装入口。
 不要克隆代码仓库。完整说明见 README.md。

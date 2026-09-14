@@ -33,19 +33,20 @@ where python
 `C:\Users\你的用户名\AppData\Local\Programs\Python\Python312\python.exe`。
 向导中选择这个可执行文件，不是选择 Python 安装目录。
 
-## 安装
+## 安装 Toolbox（图形界面）
 
-1. 下载并解压 `yunlink-sunray-matlab-1.1.0-bundle.zip`。
-2. 打开 MATLAB，选择 **Home → Add-Ons → Install from File**。
-3. 选择解压目录里的 `yunlink-sunray-matlab-1.1.0.mltbx`。
-4. 在命令窗口运行：
+1. 下载并解压 `yunlink-sunray-matlab-1.1.0-bundle.zip`。不要直接在 zip 压缩包内操作。
+2. 打开解压后的目录，找到 `yunlink-sunray-matlab-1.1.0.mltbx`。
+3. 在 macOS Finder 或 Windows 资源管理器中**双击这个 `.mltbx` 文件**。MATLAB 会自动打开 Toolbox 安装器。
+4. 在安装器中确认名称为 **YunLink Sunray MATLAB Support**，点击 **Install/安装**。
+5. 回到 MATLAB，在命令窗口运行：
 
 ```matlab
 yunlink_setup
 ```
 
-5. 选择刚才确认过的 Python 可执行文件。
-6. 选择 **Select bundle folder**，并选中刚才解压出来的目录。
+6. 选择刚才确认过的 Python 可执行文件。
+7. 选择 **Select bundle folder**，并选中刚才解压出来的目录。
 
 向导会自动安装匹配当前系统和 Python 版本的通信库。它不会连接无人机，也不会发送飞行指令。
 
@@ -58,6 +59,10 @@ pyenv
 确认 `Version` 是 3.10、3.11、3.12 或 3.13，`Executable` 与终端中检查的路径一致。
 
 如果 MATLAB 已经加载了别的 Python，先重启 MATLAB，再运行 `yunlink_setup`。
+
+> **不要使用 Add Package Repository。** 这是 MATLAB 的文件夹型包仓库功能，不用于安装 `.mltbx`。
+> 如果双击没有唤起 MATLAB，也可以在 MATLAB 命令窗口执行
+> `matlab.addons.install("/完整路径/yunlink-sunray-matlab-1.1.0.mltbx")`。
 
 ## 使用
 
