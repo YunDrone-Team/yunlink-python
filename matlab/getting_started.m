@@ -4,6 +4,8 @@
 %   https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
 
 %% 安装 Toolbox
+% 不要在 Add-On Explorer 中搜索本工具箱。它只搜索 MathWorks 在线商店，
+% 找不到 YunLink 是正常的；Add Package Repository 也不是本地安装入口。
 % 解压发布包，在 macOS Finder 或 Windows 资源管理器中双击
 % 目录里的 yunlink-sunray-matlab-1.1.0.mltbx。
 % MATLAB 会打开 Toolbox 安装器；确认名称后点击 Install。

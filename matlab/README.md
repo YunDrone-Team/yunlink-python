@@ -35,6 +35,10 @@ where python
 
 ## 安装 Toolbox（图形界面）
 
+> **你看到的 Add-On Explorer 不是本地安装器。** 它只搜索 MathWorks 在线商店，搜索不到
+> `YunLink Sunray MATLAB Support` 是正常的。请关闭这个页面，不要搜索本工具箱，也不要点击
+> **Add Package Repository**。
+
 1. 下载并解压 `yunlink-sunray-matlab-1.1.0-bundle.zip`。不要直接在 zip 压缩包内操作。
 2. 打开解压后的目录，找到 `yunlink-sunray-matlab-1.1.0.mltbx`。
 3. 在 macOS Finder 或 Windows 资源管理器中**双击这个 `.mltbx` 文件**。MATLAB 会自动打开 Toolbox 安装器。
