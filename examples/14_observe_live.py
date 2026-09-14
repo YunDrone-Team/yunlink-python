@@ -23,7 +23,7 @@ from yunlink_python import (
     connect_discovered,
     run_with_status,
 )
-from yunlink_python.display import format_table
+from yunlink_python.display import format_fields
 from yunlink_python.state import Quaternion, UgvState, Vector3, VehicleState
 
 ENTER_ALT = "\033[?1049h"
@@ -69,16 +69,16 @@ def _has_content(value: object) -> bool:
     return True
 
 
-def _rows(pairs: list[tuple[str, object]]) -> list[dict[str, str]]:
+def _rows(pairs: list[tuple[str, object]]) -> list[tuple[str, str]]:
     rows = []
     for label, value in pairs:
         if not _has_content(value):
             continue
-        rows.append({"name": label, "value": _fmt(value)})
+        rows.append((label, _fmt(value)))
     return rows
 
 
-def _vehicle_rows(info: EntityInfo, state: VehicleState, updates: int) -> list[dict[str, str]]:
+def _vehicle_rows(info: EntityInfo, state: VehicleState, updates: int) -> list[tuple[str, str]]:
     loc = state.localization
     planner = state.planner
     age = "-" if state.received_at <= 0 else f"{time.time() - state.received_at:.2f}s"
@@ -123,13 +123,12 @@ def _vehicle_rows(info: EntityInfo, state: VehicleState, updates: int) -> list[d
             ("距目标 m", planner.distance_to_goal_m),
             ("停留剩余 s", planner.hold_remaining_s),
             ("失败原因", planner.failure_reason),
-            ("能力", info.capabilities),
             *_attribute_pairs(info),
         ]
     )
 
 
-def _ugv_rows(info: EntityInfo, state: UgvState, updates: int) -> list[dict[str, str]]:
+def _ugv_rows(info: EntityInfo, state: UgvState, updates: int) -> list[tuple[str, str]]:
     age = "-" if state.received_at <= 0 else f"{time.time() - state.received_at:.2f}s"
     return _rows(
         [
@@ -145,7 +144,6 @@ def _ugv_rows(info: EntityInfo, state: UgvState, updates: int) -> list[dict[str,
             ("速度", state.velocity),
             ("控制状态", state.control_state),
             ("规划状态", state.planner_state),
-            ("能力", info.capabilities),
             *_attribute_pairs(info),
         ]
     )
@@ -161,8 +159,10 @@ def _attribute_pairs(info: EntityInfo) -> list[tuple[str, object]]:
         "sunray.agent_serial_number": "序列号",
     }
     pairs = []
-    for key, value in sorted(info.attributes.items()):
-        pairs.append((labels.get(key, key), value))
+    for key, label in labels.items():
+        value = info.attributes.get(key, "")
+        if value:
+            pairs.append((label, value))
     return pairs
 
 
@@ -235,7 +235,7 @@ def _frame(
             rows = _vehicle_rows(info, state, counts[info.uid])
         else:
             rows = _ugv_rows(info, state, counts[info.uid])
-        blocks.append(format_table(rows, (("name", "字段"), ("value", "当前值"))))
+        blocks.append(format_fields(rows, label_width=12))
         blocks.append("")
     return "\n".join(blocks).rstrip() + "\n"
 

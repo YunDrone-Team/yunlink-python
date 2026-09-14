@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from yunlink_python.display import (
     color_enabled,
     discovery_id,
+    format_fields,
     format_table,
     print_client_catalog,
     print_discovered_bridges,
@@ -19,6 +20,18 @@ def test_discovery_id_matches_gcs_candidate_key():
 
 def test_vehicle_key_matches_gcs_route_key():
     assert vehicle_key("89c423", "e-89c423-2-1") == "89c423::e-89c423-2-1"
+
+
+def test_format_fields_wraps_long_values_instead_of_widening():
+    text = format_fields(
+        [("能力", "stream, action, " + ("com.yundrone.sunray.ugv.move-point.v1, " * 8))],
+        width=40,
+        label_width=4,
+    )
+    lines = text.splitlines()
+    assert lines[0].startswith("能力")
+    assert all(len(line) <= 42 for line in lines)
+    assert len(lines) > 1
 
 
 def test_format_table_aligns_cjk_headers():

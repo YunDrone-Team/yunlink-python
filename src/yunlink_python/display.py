@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import sys
 import threading
 import time
@@ -112,6 +113,40 @@ def format_table(
     for row in rows:
         lines.append(_join_cells([str(row.get(key, "")) for key, _ in columns], widths))
     return "\n".join(lines)
+
+
+def format_fields(
+    rows: Sequence[tuple[str, str]],
+    *,
+    width: int | None = None,
+    label_width: int = 12,
+) -> str:
+    """Render a terminal-width-limited label/value list. Long values wrap."""
+    columns = shutil.get_terminal_size((100, 24)).columns if width is None else width
+    value_width = max(8, columns - label_width - 2)
+    lines: list[str] = []
+    for label, value in rows:
+        parts = _wrap_display(str(value), value_width)
+        for index, part in enumerate(parts):
+            prefix = _pad(label, label_width) if index == 0 else " " * label_width
+            lines.append(f"{prefix}  {part}")
+    return "\n".join(lines)
+
+
+def _wrap_display(text: str, width: int) -> list[str]:
+    if width <= 0:
+        return [text]
+    lines: list[str] = []
+    current = ""
+    for char in text:
+        if current and _display_width(current + char) > width:
+            lines.append(current)
+            current = char
+        else:
+            current += char
+    if current:
+        lines.append(current)
+    return lines or [""]
 
 
 def print_discovered_bridges(

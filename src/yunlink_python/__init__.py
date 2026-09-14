@@ -12,6 +12,7 @@ from .client import (
 )
 from .display import (
     discovery_id,
+    format_fields,
     print_client_catalog,
     print_discovered_bridges,
     print_entity_catalog,
@@ -59,6 +60,7 @@ __all__ = [
     "discover",
     "discover_and_connect",
     "discovery_id",
+    "format_fields",
     "print_client_catalog",
     "print_discovered_bridges",
     "print_entity_catalog",
