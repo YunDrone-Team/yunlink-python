@@ -25,13 +25,17 @@ for index = 1:numel(files)
 end
 fprintf('\n以后随时运行 yunlink_examples 都会回到这里。\n');
 
-if usejava('desktop') && exist(fullfile(exampleDir, 'read_state_demo.m'), 'file')
+if usejava('desktop') && exist(fullfile(exampleDir, '00_setup.m'), 'file')
+    edit('00_setup.m');
+elseif usejava('desktop') && exist(fullfile(exampleDir, 'read_state_demo.m'), 'file')
     edit('read_state_demo.m');
 end
 end
 
 function text = example_blurb(name)
 switch name
+    case '00_setup.m'
+        text = '填 Python 和 bundle 路径后点 Run';
     case 'read_state_demo.m'
         text = '只读状态，不会起飞';
     case 'basic_flight_demo.m'

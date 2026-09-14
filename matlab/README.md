@@ -10,14 +10,18 @@ MATLAB 底层调用的是 Python SDK。连接对象仍然是 **YunLink Bridge**�
 
 ## 测试当天最短路径
 
-1. 本机安装 Python 3.10 / 3.11 / 3.12 / 3.13（不要用 MATLAB 自带 3.14）。
-2. 下载并解压上面的 zip。
-3. 双击解压目录里的 `.mltbx`，在 Toolbox 安装器点 **Install**。
-4. MATLAB 命令窗口运行 `yunlink_setup`，选 Python 可执行文件，再选 **Select bundle folder**（解压后的整个目录）。
-5. 运行 `pyenv`，确认 Version 是 3.10–3.13。
-6. 安装结束时选 **Open examples**，或之后运行 `yunlink_examples`。MATLAB 会切到示例目录并打开 `read_state_demo.m`。
-7. 用 Python `examples/01_discover.py` 或地面站确认 Bridge 地址和 `entity_uid`，改示例里的这两个值。
-8. 先跑只读 `read_state_demo.m`。现场允许后再跑 `basic_flight_demo.m`。
+1. 本机准备 Python 3.10–3.13。这台 Mac 用 `/opt/homebrew/bin/python3.13`，不要用 `python3` 或 MATLAB 自带 3.14。
+2. 下载并解压上面的 zip。双击 `.mltbx` 点 Install。不要用 Add-On Explorer。
+3. MATLAB 运行：
+
+```matlab
+addpath('/Users/groove/Project/work/YunDrone/yunlink-python/matlab')
+yunlink_examples
+```
+
+4. 打开的 `00_setup.m` 里确认 `pythonExe` 和 `bundleDir`（可留空自动找 Downloads），点 **Run**。不要再空跑 `yunlink_setup` 点对话框。
+5. 它会装依赖并打开 `read_state_demo.m`。改地址和 `entity_uid` 后运行。
+6. 只读通过后再跑 `basic_flight_demo.m`。
 
 ## 你需要准备什么
 
@@ -177,7 +181,9 @@ yunlink_update
 
 ## 常见问题
 
-- 报错 `cp314` 或 `No YunLink binding wheel matching this computer and cp314`：选成了 Python 3.14。本机 Homebrew 的 `python3` 也是 3.14。请完全退出 MATLAB，重新运行 `yunlink_setup`，文件选择时选 **`/opt/homebrew/bin/python3.13`**，不要选 `python3` 或 MATLAB 自带解释器。
+- 报错 `cp314`：选成了 Python 3.14。在 `00_setup.m` 里把 `pythonExe` 写成 `/opt/homebrew/bin/python3.13`。
+- 报错 `pyexpat` / `_XML_SetAllocTrackerActivationThreshold`：MATLAB 调 pip 时带入了系统旧 libexpat。请运行仓库里的 `00_setup.m`（会清掉 DYLD 并在 pip 失败时直接解压 wheel）。
+- 不要用命令窗口空跑 `yunlink_setup` 点对话框。日常入口是 `00_setup.m`。
 - 找不到 Python：先在 Windows 或 macOS 安装 Python 3.10、3.11、3.12 或 3.13；不要使用 MATLAB 自带的 3.14。
 - 版本或路径不一致：在终端重新运行 `python --version`/`which python3`（Windows 使用 `where python`），并在向导中选择同一个可执行文件。
 - `PythonAlreadyLoaded`：重启 MATLAB 后再配置。

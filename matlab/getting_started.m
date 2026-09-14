@@ -26,13 +26,10 @@
 % 记下 Python 可执行文件路径，不是安装目录。
 
 %% 配置一次
-%   yunlink_setup
-%
-% 选择刚才确认过的 Python 可执行文件，再选择 Select bundle folder，
-% 选中解压后的目录。不要选 Skip。向导不会连接无人机。
-% 配置后运行 pyenv，确认 Version 和 Executable 与终端检查结果一致。
-% 然后运行 yunlink_examples，会打开示例目录。先改地址和 entity_uid，
-% 再运行 read_state_demo.m。会飞的示例是 basic_flight_demo.m。
+%   yunlink_examples
+%   打开 00_setup.m，确认 pythonExe 和 bundleDir，点 Run。
+% 不要空跑 yunlink_setup 去点对话框。
+% 装好后改 read_state_demo.m 的地址和 entity_uid 再运行。
 
 %% 连接并读取状态
 % 地址用 ip:port。第二个参数用 entity_uid，不要只用显示名 uav1。

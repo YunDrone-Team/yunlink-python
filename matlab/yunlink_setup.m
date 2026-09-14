@@ -1,28 +1,41 @@
 function result = yunlink_setup(varargin)
 %YUNLINK_SETUP Configure Python and install YunLink MATLAB dependencies.
 %
-%   yunlink_setup opens a file-selection wizard. The explicit forms
-%   yunlink_setup(PYTHON, SDK) and yunlink_setup(PYTHON, SDK, BINDING) are
-%   intended for scripts and CI. BINDING may be a wheel or package path.
+%   yunlink_setup(PYTHON, BUNDLE_DIR) is the normal path: PYTHON is a
+%   3.10-3.13 executable, BUNDLE_DIR is the unzipped release folder.
+%   yunlink_setup(PYTHON, SDK, BINDING) installs explicit wheel paths.
+%   yunlink_setup with no arguments still opens the file-selection wizard.
 
 if nargin == 0
     if ~usejava('desktop') || ~usejava('awt')
         error('yunlink:SetupRequiresDesktop', ...
             ['yunlink_setup with no arguments needs the MATLAB desktop. ', ...
-             'Pass python, sdk, and optional binding paths instead.']);
+             'Prefer examples/00_setup.m: fill pythonExe and bundleDir, then Run.']);
     end
     [pythonExecutable, sdkSource, bindingSource] = select_sources();
 elseif nargin == 2 || nargin == 3
     pythonExecutable = string(varargin{1});
-    sdkSource = string(varargin{2});
-    if nargin == 3
-        bindingSource = string(varargin{3});
+    second = string(varargin{2});
+    if isfolder(second)
+        check_supported_python(pythonExecutable);
+        bindingSource = match_binding_wheel(second, pythonExecutable);
+        sdkSource = match_sdk_wheel(second);
+        if strlength(sdkSource) == 0
+            error('yunlink:MissingSdkWheel', ...
+                'No yunlink_python-*.whl was found in %s', second);
+        end
     else
-        bindingSource = "";
+        sdkSource = second;
+        if nargin == 3
+            bindingSource = string(varargin{3});
+        else
+            bindingSource = "";
+        end
     end
 else
     error('yunlink:InvalidArguments', ...
-        'Use yunlink_setup, yunlink_setup(python, sdk), or yunlink_setup(python, sdk, binding).');
+        ['Use examples/00_setup.m, yunlink_setup(python, bundleDir), ', ...
+         'or yunlink_setup(python, sdk, binding).']);
 end
 
 pythonExecutable = string(pythonExecutable);
@@ -160,13 +173,59 @@ end
 end
 
 function install_package(pythonExecutable, source, label)
-command = sprintf('%s -m pip install --upgrade %s', ...
-    shell_quote(char(pythonExecutable)), shell_quote(char(source)));
+command = sprintf('%s%s -m pip install --upgrade --disable-pip-version-check %s', ...
+    clean_env_prefix(), shell_quote(char(pythonExecutable)), shell_quote(char(source)));
+[status, output] = system(command);
+if status == 0
+    fprintf('%s installed.\n%s', label, output);
+    return
+end
+if isfile(source) && endsWith(lower(string(source)), ".whl")
+    fprintf('%s pip failed; installing the wheel without pip.\n%s\n', label, output);
+    extract_wheel(pythonExecutable, source);
+    fprintf('%s extracted.\n', label);
+    return
+end
+error('yunlink:InstallFailed', '%s installation failed:\n%s', label, output);
+end
+
+function extract_wheel(pythonExecutable, wheel)
+script = [tempname, '.py'];
+fid = fopen(script, 'w');
+if fid < 0
+    error('yunlink:InstallFailed', 'Could not write a temporary wheel installer.');
+end
+cleaner = onCleanup(@() delete_if_present(script));
+fprintf(fid, [ ...
+    'import pathlib, site, sys, zipfile\n', ...
+    'wheel = pathlib.Path(sys.argv[1])\n', ...
+    'dest = pathlib.Path(site.getsitepackages()[0])\n', ...
+    'dest.mkdir(parents=True, exist_ok=True)\n', ...
+    'zipfile.ZipFile(wheel).extractall(dest)\n', ...
+    'print("extracted", wheel, "->", dest)\n']);
+fclose(fid);
+command = sprintf('%s%s %s %s', clean_env_prefix(), ...
+    shell_quote(char(pythonExecutable)), shell_quote(script), shell_quote(char(wheel)));
 [status, output] = system(command);
 if status ~= 0
-    error('yunlink:InstallFailed', '%s installation failed:\n%s', label, output);
+    error('yunlink:InstallFailed', 'Wheel extract failed:\n%s', output);
 end
-fprintf('%s installed.\n%s', label, output);
+fprintf('%s\n', output);
+end
+
+function delete_if_present(path)
+if exist(path, 'file')
+    delete(path);
+end
+end
+
+function prefix = clean_env_prefix()
+if ispc
+    prefix = '';
+else
+    prefix = ['env -u DYLD_LIBRARY_PATH -u DYLD_FALLBACK_LIBRARY_PATH ', ...
+              '-u DYLD_INSERT_LIBRARIES -u DYLD_FRAMEWORK_PATH '];
+end
 end
 
 function result = verify_installation(pythonExecutable, sdkSource, bindingSource)
