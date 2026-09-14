@@ -1,23 +1,28 @@
-% 00_SETUP  Fill the two paths, then click Run. No extra dialogs.
-% After it finishes, this folder stays open. Edit read_state_demo.m next.
+% 00_SETUP  Fill pythonExe and bundleDir, then click Run.
+% Next: edit read_state_demo.m in this folder.
 
-pythonExe = "/opt/homebrew/bin/python3.13";
+% pythonExe: Python 3.10-3.13 executable, not MATLAB's Python 3.14.
+%   Windows:  "C:\Users\<user>\AppData\Local\Programs\Python\Python313\python.exe"
+%   macOS:    "/opt/homebrew/bin/python3.13"  or  "/usr/local/bin/python3.13"
+%   Linux:    "/usr/bin/python3.12"
+pythonExe = "";
+
+% bundleDir: unzipped yunlink-sunray-matlab-1.1.0-bundle folder.
+% Leave empty to search the user Downloads folder.
 bundleDir = "";
-
-% pythonExe must be 3.10-3.13. Do not use python3 or MATLAB's 3.14.
-% On this Mac the working interpreter is /opt/homebrew/bin/python3.13.
-% bundleDir is the unzipped yunlink-sunray-matlab-1.1.0-bundle folder.
-% Leave it empty to search ~/Downloads and ~/Downloads/Edge.
 
 thisDir = fileparts(mfilename('fullpath'));
 addpath(fileparts(thisDir));
+if strlength(strtrim(string(pythonExe))) == 0
+    pythonExe = local_find_python();
+end
 if strlength(strtrim(string(bundleDir))) == 0
     bundleDir = local_find_bundle();
 end
-if ~isfile(pythonExe) && ~isfile(char(pythonExe))
+if ~isfile(char(pythonExe))
     error('yunlink:MissingPython', ...
-        ['Python executable not found:\n%s\n', ...
-         'Set pythonExe at the top of 00_setup.m to Python 3.10-3.13.'], pythonExe);
+        ['Python executable not found.\n', ...
+         'Set pythonExe at the top of 00_setup.m to Python 3.10, 3.11, 3.12, or 3.13.']);
 end
 if ~isfolder(bundleDir)
     error('yunlink:MissingBundle', ...
@@ -34,17 +39,53 @@ if usejava('desktop')
     commandwindow;
     edit(fullfile(thisDir, 'read_state_demo.m'));
 end
-fprintf(['\n依赖已装好。请在 read_state_demo.m 里改 Bridge 地址和 entity_uid，然后 Run。\n', ...
-         '只读用 read_state_demo.m；会飞的是 basic_flight_demo.m。\n']);
+fprintf(['\nSetup finished. Edit the Bridge address and entity_uid in read_state_demo.m, then Run.\n', ...
+         'read_state_demo.m is read-only; basic_flight_demo.m sends flight commands.\n']);
+
+function pythonExe = local_find_python()
+homeDir = getenv('USERPROFILE');
+if strlength(string(homeDir)) == 0
+    homeDir = getenv('HOME');
+end
+localApp = getenv('LOCALAPPDATA');
+candidates = {
+    fullfile(localApp, 'Programs', 'Python', 'Python313', 'python.exe')
+    fullfile(localApp, 'Programs', 'Python', 'Python312', 'python.exe')
+    fullfile(localApp, 'Programs', 'Python', 'Python311', 'python.exe')
+    fullfile(localApp, 'Programs', 'Python', 'Python310', 'python.exe')
+    fullfile(homeDir, 'AppData', 'Local', 'Programs', 'Python', 'Python313', 'python.exe')
+    '/opt/homebrew/bin/python3.13'
+    '/opt/homebrew/bin/python3.12'
+    '/opt/homebrew/bin/python3.11'
+    '/opt/homebrew/bin/python3.10'
+    '/usr/local/bin/python3.13'
+    '/usr/local/bin/python3.12'
+    '/usr/bin/python3.13'
+    '/usr/bin/python3.12'
+    '/usr/bin/python3.11'
+    '/usr/bin/python3.10'
+    };
+pythonExe = "";
+for index = 1:numel(candidates)
+    item = candidates{index};
+    if strlength(string(item)) > 0 && isfile(item)
+        pythonExe = item;
+        return
+    end
+end
+error('yunlink:MissingPython', ...
+    ['Could not find Python 3.10-3.13.\n', ...
+     'Set pythonExe at the top of 00_setup.m to the interpreter executable.']);
+end
 
 function bundleDir = local_find_bundle()
 roots = {};
-homeDir = getenv('HOME');
+homeDir = getenv('USERPROFILE');
 if strlength(string(homeDir)) == 0
-    homeDir = getenv('USERPROFILE');
+    homeDir = getenv('HOME');
 end
 if strlength(string(homeDir)) > 0
-    roots = {fullfile(homeDir, 'Downloads', 'Edge'), fullfile(homeDir, 'Downloads')};
+    roots = {fullfile(homeDir, 'Downloads'), fullfile(homeDir, 'Downloads', 'Edge')};
 end
 newest = datetime(0, 1, 1);
 bundleDir = "";
@@ -67,6 +108,6 @@ for rootIndex = 1:numel(roots)
 end
 if strlength(bundleDir) == 0
     error('yunlink:MissingBundle', ...
-        'Could not find yunlink-sunray-matlab-*-bundle under Downloads. Set bundleDir at the top of this file.');
+        'Could not find the unzipped release folder. Set bundleDir at the top of 00_setup.m.');
 end
 end

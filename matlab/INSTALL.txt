@@ -1,15 +1,10 @@
-YunLink Sunray MATLAB 1.1.0
+YunLink MATLAB 1.1.0
 
-1. 在 Windows 或 macOS 安装 Python 3.10、3.11、3.12 或 3.13。不要用 MATLAB 自带 3.14。
-2. 在系统终端运行 python --version（macOS 也可运行 python3 --version）确认版本。
-3. 解压本 zip，在 Finder 或 Windows 资源管理器中双击 yunlink-sunray-matlab-1.1.0.mltbx。
-4. 在 MATLAB Toolbox 安装器中点击 Install/安装。
-5. 回到 MATLAB 命令窗口运行 yunlink_setup。
-6. 选择刚才确认过的 Python 可执行文件。
-7. 选 Select bundle folder，选中本 zip 解压后的整个目录。不要选 Skip。
-8. 运行 pyenv，确认 Version 是 3.10-3.13。
-9. 连接时使用 Bridge 的 ip:port，选择无人机时使用 entity_uid（例如 e-f97f96-2-1）。
+1. 安装 Python 3.10、3.11、3.12 或 3.13（Windows / macOS / Linux 均可）。不要使用 MATLAB 自带的 3.14。
+2. 解压本 zip，双击 yunlink-sunray-matlab-1.1.0.mltbx，在 Toolbox 安装器中点击 Install。
+3. 在 MATLAB 中运行 yunlink_examples，打开 examples/00_setup.m。
+4. 填写 pythonExe（Python 可执行文件）和 bundleDir（本 zip 解压后的目录），然后 Run。
+5. 在 read_state_demo.m 中填入 Bridge 的 host:port 和设备 entity_uid，再运行。
 
-不要在 MATLAB Add-Ons 面板中选择 Add Package Repository；它不是 .mltbx 安装入口。
-不要在 Add-On Explorer 中搜索本工具箱；它只搜索 MathWorks 在线商店。
-不要克隆代码仓库。完整说明见 README.md。
+不要在 Add-On Explorer 中搜索本工具箱，也不要使用 Add Package Repository。
+完整说明见 README.md。

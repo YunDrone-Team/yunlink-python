@@ -1,45 +1,29 @@
-%% YunLink Sunray MATLAB 快速开始
-% 不要克隆代码仓库。请下载发布包：
+%% YunLink MATLAB 快速开始
+% 下载发布包即可，不必克隆代码仓库：
 %
 %   https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
 
 %% 安装 Toolbox
-% 不要在 Add-On Explorer 中搜索本工具箱。它只搜索 MathWorks 在线商店，
-% 找不到 YunLink 是正常的；Add Package Repository 也不是本地安装入口。
-% 解压发布包，在 macOS Finder 或 Windows 资源管理器中双击
-% 目录里的 yunlink-sunray-matlab-1.1.0.mltbx。
-% MATLAB 会打开 Toolbox 安装器；确认名称后点击 Install。
-% Add-Ons 面板里的 Add Package Repository 不用于安装 .mltbx。
+% 不要在 Add-On Explorer 中搜索。解压发布包后，在资源管理器、Finder
+% 或文件管理器中双击 yunlink-sunray-matlab-1.1.0.mltbx，点击 Install。
+% Add Package Repository 不是 .mltbx 安装入口。
 
 %% 准备 Python
-% Windows 和 macOS 需要先安装 Python 3.10、3.11、3.12 或 3.13。
-% MATLAB 不会自动安装 Python。
-%
-% macOS 终端：
-%   python3 --version
-%   which python3
-%
-% Windows PowerShell：
-%   python --version
-%   where python
-%
-% 记下 Python 可执行文件路径，不是安装目录。
+% 需要系统安装的 Python 3.10、3.11、3.12 或 3.13，不要使用 MATLAB 自带 3.14。
+% 填写的是可执行文件路径，例如：
+%   Windows:  C:\Users\<用户>\AppData\Local\Programs\Python\Python313\python.exe
+%   macOS:    /opt/homebrew/bin/python3.13  或  /usr/local/bin/python3.13
+%   Linux:    /usr/bin/python3.12
 
 %% 配置一次
 %   yunlink_examples
-%   打开 00_setup.m，确认 pythonExe 和 bundleDir，点 Run。
-% 不要空跑 yunlink_setup 去点对话框。
-% 装好后改 read_state_demo.m 的地址和 entity_uid 再运行。
+% 打开 00_setup.m，填写 pythonExe 和 bundleDir，点击 Run。
+% 然后在 read_state_demo.m 中填写 Bridge 地址和 entity_uid。
 
 %% 连接并读取状态
-% 地址用 ip:port。第二个参数用 entity_uid，不要只用显示名 uav1。
 %   client = yunlink_connect("192.168.31.236:9696");
 %   uav = yunlink_vehicle(client, "e-f97f96-2-1");
 %   state = yunlink_state(uav);
-%   disp(state.position);
-%   disp(state.batteryPercent);
-%   disp(state.armed);
-%   disp(state.landed);
 
 %% 基础控制
 %   yunlink_takeoff(uav, 1.5);

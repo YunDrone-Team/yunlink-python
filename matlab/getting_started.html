@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <title>YunLink Sunray MATLAB 快速开始</title>
+  <title>YunLink MATLAB 快速开始</title>
   <style>
     body { font-family: Helvetica, Arial, sans-serif; max-width: 760px; margin: 24px auto; line-height: 1.5; color: #222; }
     code, pre { font-family: Menlo, Consolas, monospace; }
@@ -11,32 +11,24 @@
   </style>
 </head>
 <body>
-  <h1>YunLink Sunray MATLAB 快速开始</h1>
-  <p>不要克隆代码仓库。下载发布包即可：</p>
+  <h1>YunLink MATLAB 快速开始</h1>
+  <p>下载发布包即可，不必克隆代码仓库：</p>
   <p><a href="https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip">yunlink-sunray-matlab-1.1.0-bundle.zip</a></p>
 
   <h2>1. 准备 Python</h2>
-  <p>Windows 和 macOS 需要先安装 Python 3.10、3.11、3.12 或 3.13。MATLAB 不会自动安装 Python。</p>
-  <p>macOS 终端检查：</p>
-  <pre>python3 --version
-which python3</pre>
-  <p>Windows PowerShell 检查：</p>
-  <pre>python --version
-where python</pre>
-  <p>记下 Python <strong>可执行文件路径</strong>，不是安装目录。</p>
+  <p>在 Windows、macOS 或 Linux 上安装 Python 3.10、3.11、3.12 或 3.13。不要使用 MATLAB 自带的 3.14。需要的是可执行文件路径，例如：</p>
+  <pre>Windows:  C:\Users\&lt;用户&gt;\AppData\Local\Programs\Python\Python313\python.exe
+macOS:    /opt/homebrew/bin/python3.13
+Linux:    /usr/bin/python3.12</pre>
 
   <h2>2. 安装 Toolbox</h2>
-  <p><strong>不要在 Add-On Explorer 中搜索本工具箱。</strong>该页面只搜索 MathWorks 在线商店，找不到 YunLink 是正常的；右上角的 <strong>Add Package Repository</strong> 也不是本地 Toolbox 安装入口。</p>
-  <p>解压发布包，在 macOS Finder 或 Windows 资源管理器中<strong>双击</strong>目录里的 <code>yunlink-sunray-matlab-1.1.0.mltbx</code>。MATLAB 会打开 Toolbox 安装器；确认名称后点击 <strong>Install</strong>。</p>
-  <p>MATLAB Add-Ons 面板里的 <strong>Add Package Repository</strong> 不用于安装 <code>.mltbx</code>，请不要选择它。</p>
+  <p><strong>不要在 Add-On Explorer 中搜索本工具箱。</strong>解压发布包后，双击 <code>yunlink-sunray-matlab-1.1.0.mltbx</code>，在安装器中点击 <strong>Install</strong>。不要使用 <strong>Add Package Repository</strong>。</p>
 
   <h2>3. 配置一次</h2>
-  <pre>yunlink_setup</pre>
-  <p>选择刚才确认过的 Python 可执行文件，再选择 <strong>Select bundle folder</strong>，选中解压后的整个目录。不要选 Skip。向导不会连接无人机。</p>
-  <p>配置后可运行 <code>pyenv</code>，确认 MATLAB 的 <code>Version</code> 和 <code>Executable</code> 与终端检查结果一致。然后运行 <code>yunlink_examples</code>，MATLAB 会打开示例目录；先改地址和 <code>entity_uid</code>，再运行 <code>read_state_demo.m</code>。</p>
+  <pre>yunlink_examples</pre>
+  <p>打开 <code>00_setup.m</code>，填写 <code>pythonExe</code> 和 <code>bundleDir</code>，点击 Run。然后在 <code>read_state_demo.m</code> 中填写 Bridge 地址和 <code>entity_uid</code>。</p>
 
   <h2>4. 连接并读取状态</h2>
-  <p>地址用 <code>ip:port</code>。第二个参数用 <code>entity_uid</code>，不要只用显示名 <code>uav1</code>。</p>
   <pre>client = yunlink_connect("192.168.31.236:9696");
 uav = yunlink_vehicle(client, "e-f97f96-2-1");
 state = yunlink_state(uav);
