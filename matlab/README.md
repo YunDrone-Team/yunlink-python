@@ -8,6 +8,13 @@ https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/y
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 
+发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
+
+1. `yunlink-2.0.1-*.whl`：按操作系统和 Python 版本提供的原生绑定
+2. `yunlink_python-1.1.0-*.whl`：MATLAB 调用的 SDK
+
+MATLAB 本身不内置可用的 3.10–3.13 解释器，所以仍要指定系统里的 Python 可执行文件。通信库不在 MATLAB 里现场编译。
+
 ## 环境要求
 
 - MATLAB R2026a 或更新版本
@@ -113,13 +120,7 @@ yunlink_land(uav);
 yunlink_close(client);
 ```
 
-示例脚本：
-
-| 文件 | 说明 |
-| --- | --- |
-| `examples/00_setup.m` | 配置 Python 和通信库 |
-| `examples/read_state_demo.m` | 只读状态，不发送飞行指令 |
-| `examples/basic_flight_demo.m` | 会发送起飞、移动和降落指令 |
+示例脚本按编号排列，说明见 [`examples/README.md`](examples/README.md)。运行 `yunlink_examples` 后，在 Current Folder 中按 `00_setup.m` → `01_discover.m` → `02_connect_and_inspect.m` 的顺序执行。控制类示例从 `04_flight_basics.m` 开始。
 
 运行示例前先修改其中的地址和 `entity_uid`。`state.armed` / `state.disarmed` 只表示状态，没有解锁或上锁函数。`state.fresh` 为 false 时不要起飞。
 
@@ -131,8 +132,11 @@ yunlink_close(client);
 | --- | --- |
 | `yunlink_examples` | 打开示例目录 |
 | `yunlink_setup` | 配置 Python 和通信库；一般通过 `00_setup.m` 调用 |
+| `yunlink_discover` | 搜索局域网中的 Bridge |
 | `yunlink_connect` | 连接 Bridge，不 attach 设备 |
+| `yunlink_entities` | 读取设备目录，不 attach |
 | `yunlink_vehicle` | 按 `entity_uid` attach 无人机 |
+| `yunlink_ugv` | 按 `entity_uid` attach 无人车 |
 | `yunlink_state` | 读取状态 |
 | `yunlink_takeoff` | 起飞 |
 | `yunlink_move_to` | Planner 单目标移动 |

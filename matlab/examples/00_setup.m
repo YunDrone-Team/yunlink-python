@@ -37,10 +37,10 @@ cd(thisDir);
 if usejava('desktop')
     filebrowser;
     commandwindow;
-    edit(fullfile(thisDir, 'read_state_demo.m'));
+    edit(fullfile(thisDir, '01_discover.m'));
 end
-fprintf(['\nSetup finished. Edit the Bridge address and entity_uid in read_state_demo.m, then Run.\n', ...
-         'read_state_demo.m is read-only; basic_flight_demo.m sends flight commands.\n']);
+fprintf(['\nSetup finished. Next run 01_discover.m, then 02_connect_and_inspect.m.\n', ...
+         'Flight examples start at 04_flight_basics.m. See README.md in this folder.\n']);
 
 function pythonExe = local_find_python()
 homeDir = getenv('USERPROFILE');

@@ -82,7 +82,7 @@ gh release upload matlab-1.1.0 \
 - `README.md`
 - `getting_started.m`
 - `getting_started.html`
-- `examples/*.m`
+- `examples/*.m` 与 `examples/README.md`
 - `LICENSE`
 - `vendor/yunlink_python-*.whl`
 

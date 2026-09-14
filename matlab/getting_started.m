@@ -18,7 +18,8 @@
 %% 配置一次
 %   yunlink_examples
 % 打开 00_setup.m，填写 pythonExe 和 bundleDir，点击 Run。
-% 然后在 read_state_demo.m 中填写 Bridge 地址和 entity_uid。
+% 然后按 01_discover.m、02_connect_and_inspect.m、03_watch_state.m 的顺序运行。
+% 完整列表见 examples/README.md。
 
 %% 连接并读取状态
 %   client = yunlink_connect("192.168.31.236:9696");

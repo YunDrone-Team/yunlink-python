@@ -53,6 +53,12 @@ for index = 1:numel(examples)
     copyfile(fullfile(examples(index).folder, examples(index).name), destination);
     toolboxFiles(end + 1) = string(destination); %#ok<AGROW>
 end
+exampleReadme = fullfile(root, 'examples', 'README.md');
+if isfile(exampleReadme)
+    destination = fullfile(exampleDirectory, 'README.md');
+    copyfile(exampleReadme, destination);
+    toolboxFiles(end + 1) = string(destination);
+end
 
 wheel = choose_sdk_wheel(repoRoot, sdkWheel);
 if strlength(wheel) > 0

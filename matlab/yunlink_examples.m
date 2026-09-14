@@ -1,7 +1,5 @@
 function exampleDir = yunlink_examples()
 %YUNLINK_EXAMPLES Open the MATLAB example folder in Current Folder.
-%   yunlink_examples changes MATLAB's current folder to the bundled
-%   examples, shows the file browser, and opens the read-only demo.
 
 root = fileparts(mfilename('fullpath'));
 exampleDir = fullfile(root, 'examples');
@@ -18,24 +16,48 @@ end
 
 files = dir(fullfile(exampleDir, '*.m'));
 fprintf('\n示例目录：\n  %s\n\n', exampleDir);
-fprintf('在左侧 Current Folder 里双击文件，或在命令窗口输入文件名运行。\n');
-fprintf('先改地址和 entity_uid，再运行。\n\n');
+fprintf('在左侧 Current Folder 里打开脚本。先运行 00_setup.m，再按编号往下做。\n');
+fprintf('控制类示例请先改 address 和 entity_uid。\n\n');
 for index = 1:numel(files)
-    fprintf('  %-24s  %s\n', files(index).name, example_blurb(files(index).name));
+    fprintf('  %-32s  %s\n', files(index).name, example_blurb(files(index).name));
 end
-fprintf('\n以后随时运行 yunlink_examples 都会回到这里。\n');
+fprintf('\n说明见本目录 README.md。以后运行 yunlink_examples 会回到这里。\n');
 
 if usejava('desktop') && exist(fullfile(exampleDir, '00_setup.m'), 'file')
     edit('00_setup.m');
-elseif usejava('desktop') && exist(fullfile(exampleDir, 'read_state_demo.m'), 'file')
-    edit('read_state_demo.m');
 end
 end
 
 function text = example_blurb(name)
 switch name
     case '00_setup.m'
-        text = '填 Python 和 bundle 路径后点 Run';
+        text = '配置 Python 和通信库';
+    case '01_discover.m'
+        text = '搜索 Bridge，不连接';
+    case '02_connect_and_inspect.m'
+        text = '连接 Bridge 并打印目录';
+    case '03_watch_state.m'
+        text = '读取 UAV 状态，不飞';
+    case '04_flight_basics.m'
+        text = '起飞、平移、悬停、降落';
+    case '05_waypoints.m'
+        text = '多航点 Planner 任务';
+    case '06_cancel_action.m'
+        text = '启动移动后取消';
+    case '07_ugv_control.m'
+        text = '无人车点位、速度、Hold';
+    case '08_errors.m'
+        text = '连接和动作异常处理';
+    case '10_discover_select_connect.m'
+        text = '按 Bridge ID 选择连接';
+    case '11_multi_device_control.m'
+        text = '多设备状态，不飞';
+    case '12_multi_uav_waypoints.m'
+        text = '多机短航线，会飞';
+    case '13_multi_device_state.m'
+        text = '连续打印多设备状态';
+    case '14_observe_live.m'
+        text = '命令窗口刷新遥测';
     case 'read_state_demo.m'
         text = '只读状态，不会起飞';
     case 'basic_flight_demo.m'
