@@ -12,7 +12,9 @@ Python SDK -> YunLink Session -> Attach/Authority -> Bridge -> SunrayV2 -> 控�
 from yunlink_python import connect
 
 with connect("真实 Bridge 的地址:9696") as client:
-    uav = client.vehicle("目录中的 UAV 名称或 entity UID")
+    for device in client.entities():
+        print(device.uid, device.name, device.kind)
+    uav = client.vehicle("目录中确认过的 entity_uid")
     print(uav.state)
     uav.takeoff(1.5, timeout=30)
     uav.move_to(1.0, 0.0, 1.5, timeout=60)

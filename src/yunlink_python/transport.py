@@ -69,6 +69,14 @@ class Transport:
     def endpoint_uid(self) -> str:
         return self._remote_uid
 
+    @property
+    def host(self) -> str:
+        return self._host
+
+    @property
+    def port(self) -> int:
+        return self._port
+
     def _connect_session(self, timeout: float = 8.0) -> None:
         peer = self.runtime.connect(self._host, self._port)
         session_id = self.runtime.open_session(peer)

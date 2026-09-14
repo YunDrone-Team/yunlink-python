@@ -7,6 +7,8 @@ import time
 
 from _session import add_connection_arguments, open_bridge, select_uav
 
+from yunlink_python import run_with_status
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--after", type=float, default=2.0, help="开始任务后等待多少秒再取消")
 add_connection_arguments(parser)
@@ -16,7 +18,7 @@ with open_bridge(args.address) as client:
     # 取消示例也必须针对明确的 UAV，不会默认取消第一台设备的任务。
     vehicle = select_uav(client, args.entity)
     try:
-        vehicle.takeoff(1.0, timeout=30)
+        run_with_status("起飞中", lambda: vehicle.takeoff(1.0, timeout=30))
         start = vehicle.state.position
         handle = vehicle.move_to(start.x + 1.0, start.y, 1.0, timeout=90, wait=False)
         deadline = time.monotonic() + args.after
@@ -29,4 +31,4 @@ with open_bridge(args.address) as client:
         print(f"final phase={handle.phase.name} detail={handle.detail}")
     finally:
         if not vehicle.state.landed:
-            vehicle.land(timeout=30)
+            run_with_status("降落中", lambda: vehicle.land(timeout=30))

@@ -3,16 +3,11 @@
 from __future__ import annotations
 
 import argparse
-import os
 
-from _session import open_bridge
+from _session import add_connection_arguments, open_bridge
 
 parser = argparse.ArgumentParser(description="连接 Bridge 并打印设备目录，不控制设备")
-parser.add_argument(
-    "--address",
-    default=os.getenv("YUNLINK_ADDRESS"),
-    help="Bridge 地址，例如 192.168.31.236:9696；也可用 YUNLINK_ADDRESS",
-)
+add_connection_arguments(parser, include_entity=False)
 args = parser.parse_args()
 
 # 这里建立的只是 Bridge Session。client.entities() 只读目录，不会 attach 任何 UAV/UGV。

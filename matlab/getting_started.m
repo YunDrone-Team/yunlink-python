@@ -29,12 +29,13 @@
 %   yunlink_setup
 %
 % 选择刚才确认过的 Python 可执行文件，再选择 Select bundle folder，
-% 选中解压后的目录。向导不会连接无人机。
+% 选中解压后的目录。不要选 Skip。向导不会连接无人机。
 % 配置后运行 pyenv，确认 Version 和 Executable 与终端检查结果一致。
 
 %% 连接并读取状态
+% 地址用 ip:port。第二个参数用 entity_uid，不要只用显示名 uav1。
 %   client = yunlink_connect("192.168.31.236:9696");
-%   uav = yunlink_vehicle(client, "uav1");
+%   uav = yunlink_vehicle(client, "e-f97f96-2-1");
 %   state = yunlink_state(uav);
 %   disp(state.position);
 %   disp(state.batteryPercent);

@@ -20,19 +20,22 @@ SDK 不连接 ROS，不复制 ROS 服务，不自动选择第一台设备，也�
 2. 仿真或真实设备已经注册到 Bridge 的设备目录。
 3. Python 版本为 3.10、3.11、3.12 或 3.13，SDK 版本为 `1.1.0`。
 4. 第一次测试优先使用仿真实体，真实设备必须遵守现场安全规定。
+5. 运行 `examples/` 脚本前，复制 `examples/yunlink.env.example` 为 `examples/yunlink.env`，在文件里填写目标 Bridge 和设备 ID。不要每次 export。
 
 控制脚本会发送真实动作。只读搜索、目录查看和状态查看不会起飞或移动设备。
 
 ## 3. Bridge、设备和两级 ID
 
-SDK 有两个不能混用的 ID：
+SDK 有两级不能混用的 ID；地面站还会把它们拼成探测候选和路由键：
 
-| ID | 含义 | 用途 |
+| 字段 | 例子 | 用途 |
 | --- | --- | --- |
-| `endpoint_uid` | YunLink Bridge 的唯一 ID | 在多 Bridge 局域网中选择 Bridge |
-| `entity_uid` | Bridge 下 UAV/UGV 的唯一 ID | attach、读取状态和发送设备动作 |
+| `endpoint_uid` | `89c423` | Bridge 的稳定 ID，用来选择并连接 Bridge |
+| 探测候选 ID | `89c423@192.168.10.10:9696` | 地面站探测列表里区分一台可连接 Bridge，格式 `endpoint_uid@ip:tcp_port` |
+| `entity_uid` | `e-89c423-2-1` | Bridge 下 UAV/UGV 的稳定 ID，用来 attach 和控制 |
+| GCS 键 | `89c423::e-89c423-2-1` | 地面站内部路由键，格式 `endpoint_uid::entity_uid` |
 
-IP 地址只是连接地址，不是设备 ID。显示名称例如 `uav1` 可以用于选择，但多设备场景应优先记录并使用完整的 `entity_uid`。
+IP 地址只是连接地址，不是设备 ID。显示名称例如 `uav1` 可以用于选择，但多设备场景应优先记录并使用完整的 `entity_uid`。`01_discover.py` 会把探测候选 ID 和 GCS 键显著打印出来。
 
 连接层次如下：
 
@@ -52,29 +55,31 @@ IP 地址只是连接地址，不是设备 ID。显示名称例如 `uav1` 可以
 
 ## 4. 安装 YunLink binding 与 SDK
 
-YunLink binding 包含平台相关运行库，需要先安装与操作系统匹配的 wheel：
+YunLink binding 含平台原生库，请从
+[yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
+下载匹配本机系统和 Python 版本的预编译 wheel，不必编译 C++。
 
 ```bash
-# 先安装通用 YunLink Python binding。
-python -m pip install /path/to/yunlink-*.whl
-
-# 再安装本 SDK 的 wheel。
-python -m pip install /path/to/yunlink_python-1.1.0-py3-none-any.whl
-
-# 确认 Python import 名称和版本。
-python -c "import yunlink_python; print(yunlink_python.__version__)"
-```
-
-开发环境也可以从源码安装：
-
-```bash
-git clone --recursive https://github.com/YunDrone-Team/yunlink.git
-python -m pip install ./yunlink/bindings/python
+# 先安装通用 YunLink Python binding，文件名按系统和 Python 版本替换。
+python -m pip install \
+  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.1/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
 
 git clone https://github.com/YunDrone-Team/yunlink-python.git
 cd yunlink-python
-python -m pip install -e .
+python -m pip install --no-deps -e .
+
+python -c "import yunlink_python; print(yunlink_python.__version__)"
 ```
+
+`--no-deps` 必须加：SDK 声明了 `yunlink>=2.0.1`，但该包不在 PyPI。不要使用 `uv run`。
+激活虚拟环境后先准备目标配置：
+
+```bash
+cp examples/yunlink.env.example examples/yunlink.env
+```
+
+在 `examples/yunlink.env` 填写 `YUNLINK_ADDRESS` 和后续要用的 `YUNLINK_UAV` / `YUNLINK_UGV`。
+然后运行 `python examples/01_discover.py`。命令行 `--address` / `--entity` 只用于临时覆盖该文件。
 
 ## 5. 第一步：搜索全部 Bridge
 
@@ -85,29 +90,34 @@ python examples/01_discover.py
 ```
 
 这个脚本只发送 discovery 查询，不建立控制 Session，不 attach 设备，不发送动作。
-输出中重点记录每个 Bridge 的 `endpoint_uid` 和地址：
+默认会监听 5 秒，期间终端显示 loading；时间到了再把收集到的 Bridge 一次性打印出来，不是搜到一台就立刻结束。
+监听时长可用 `--timeout 10` 或 `examples/yunlink.env` 里的 `YUNLINK_DISCOVER_TIMEOUT` 修改。
+输出会按表格打印地面站同款探测候选 ID，以及每台设备的 `entity_uid` 和 GCS 键：
 
 ```text
-Bridge ID: bridge-abc
-Address: 192.168.31.236:9696
-  Device ID: uav-abc-01 (sunray.uav)
+探测候选 ID                Bridge ID  地址
+89c423@192.168.10.10:9696  89c423     192.168.10.10:9696
+
+entity_uid    名称  类型        GCS 键
+e-89c423-2-1  uav1  sunray.uav  89c423::e-89c423-2-1
 ```
 
 如果没有搜索结果：
 
-- 检查 Bridge 是否启动。
-- 检查 UDP discovery 端口和局域网广播权限。
-- 已知地址时跳过广播，直接使用 `--address` 或 `connect("host:9696")`。
+- 检查 Bridge 是否启动，以及 TCP `9696` 是否可达。
+- 家用 Wi-Fi 经常丢掉 `255.255.255.255` 广播；SDK 会同时对已知地址和本机 /24 网段做 UDP 单播。
+- 在 `examples/yunlink.env` 填写 `YUNLINK_ADDRESS` 可把该 IP 加入搜索目标。
+- 已知地址时也可以直接 `connect("host:9696")`，不依赖 discovery。
 
 ## 6. 第二步：连接指定 Bridge
 
-如果只有一个 Bridge，可以运行：
+如果 `yunlink.env` 里已经写了地址，直接运行：
 
 ```bash
-python examples/02_connect_and_inspect.py --address 192.168.31.236:9696
+python examples/02_connect_and_inspect.py
 ```
 
-不传 `--address` 时，脚本会尝试发现唯一 Bridge。如果发现多个 Bridge，会要求先使用示例 10 按 `endpoint_uid` 选择。
+地址留空时，脚本会尝试发现唯一 Bridge。如果发现多个 Bridge，先在 `yunlink.env` 填写 `YUNLINK_BRIDGE_ID`，再使用示例 10。
 
 脚本执行到这里只完成：
 
@@ -139,11 +149,10 @@ with connect("192.168.31.236:9696") as client:
 使用目录中确认过的设备 ID：
 
 ```bash
-python examples/03_watch_state.py \
-  --address 192.168.31.236:9696 \
-  --entity <entity_uid> \
-  --seconds 10
+python examples/03_watch_state.py --seconds 10
 ```
+
+`YUNLINK_UAV` 必须事先写在 `examples/yunlink.env`。临时换设备时才加 `--entity`。
 
 对应的 Python 代码：
 
@@ -203,9 +212,7 @@ finally:
 确认状态新鲜、目标设备正确且现场安全后，才运行控制示例：
 
 ```bash
-python examples/04_flight_basics.py \
-  --address 192.168.31.236:9696 \
-  --entity <entity_uid>
+python examples/04_flight_basics.py
 ```
 
 最小控制代码：
@@ -231,9 +238,7 @@ with connect("192.168.31.236:9696") as client:
 ## 11. 第七步：航点任务
 
 ```bash
-python examples/05_waypoints.py \
-  --address 192.168.31.236:9696 \
-  --entity <entity_uid>
+python examples/05_waypoints.py
 ```
 
 航点任务会等待 Planner Action 的最终结果，并从状态中显示当前航点、距离、停留时间和失败原因。
@@ -242,10 +247,7 @@ python examples/05_waypoints.py \
 ## 12. 第八步：异步 Action 与取消
 
 ```bash
-python examples/06_cancel_action.py \
-  --address 192.168.31.236:9696 \
-  --entity <entity_uid> \
-  --after 2
+python examples/06_cancel_action.py --after 2
 ```
 
 非阻塞调用返回 `ActionHandle`：
@@ -286,12 +288,15 @@ python examples/10_discover_select_connect.py \
 python examples/11_multi_device_control.py
 python examples/12_multi_uav_waypoints.py
 python examples/13_multi_device_state.py --seconds 60
+python examples/14_observe_live.py
 ```
+
+`14_observe_live.py` 只 attach 和读状态，不申请控制权。可与地面站同时连同一架机：地面站控制，脚本原地刷新打印全部遥测字段。
 
 ## 14. 第十步：错误、超时和断线恢复
 
 ```bash
-python examples/08_errors.py --address 192.168.31.236:9696 --entity <entity_uid>
+python examples/08_errors.py
 ```
 
 常见异常：
@@ -321,9 +326,13 @@ python examples/08_errors.py --address 192.168.31.236:9696 --entity <entity_uid>
 | API | 作用 | 是否 attach |
 | --- | --- | --- |
 | `discover()` | 搜索 Bridge | 否 |
+| `discovery_id()` / `vehicle_key()` | 生成地面站同款探测候选 ID / GCS 键 | 否 |
+| `print_discovered_bridges()` | 表格打印搜索结果 | 否 |
 | `connect(address)` | 连接 Bridge | 否 |
 | `connect_discovered(bridge)` | 连接已选 Bridge | 否 |
 | `client.bridge_uid` | 获取远端 Bridge ID | 否 |
+| `client.bridge_address` | 获取当前 Bridge 的 `host:port` | 否 |
+| `print_client_catalog(client)` | 表格打印已连接 Bridge 的设备目录 | 否 |
 | `client.entities()` | 读取设备目录 | 否 |
 | `client.vehicle(uid)` | attach UAV 并订阅状态 | 是 |
 | `client.ugv(uid)` | attach UGV 并订阅状态 | 是 |

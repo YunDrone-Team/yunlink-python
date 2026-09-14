@@ -7,11 +7,13 @@ import ipaddress
 
 import yunlink
 
+from .discovery import discover as _discover
 from .errors import ConnectionError, EntityNotFoundError
 from .transport import Transport
 
 DEFAULT_TCP_PORT = 9696
 DEFAULT_DISCOVERY_PORT = 9697
+DEFAULT_DISCOVERY_TIMEOUT = 5.0
 
 
 @dataclasses.dataclass(frozen=True)
@@ -80,6 +82,14 @@ class Client:
     def bridge_uid(self) -> str:
         """返回当前连接的远端 Bridge ``endpoint_uid``。"""
         return self._transport.endpoint_uid
+
+    @property
+    def bridge_address(self) -> str:
+        """返回当前 Bridge 的 TCP 地址，格式 ``host:port``。"""
+        host, port = self._transport.host, self._transport.port
+        if ":" in host and not host.startswith("["):
+            return f"[{host}]:{port}"
+        return f"{host}:{port}"
 
     def entities(self) -> list[EntityInfo]:
         """读取 Bridge 的实时设备目录，不 attach 设备，也不申请控制权限。"""
@@ -203,17 +213,25 @@ def discover(
     *,
     host: str = "255.255.255.255",
     port: int = DEFAULT_DISCOVERY_PORT,
-    timeout: float = 1.0,
+    timeout: float = DEFAULT_DISCOVERY_TIMEOUT,
     shared_secret: str = "yunlink-default-secret",
+    extra_hosts: list[str] | tuple[str, ...] = (),
 ) -> list[yunlink.Advertisement]:
-    return yunlink.discover(host=host, port=port, timeout=timeout, shared_secret=shared_secret)
+    """Listen for Bridge advertisements until ``timeout`` seconds, then return all unique results."""
+    return _discover(
+        host=host,
+        port=port,
+        timeout=timeout,
+        shared_secret=shared_secret,
+        extra_hosts=extra_hosts,
+    )
 
 
 def discover_and_connect(
     *,
     host: str = "255.255.255.255",
     port: int = DEFAULT_DISCOVERY_PORT,
-    timeout: float = 1.0,
+    timeout: float = DEFAULT_DISCOVERY_TIMEOUT,
     shared_secret: str = "yunlink-default-secret",
     auto_reconnect: bool = True,
 ) -> Client:

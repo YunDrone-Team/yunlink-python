@@ -52,6 +52,7 @@ def test_bridge_uid_is_remote_endpoint_without_attaching():
     try:
         with connect(f"127.0.0.1:{bridge.port}") as client:
             assert client.bridge_uid == "bridge.fake"
+            assert client.bridge_address == f"127.0.0.1:{bridge.port}"
             assert [item.uid for item in client.entities()] == ["uav1", "ugv1"]
             assert bridge.attach_requests == 0
     finally:

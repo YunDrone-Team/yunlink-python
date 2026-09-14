@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
-import os
 import time
 
-from _session import print_device_catalog
+from _session import open_bridge
 
-from yunlink_python import Waypoint, connect, discover_and_connect
+from yunlink_python import Waypoint
 
 
 def wait_for_odometry(uav, timeout: float = 5.0) -> None:
@@ -46,11 +45,8 @@ parser = argparse.ArgumentParser(description="Run independent waypoint routes on
 parser.add_argument("--height", type=float, default=0.8)
 args = parser.parse_args()
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
+with open_bridge() as client:
     # 这里是有意遍历全部 UAV，不是默认选择第一台；每个 UID 都会先显示在目录中。
-    print_device_catalog(client)
     uavs = [client.vehicle(item.uid) for item in client.vehicles()]
     if not uavs:
         raise SystemExit("没有发现 UAV")

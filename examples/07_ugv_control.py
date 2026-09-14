@@ -6,8 +6,10 @@ import argparse
 
 from _session import add_connection_arguments, open_bridge, select_ugv
 
+from yunlink_python import run_with_status
+
 parser = argparse.ArgumentParser(description="执行 UGV MovePoint、速度租约和 Hold")
-add_connection_arguments(parser, entity_env="YUNLINK_UGV")
+add_connection_arguments(parser, entity_key="YUNLINK_UGV")
 args = parser.parse_args()
 
 with open_bridge(args.address) as client:
@@ -15,7 +17,13 @@ with open_bridge(args.address) as client:
     ugv = select_ugv(client, args.entity)
     print("initial:", ugv.state)
     start = ugv.state.position
-    print("move_to:", ugv.move_to(start.x + 0.3, start.y, timeout=45))
-    print("velocity:", ugv.velocity(0.1, duration_s=0.5, timeout=15))
-    print("hold:", ugv.hold(timeout=15))
+    print(
+        "move_to:",
+        run_with_status("移动中", lambda: ugv.move_to(start.x + 0.3, start.y, timeout=45)),
+    )
+    print(
+        "velocity:",
+        run_with_status("速度控制中", lambda: ugv.velocity(0.1, duration_s=0.5, timeout=15)),
+    )
+    print("hold:", run_with_status("保持中", lambda: ugv.hold(timeout=15)))
     print("final:", ugv.state)

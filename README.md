@@ -17,21 +17,26 @@ SunrayV2
 
 ## 安装
 
-当前 SDK 版本为 `1.1.0`。由于 `yunlink` 依赖包含平台相关的原生运行库，
-请先安装与系统和 Python 版本匹配的 YunLink wheel，再安装本仓库的
-`yunlink-python` wheel。两个包目前都不发布到 PyPI。
+当前 SDK 版本为 `1.1.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
+[yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
+里匹配本机的预编译 wheel，不必编译 C++。
 
-SDK wheel 和源码包可从 GitHub Release 下载；本地开发也可以直接按下方命令从源码安装。
-
-开发环境可以从源码安装：
+按文件名选择：`cp310`/`cp311`/`cp312`/`cp313` 对应 Python 3.10 到 3.13；
+`macosx_*_arm64`、`macosx_*_x86_64`、`manylinux_*_x86_64`、`manylinux_*_aarch64`、
+`win_amd64` 对应系统和架构。
 
 ```bash
-git clone --recursive https://github.com/YunDrone-Team/yunlink.git
-python -m pip install ./yunlink/bindings/python
+python -m pip install \
+  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.1/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
 
 git clone https://github.com/YunDrone-Team/yunlink-python.git
-python -m pip install ./yunlink-python
+cd yunlink-python
+python -m pip install --no-deps -e .
 ```
+
+`--no-deps` 必须加，否则 pip 会去 PyPI 找不存在的 `yunlink`。不要使用 `uv run`，
+它同样会从包索引解析依赖。激活虚拟环境后，先复制 `examples/yunlink.env.example` 为 `examples/yunlink.env` 并填写目标，
+再运行 `python examples/01_discover.py`。不要每次 export 环境变量。
 
 支持 Python 3.10、3.11、3.12 和 3.13。
 
@@ -60,16 +65,18 @@ with connect("192.168.31.236:9696") as client:
     uav.land(timeout=30)
 ```
 
-搜索全部 Bridge：
+搜索全部 Bridge。地面站探测列表用 `endpoint_uid@ip:tcp_port` 区分一台可连接的 Bridge，
+设备再用 `endpoint_uid::entity_uid` 路由：
 
 ```python
-from yunlink_python import discover
+from yunlink_python import discover, discovery_id, print_discovered_bridges, vehicle_key
 
-for bridge in discover(timeout=1.5):
-    print(f"Bridge ID: {bridge.endpoint_uid}")
-    print(f"Address: {bridge.ip}:{bridge.tcp_port}")
-    for device in bridge.entities:
-        print(f"  Device ID: {device.entity_uid} ({device.kind})")
+bridges = discover(timeout=5)
+print_discovered_bridges(bridges)
+
+bridge = bridges[0]
+print(discovery_id(bridge.endpoint_uid, bridge.ip, bridge.tcp_port))
+print(vehicle_key(bridge.endpoint_uid, bridge.entities[0].entity_uid))
 ```
 
 如果局域网中有多个 Bridge，请先运行
@@ -151,18 +158,9 @@ result = handle.wait(timeout=30)
 
 ## 搜索与连接边界
 
-```python
-from yunlink_python import discover
-
-for bridge in discover(timeout=1.0):
-    print(bridge.endpoint_uid, bridge.ip, bridge.tcp_port, bridge.profiles)
-    for entity in bridge.entities:
-        print(entity.entity_uid, entity.kind, entity.attributes)
-```
-
-搜索返回 Bridge 的 `endpoint_uid`、Profiles、Entities 和设备属性。`connect()` 只建立
-Bridge Session；`client.entities()` 读取目录；`client.vehicle(entity_uid)` 或
-`client.entity(entity_uid)` 才会 attach 具体设备。
+`discover()` 返回 Bridge 广告，其中稳定选择键是 `endpoint_uid`，地面站探测候选 ID 是
+`endpoint_uid@ip:tcp_port`。`connect()` 只建立 Bridge Session；`client.entities()`
+读取目录；`client.vehicle(entity_uid)` 或 `client.entity(entity_uid)` 才会 attach 具体设备。
 
 `discover_and_connect()` 仍然可用，但只建议在确认网络中只有一个 Bridge 时使用。它不应作为多机网络的
 默认入口，因为它不会替用户决定要控制哪一个设备。

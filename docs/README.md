@@ -33,13 +33,14 @@ discover()
 ```
 
 `endpoint_uid` 是 Bridge ID，`entity_uid` 是 Bridge 下具体 UAV/UGV 的设备 ID。
-二者不能混用，也不能用 IP 地址代替设备 ID。
+地面站探测列表使用 `endpoint_uid@ip:tcp_port` 作为可连接候选，内部再用
+`endpoint_uid::entity_uid` 路由设备。二者不能混用，也不能用 IP 地址代替设备 ID。
 
 ## 操作边界速查
 
 | 阶段 | 典型调用 | 是否会操作设备 |
 | --- | --- | --- |
-| 搜索 | `discover()` | 否，只发送 discovery 查询 |
+| 搜索 | `discover()` / `print_discovered_bridges()` | 否，只发送 discovery 查询 |
 | 连接 Bridge | `connect(address)` | 否，只建立 Session 并协商 Profile |
 | 查看目录 | `client.entities()` | 否，只读取设备目录 |
 | 选择设备 | `client.vehicle(uid)` / `client.ugv(uid)` | 会 attach 并订阅状态 |

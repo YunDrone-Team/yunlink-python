@@ -6,11 +6,25 @@
 
 https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
 
+MATLAB 底层调用的是 Python SDK。连接对象仍然是 **YunLink Bridge**，不是直接连飞控。
+
+## 测试当天最短路径
+
+1. 本机安装 Python 3.10 / 3.11 / 3.12 / 3.13（不要用 MATLAB 自带 3.14）。
+2. 下载并解压上面的 zip。
+3. 双击解压目录里的 `.mltbx`，在 Toolbox 安装器点 **Install**。
+4. MATLAB 命令窗口运行 `yunlink_setup`，选 Python 可执行文件，再选 **Select bundle folder**（解压后的整个目录）。
+5. 运行 `pyenv`，确认 Version 是 3.10–3.13。
+6. 用 Python `examples/01_discover.py` 或地面站确认 Bridge 地址和 `entity_uid`。
+7. 先跑只读：`yunlink_connect` → `yunlink_vehicle` → `yunlink_state`。
+8. 现场允许后再跑起飞示例。
+
 ## 你需要准备什么
 
 - MATLAB R2026a 或更新版本
 - Windows 或 macOS 本机已安装 Python 3.10、3.11、3.12 或 3.13
 - 已经运行的 YunLink Bridge 地址，例如 `192.168.31.236:9696`
+- 目标无人机的 `entity_uid`，例如 `e-f97f96-2-1`（不要只用显示名 `uav1` 当稳定 ID）
 
 MATLAB 不会替你安装 Python。请先在系统终端确认版本和路径：
 
@@ -29,7 +43,7 @@ where python
 ```
 
 确认版本为 3.10、3.11、3.12 或 3.13，并记下 **Python 可执行文件路径**，例如
-`/opt/homebrew/bin/python3.12` 或
+`/opt/homebrew/bin/python3.13` 或
 `C:\Users\你的用户名\AppData\Local\Programs\Python\Python312\python.exe`。
 向导中选择这个可执行文件，不是选择 Python 安装目录。
 
@@ -50,7 +64,7 @@ yunlink_setup
 ```
 
 6. 选择刚才确认过的 Python 可执行文件。
-7. 选择 **Select bundle folder**，并选中刚才解压出来的目录。
+7. 弹出 “How do you want to provide the platform YunLink binding?” 时，选 **Select bundle folder**，并选中刚才解压出来的目录。不要选 Skip。
 
 向导会自动安装匹配当前系统和 Python 版本的通信库。它不会连接无人机，也不会发送飞行指令。
 
@@ -58,6 +72,8 @@ yunlink_setup
 
 ```matlab
 pyenv
+py.importlib.import_module("yunlink")
+py.importlib.import_module("yunlink_python")
 ```
 
 确认 `Version` 是 3.10、3.11、3.12 或 3.13，`Executable` 与终端中检查的路径一致。
@@ -68,19 +84,36 @@ pyenv
 > 如果双击没有唤起 MATLAB，也可以在 MATLAB 命令窗口执行
 > `matlab.addons.install("/完整路径/yunlink-sunray-matlab-1.1.0.mltbx")`。
 
+## Bridge 和设备 ID
+
+MATLAB 没有独立的搜索函数。地址和设备 ID 请先用 Python 示例或地面站确认：
+
+```text
+探测候选 ID  f97f96@192.168.31.236:9696   地面站探测列表用，MATLAB 不用它去连接
+Bridge 地址  192.168.31.236:9696          传给 yunlink_connect
+Bridge ID    f97f96                      只用来区分多台 Bridge
+entity_uid   e-f97f96-2-1                传给 yunlink_vehicle
+显示名       uav1                        仅供阅读，多机时不要当唯一 ID
+```
+
+`yunlink_connect` 只连接 Bridge，不会 attach 无人机。
+`yunlink_vehicle(client, entity_uid)` 才会 attach 并订阅状态。
+后面的 `yunlink_takeoff` 才会申请控制权并发送动作。
+
 ## 使用
 
-把地址和飞机 ID 换成你的实际值：
+把地址和 `entity_uid` 换成你刚才确认的值：
 
 ```matlab
 client = yunlink_connect("192.168.31.236:9696");
-uav = yunlink_vehicle(client, "uav1");
+uav = yunlink_vehicle(client, "e-f97f96-2-1");
 
 state = yunlink_state(uav);
 disp(state.position);
 disp(state.batteryPercent);
 disp(state.armed);
 disp(state.landed);
+disp(state.fresh);
 
 yunlink_takeoff(uav, 1.5);
 yunlink_position_control(uav, 2.0, 0.0, 1.5);
@@ -90,26 +123,37 @@ yunlink_land(uav);
 yunlink_close(client);
 ```
 
-只读示例：`examples/read_state_demo.m`。
+只读示例：`examples/read_state_demo.m`。先改文件里的地址和设备 ID，再运行。
 会发送飞行指令的示例：`examples/basic_flight_demo.m`。
 
 `state.armed` 和 `state.disarmed` 只表示状态，没有解锁/上锁控制函数。
+`state.fresh` 为 false 时不要起飞，先检查 Bridge 和设备是否在发布状态。
+
+## 建议测试顺序
+
+1. `yunlink_setup` 和 `pyenv` 检查。
+2. `yunlink_connect` + `yunlink_vehicle` + `yunlink_state`（只读，不飞）。
+3. 确认 `state.connected`、`state.fresh`、位置和电池在更新。
+4. 现场允许后：`yunlink_takeoff` → `yunlink_hover` → `yunlink_land`。
+5. 需要再测：`yunlink_position_control`、`yunlink_velocity_control`、`yunlink_move_to`、`yunlink_waypoint`、`yunlink_cancel`。
 
 ## 常用函数
 
 | 函数 | 作用 |
 | --- | --- |
-| `yunlink_setup` | 首次配置 |
-| `yunlink_connect` | 连接 Bridge |
-| `yunlink_vehicle` | 选择无人机 |
+| `yunlink_setup` | 首次配置 Python 和通信库 |
+| `yunlink_connect` | 连接 Bridge，不 attach 设备 |
+| `yunlink_vehicle` | 按 entity_uid 选择并 attach 无人机 |
 | `yunlink_state` | 读取状态 |
 | `yunlink_takeoff` | 起飞 |
+| `yunlink_move_to` | Planner 单目标移动 |
+| `yunlink_waypoint` | Planner 航点 |
 | `yunlink_position_control` | 直接位置控制 |
 | `yunlink_velocity_control` | 速度控制 |
 | `yunlink_hover` | 悬停 |
 | `yunlink_land` | 降落 |
 | `yunlink_cancel` | 取消当前动作 |
-| `yunlink_monitor` | 监视状态 |
+| `yunlink_monitor` | 监视状态一段时间 |
 | `yunlink_close` | 关闭连接 |
 | `yunlink_update` | 更新依赖 |
 
@@ -137,4 +181,6 @@ yunlink_update
 - `PythonAlreadyLoaded`：重启 MATLAB 后再配置。
 - 无法导入 `yunlink`：确认选择的是解压后的整个 bundle 目录，且 Python 版本是 3.10、3.11、3.12 或 3.13。
 - 当前 macOS 包支持 Apple Silicon；Linux 支持 x86_64；Windows 支持 64 位。
-- 连接失败：检查 Bridge 是否已启动，以及地址、端口、飞机 ID 是否正确。
+- 连接失败：检查 Bridge 是否已启动，以及地址、端口、`entity_uid` 是否正确。
+- 搜不到设备：MATLAB 本身不搜索；先用 Python `examples/01_discover.py` 拿到 `ip:port` 和 `entity_uid`。
+- `uav1` 连错机：多设备时改用完整 `entity_uid`，例如 `e-f97f96-2-1`。

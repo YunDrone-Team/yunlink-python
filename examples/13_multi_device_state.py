@@ -3,32 +3,49 @@
 from __future__ import annotations
 
 import argparse
-import os
 import time
 
-from _session import print_device_catalog
+from _session import open_bridge
 
-from yunlink_python import connect, discover_and_connect
+from yunlink_python.display import format_table
 
 parser = argparse.ArgumentParser(description="Watch every discovered device")
 parser.add_argument("--seconds", type=float, default=30.0)
 args = parser.parse_args()
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
+with open_bridge() as client:
     # 这是只读监控：先打印目录，再按每个明确 UID attach 并订阅状态。
-    print_device_catalog(client)
     devices = [client.entity(item.uid) for item in client.entities()]
     if not devices:
         raise SystemExit("没有发现设备")
     started = time.monotonic()
     while time.monotonic() - started < args.seconds:
         print("---")
+        rows = []
         for device in devices:
             state = device.state
-            print(
-                f"{device.uid:24} connected={state.connected} fresh={state.is_fresh()} "
-                f"pos=({state.position.x:.2f}, {state.position.y:.2f}, {state.position.z:.2f})"
+            position = state.position
+            rows.append(
+                {
+                    "uid": device.uid,
+                    "connected": "yes" if state.connected else "no",
+                    "fresh": "yes" if state.is_fresh() else "no",
+                    "x": f"{position.x:.2f}",
+                    "y": f"{position.y:.2f}",
+                    "z": f"{position.z:.2f}",
+                }
             )
+        print(
+            format_table(
+                rows,
+                (
+                    ("uid", "entity_uid"),
+                    ("connected", "connected"),
+                    ("fresh", "fresh"),
+                    ("x", "x"),
+                    ("y", "y"),
+                    ("z", "z"),
+                ),
+            )
+        )
         time.sleep(1.0)

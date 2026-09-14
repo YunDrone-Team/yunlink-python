@@ -8,23 +8,26 @@
 
 ## 运行前准备
 
-先安装 YunLink Python binding 和本 SDK：
+先安装预编译的 YunLink Python binding，再安装本 SDK。binding 从
+[yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
+下载，不必编译 C++：
 
 ```bash
-python -m pip install ./yunlink/bindings/python
-python -m pip install ./yunlink-python
+python -m pip install /path/to/yunlink-2.0.1-*.whl
+python -m pip install --no-deps -e .
 ```
 
-或者使用已经安装的 `yunlink-python` wheel。示例默认读取以下环境变量：
+`--no-deps` 必须加，因为 `yunlink` 不在 PyPI。不要使用 `uv run`。
+
+目标机器写在 `examples/yunlink.env`，所有示例共用这一份，不必每次 export：
 
 ```bash
-export YUNLINK_ADDRESS=192.168.31.236:9696
-export YUNLINK_VEHICLE=<entity_uid>
-export YUNLINK_UGV=<entity_uid>
+cp examples/yunlink.env.example examples/yunlink.env
 ```
 
-不设置 `YUNLINK_ADDRESS` 时，搜索示例会使用 YunLink UDP discovery。网络不允许广播时，请直接设置地址。
-设备名称可以写目录返回的显示名，但推荐记录并使用完整的 `entity_uid`。
+打开该文件，填入 `YUNLINK_ADDRESS` 和确认过的 `YUNLINK_UAV` / `YUNLINK_UGV`。
+地址留空时，连接类示例会搜索唯一 Bridge；网络不允许广播或多台 Bridge 时必须填写地址。
+`--address` / `--entity` 只用于临时覆盖。推荐使用完整 `entity_uid`，不要用列表序号。
 
 **安全提醒：** `04_flight_basics.py`、`05_waypoints.py`、`06_cancel_action.py` 和 `07_ugv_control.py`
 会发送真实控制动作。第一次运行请只连接仿真实体，确认周围没有人员和障碍物，并准备好随时停止仿真。
@@ -37,7 +40,10 @@ export YUNLINK_UGV=<entity_uid>
 python examples/01_discover.py
 ```
 
-它只发送 discovery 查询，不连接、不 attach、不控制设备。输出包含 Bridge 地址、Profile 和实体目录。
+它只发送 discovery 查询，不连接、不 attach、不控制设备。默认监听 5 秒，终端会显示 loading，
+听满后再统一打印。可用 `--timeout 10` 或 `YUNLINK_DISCOVER_TIMEOUT` 加长。
+输出按表格打印地面站同款探测候选 ID（`endpoint_uid@ip:tcp_port`）、Bridge ID，
+以及每台设备的 `entity_uid` 和 GCS 键。
 
 ### 2. 连接 Bridge 并打印设备目录
 
@@ -63,9 +69,9 @@ python examples/10_discover_select_connect.py
 python examples/10_discover_select_connect.py --id f97f96 --entity e-f97f96-2-1
 ```
 
-也可以设置 `YUNLINK_BRIDGE_ID` 和 `YUNLINK_ENTITY_ID`。`endpoint_uid` 选择 Bridge，
-`entity_uid` 选择 Bridge 下的具体 UAV/UGV；两级 ID 都会完整打印。缺少 ID 时脚本会退出，
-不会猜测目标或连接列表中的第一台设备。搜索和目录阶段不会控制任何设备。
+也可以在 `examples/yunlink.env` 填写 `YUNLINK_BRIDGE_ID` 和 `YUNLINK_UAV`。
+`endpoint_uid` 选择 Bridge，`entity_uid` 选择 Bridge 下的具体 UAV/UGV；两级 ID 都会完整打印。
+缺少 ID 时脚本会退出，不会猜测目标或连接列表中的第一台设备。搜索和目录阶段不会控制任何设备。
 
 搜索结果分两级：`endpoint_uid` 是 Bridge ID，`entity_uid` 是 Bridge 下面具体 UAV/UGV 的 ID。
 不要把 IP 地址当作设备 ID；同一局域网可能有多台 Bridge，脚本会先列出全部结果，再让你选择。
@@ -73,7 +79,7 @@ python examples/10_discover_select_connect.py --id f97f96 --entity e-f97f96-2-1
 ### 3. 持续读取状态
 
 ```bash
-python examples/03_watch_state.py --address 192.168.31.236:9696 --entity <entity_uid> --seconds 10
+python examples/03_watch_state.py --seconds 10
 ```
 
 状态快照包含连接状态、位置、速度、解锁/着地状态、电池、飞控状态和 Planner 状态。也可以注册回调，
@@ -85,7 +91,7 @@ SDK 不提供 `arm()` 或 `disarm()` 控制调用。
 ### 4. 起飞、前进、后退、左右/上下移动、目标移动、悬停、降落
 
 ```bash
-python examples/04_flight_basics.py --address 192.168.31.236:9696 --entity <entity_uid>
+python examples/04_flight_basics.py
 ```
 
 流程是：起飞到安全高度，前进，后退，左移，右移，上移，下移，使用 Planner 移动到目标位置，悬停，最后降落。
@@ -94,7 +100,7 @@ python examples/04_flight_basics.py --address 192.168.31.236:9696 --entity <enti
 ### 5. 多航点任务
 
 ```bash
-python examples/05_waypoints.py --address 192.168.31.236:9696 --entity <entity_uid>
+python examples/05_waypoints.py
 ```
 
 `Waypoint` 使用当前 odometry frame，任务会等待 Planner 完成全部航点。脚本同时订阅状态，打印当前航点、距离、
@@ -103,7 +109,7 @@ python examples/05_waypoints.py --address 192.168.31.236:9696 --entity <entity_u
 ### 6. 非阻塞 Action 和取消
 
 ```bash
-python examples/06_cancel_action.py --address 192.168.31.236:9696 --entity <entity_uid> --after 2
+python examples/06_cancel_action.py --after 2
 ```
 
 传入 `wait=False` 会得到 `ActionHandle`。可以查询 `phase`、`progress` 和 `detail`，也可以在任务执行中调用
@@ -112,7 +118,7 @@ python examples/06_cancel_action.py --address 192.168.31.236:9696 --entity <enti
 ### 7. 无人车
 
 ```bash
-python examples/07_ugv_control.py --address 192.168.31.236:9696 --entity <entity_uid>
+python examples/07_ugv_control.py
 ```
 
 在现有协议支持范围内，示例演示无人车状态、MovePoint、速度租约和 Hold。它不会调用 UAV 的飞行接口。
@@ -143,6 +149,17 @@ python examples/13_multi_device_state.py --seconds 60
 
 只读取状态，不发送起飞、移动或降落动作，适合先确认目录和遥测链路。
 
+### 7.4 只读全量观测（可与地面站同时使用）
+
+```bash
+python examples/14_observe_live.py
+python examples/14_observe_live.py --entity <entity_uid>
+```
+
+只 attach 和订阅遥测，不申请控制权，不发送任何动作。默认观测目录里全部 UAV/UGV。
+终端进入备用屏幕整页覆盖刷新（不会在滚动区里堆旧输出），中文表格显示有内容的字段，并统计刷新次数和遥测包数。
+地面站可以同时控制同一架机。`--seconds 0`（默认）一直跑，Ctrl-C 退出。
+
 ### 8. 异常、超时和断线
 
 ```bash
@@ -162,7 +179,7 @@ python examples/08_errors.py
 ```python
 from yunlink_python import Waypoint, connect, discover, discover_and_connect
 
-bridges = discover(timeout=1.0)
+bridges = discover(timeout=5)
 with connect("192.168.31.236:9696") as client:
     # 这里必须填入前面目录中确认过的 UAV entity_uid。
     uav = client.vehicle("<entity_uid>")

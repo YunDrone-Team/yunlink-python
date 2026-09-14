@@ -6,7 +6,7 @@ import argparse
 
 from _session import add_connection_arguments, open_bridge, select_uav
 
-from yunlink_python import Waypoint
+from yunlink_python import Waypoint, run_with_status
 
 parser = argparse.ArgumentParser(description="执行 UAV 多航点 Planner 任务")
 add_connection_arguments(parser)
@@ -17,7 +17,7 @@ with open_bridge(args.address) as client:
     vehicle = select_uav(client, args.entity)
     height = 1.0
     try:
-        vehicle.takeoff(height, timeout=30)
+        run_with_status("起飞中", lambda: vehicle.takeoff(height, timeout=30))
 
         def show(state) -> None:
             planner = state.planner
@@ -43,4 +43,4 @@ with open_bridge(args.address) as client:
             unsubscribe()
     finally:
         if not vehicle.state.landed:
-            vehicle.land(timeout=30)
+            run_with_status("降落中", lambda: vehicle.land(timeout=30))

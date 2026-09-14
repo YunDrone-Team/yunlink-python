@@ -4,12 +4,9 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
-import os
 import time
 
-from _session import print_device_catalog
-
-from yunlink_python import connect, discover_and_connect
+from _session import open_bridge
 
 
 def wait_until_ready(device, timeout: float = 5.0) -> None:
@@ -78,11 +75,8 @@ parser.add_argument("--uav-offset", type=float, default=0.2)
 parser.add_argument("--ugv-offset", type=float, default=0.2)
 args = parser.parse_args()
 
-address = os.getenv("YUNLINK_ADDRESS")
-client = connect(address) if address else discover_and_connect(timeout=1.5)
-with client:
+with open_bridge() as client:
     # 多设备示例会明确打印目录，并按目录中的每个 entity_uid 独立 attach。
-    print_device_catalog(client)
     uavs = [client.vehicle(item.uid) for item in client.vehicles()]
     ugvs = [client.ugv(item.uid) for item in client.ugvs()]
     if not uavs and not ugvs:

@@ -10,6 +10,14 @@ from .client import (
     discover,
     discover_and_connect,
 )
+from .display import (
+    discovery_id,
+    print_client_catalog,
+    print_discovered_bridges,
+    print_entity_catalog,
+    run_with_status,
+    vehicle_key,
+)
 from .errors import (
     ActionFailedError,
     AuthorityError,
@@ -50,6 +58,12 @@ __all__ = [
     "connect_discovered",
     "discover",
     "discover_and_connect",
+    "discovery_id",
+    "print_client_catalog",
+    "print_discovered_bridges",
+    "print_entity_catalog",
+    "run_with_status",
+    "vehicle_key",
 ]
 
 __version__ = "1.1.0"
