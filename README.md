@@ -15,6 +15,10 @@ YunLink ROS Bridge   ROS 与 YunLink 的边界
 SunrayV2
 ```
 
+## 获取方式
+
+Python 从本仓库安装。MATLAB 从本仓库的 GitHub Release 下载用户包，不必克隆源码。
+
 ## 安装
 
 当前 SDK 版本为 `1.1.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
@@ -178,11 +182,11 @@ result = handle.wait(timeout=30)
 
 ## MATLAB
 
-MATLAB 用户请下载发布包，不要克隆本仓库：
+MATLAB 用户从 GitHub Release 下载打包好的 Toolbox，不必克隆本仓库：
 
 https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
 
-安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
+本仓库的 Release 仅提供该 MATLAB 用户包。安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
 [`matlab/developer/README.md`](matlab/developer/README.md)。
 
 ## API 边界

@@ -1,6 +1,6 @@
 # YunLink MATLAB 使用说明
 
-通过 MATLAB 控制 Sunray 无人机时，下载发布包即可，不必克隆代码仓库。
+通过 MATLAB 控制 Sunray 无人机时，从本仓库的 GitHub Release 下载用户包即可。不必克隆源码。本仓库的 Release 仅用于 MATLAB 用户包。
 
 发布包：
 

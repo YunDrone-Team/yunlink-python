@@ -64,14 +64,14 @@ bash matlab/developer/package_release.sh
 
 不要把 `dist/`、wheel 或 zip 提交进 git。
 
-创建 GitHub Release：
+GitHub Actions 工作流 `MATLAB Release` 会在 `main` 上的 MATLAB/SDK 变更后自动打包 `.mltbx` 和发布 zip，并更新 `matlab-1.1.0` Release。本仓库的 GitHub Release 只用于 MATLAB 用户包。
+
+本地创建或覆盖 Release：
 
 ```bash
-gh release create matlab-1.1.0 \
+gh release upload matlab-1.1.0 \
   dist/yunlink-sunray-matlab-1.1.0-bundle.zip \
-  --title "YunLink Sunray MATLAB 1.1.0" \
-  --notes-file matlab/developer/release_notes.md \
-  --latest=false
+  --clobber
 ```
 
 ## Toolbox 白名单

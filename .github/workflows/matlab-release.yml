@@ -1,0 +1,98 @@
+name: MATLAB Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "matlab/**"
+      - "src/yunlink_python/**"
+      - "pyproject.toml"
+      - ".github/workflows/matlab-release.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: matlab-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Package MATLAB toolbox
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Build SDK wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel
+
+      - name: Download YunLink binding wheels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist/bindings
+          gh release download v2.0.1 \
+            --repo YunDrone-Team/yunlink \
+            --dir dist/bindings \
+            --pattern 'yunlink-2.0.1-*.whl'
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2026a
+
+      - name: Package toolbox and bundle
+        uses: matlab-actions/run-command@v3
+        with:
+          command: >
+            addpath('matlab');
+            addpath('matlab/developer');
+            build_release_bundle(
+              fullfile(pwd, 'dist', 'yunlink-sunray-matlab-1.1.0-bundle'),
+              fullfile(pwd, 'dist', 'bindings'))
+
+      - name: Zip release bundle
+        run: |
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          root = Path("dist/yunlink-sunray-matlab-1.1.0-bundle")
+          zip_path = Path("dist/yunlink-sunray-matlab-1.1.0-bundle.zip")
+          with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as archive:
+              for path in sorted(root.rglob("*")):
+                  if path.is_file():
+                      archive.write(path, path.relative_to("dist"))
+          print(zip_path, zip_path.stat().st_size)
+          PY
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yunlink-sunray-matlab-1.1.0-bundle
+          path: dist/yunlink-sunray-matlab-1.1.0-bundle.zip
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view matlab-1.1.0 >/dev/null 2>&1; then
+            gh release upload matlab-1.1.0 \
+              dist/yunlink-sunray-matlab-1.1.0-bundle.zip \
+              --clobber
+          else
+            gh release create matlab-1.1.0 \
+              dist/yunlink-sunray-matlab-1.1.0-bundle.zip \
+              --title "YunLink MATLAB 1.1.0" \
+              --notes-file matlab/developer/release_notes.md \
+              --latest
+          fi

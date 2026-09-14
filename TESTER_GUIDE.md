@@ -10,7 +10,7 @@
 建议使用 Python 3.10、3.11、3.12 或 3.13 的虚拟环境。当前版本不从 PyPI 安装。
 
 1. 打开 [yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)，下载匹配本机系统和 Python 版本的 `yunlink-2.0.1-*.whl`。不必编译 YunLink。
-2. 克隆本仓库，用 `--no-deps` 安装 SDK。不要去 Release 页找 `yunlink_python-1.1.0` wheel，那个附件目前没有。
+2. 克隆本仓库，用 `--no-deps` 安装 SDK。本仓库的 GitHub Release 只提供 MATLAB 用户包。
 
 ```bash
 python -m pip install /path/to/yunlink-2.0.1-*.whl

@@ -2,12 +2,18 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
-matlab_bin="${MATLAB:-/Applications/MATLAB_R2026a.app/bin/matlab}"
+if [[ -n "${MATLAB:-}" ]]; then
+  matlab_bin="$MATLAB"
+elif command -v matlab >/dev/null 2>&1; then
+  matlab_bin="$(command -v matlab)"
+else
+  matlab_bin="/Applications/MATLAB_R2026a.app/bin/matlab"
+fi
 bundle_dir="$root/dist/yunlink-sunray-matlab-1.1.0-bundle"
 zip_file="$root/dist/yunlink-sunray-matlab-1.1.0-bundle.zip"
 binding_dir="$root/dist/bindings"
 sdk_wheel="$root/dist/yunlink_python-1.1.0-py3-none-any.whl"
-python_bin="${PYTHON:-python3.12}"
+python_bin="${PYTHON:-python3}"
 
 cd "$root"
 mkdir -p "$root/dist"
