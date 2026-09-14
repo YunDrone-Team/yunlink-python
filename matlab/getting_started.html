@@ -33,7 +33,7 @@ where python</pre>
   <h2>3. 配置一次</h2>
   <pre>yunlink_setup</pre>
   <p>选择刚才确认过的 Python 可执行文件，再选择 <strong>Select bundle folder</strong>，选中解压后的整个目录。不要选 Skip。向导不会连接无人机。</p>
-  <p>配置后可运行 <code>pyenv</code>，确认 MATLAB 的 <code>Version</code> 和 <code>Executable</code> 与终端检查结果一致。</p>
+  <p>配置后可运行 <code>pyenv</code>，确认 MATLAB 的 <code>Version</code> 和 <code>Executable</code> 与终端检查结果一致。然后运行 <code>yunlink_examples</code>，MATLAB 会打开示例目录；先改地址和 <code>entity_uid</code>，再运行 <code>read_state_demo.m</code>。</p>
 
   <h2>4. 连接并读取状态</h2>
   <p>地址用 <code>ip:port</code>。第二个参数用 <code>entity_uid</code>，不要只用显示名 <code>uav1</code>。</p>

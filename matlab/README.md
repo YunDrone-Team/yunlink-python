@@ -15,9 +15,9 @@ MATLAB 底层调用的是 Python SDK。连接对象仍然是 **YunLink Bridge**�
 3. 双击解压目录里的 `.mltbx`，在 Toolbox 安装器点 **Install**。
 4. MATLAB 命令窗口运行 `yunlink_setup`，选 Python 可执行文件，再选 **Select bundle folder**（解压后的整个目录）。
 5. 运行 `pyenv`，确认 Version 是 3.10–3.13。
-6. 用 Python `examples/01_discover.py` 或地面站确认 Bridge 地址和 `entity_uid`。
-7. 先跑只读：`yunlink_connect` → `yunlink_vehicle` → `yunlink_state`。
-8. 现场允许后再跑起飞示例。
+6. 安装结束时选 **Open examples**，或之后运行 `yunlink_examples`。MATLAB 会切到示例目录并打开 `read_state_demo.m`。
+7. 用 Python `examples/01_discover.py` 或地面站确认 Bridge 地址和 `entity_uid`，改示例里的这两个值。
+8. 先跑只读 `read_state_demo.m`。现场允许后再跑 `basic_flight_demo.m`。
 
 ## 你需要准备什么
 
@@ -142,6 +142,7 @@ yunlink_close(client);
 | 函数 | 作用 |
 | --- | --- |
 | `yunlink_setup` | 首次配置 Python 和通信库 |
+| `yunlink_examples` | 打开 MATLAB 示例目录，可直接看到并运行脚本 |
 | `yunlink_connect` | 连接 Bridge，不 attach 设备 |
 | `yunlink_vehicle` | 按 entity_uid 选择并 attach 无人机 |
 | `yunlink_state` | 读取状态 |

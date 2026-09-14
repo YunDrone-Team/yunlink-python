@@ -54,6 +54,26 @@ install_package(pythonExecutable, sdkSource, 'yunlink-python SDK');
 addpath(fileparts(mfilename('fullpath')));
 result = verify_installation(pythonExecutable, sdkSource, bindingSource);
 fprintf('YunLink MATLAB setup complete with %s\n', char(pythonExecutable));
+if nargin == 0
+    offer_examples();
+end
+end
+
+function offer_examples()
+if ~usejava('desktop') || ~usejava('awt')
+    fprintf('Run yunlink_examples after setup to open the sample scripts.\n');
+    return
+end
+choice = questdlg(sprintf([ ...
+    'Setup finished.\n\n', ...
+    'Open the MATLAB example folder now?\n', ...
+    'You can edit and run read_state_demo.m from Current Folder.']), ...
+    'YunLink examples', 'Open examples', 'Later', 'Open examples');
+if strcmp(choice, 'Open examples')
+    yunlink_examples();
+else
+    fprintf('Later, run yunlink_examples to open the sample scripts.\n');
+end
 end
 
 function [pythonExecutable, sdkSource, bindingSource] = select_sources()
