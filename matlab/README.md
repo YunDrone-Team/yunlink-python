@@ -8,7 +8,7 @@ https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/y
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 
-发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
+发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`ex00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
 
 1. `yunlink-2.0.1-*.whl`：按操作系统和 Python 版本提供的原生绑定
 2. `yunlink_python-1.1.0-*.whl`：MATLAB 调用的 SDK
@@ -67,15 +67,15 @@ matlab.addons.install("完整路径/yunlink-sunray-matlab-1.1.0.mltbx")
 yunlink_examples
 ```
 
-当前文件夹会切到示例目录。先打开并运行 `00_setup.m`：
+当前文件夹会切到示例目录。先打开并运行 `ex00_setup.m`：
 
 1. 填写 `pythonExe`（上表中的 Python 3.10–3.13 可执行文件）。
 2. 填写 `bundleDir`（解压后的发布包目录）。若留空，脚本会在用户下载目录中查找。
 3. 点击编辑器中的 **Run**。
 
-`00_setup.m` 会安装匹配当前系统和 Python 版本的通信库，然后打开 `01_discover.m`。这一步不连接无人机。
+`ex00_setup.m` 会安装匹配当前系统和 Python 版本的通信库，然后打开 `ex01_discover.m`。这一步不连接无人机。
 
-在编辑器中打开 `.m` 文件后，先保存，再点绿色 **Run**（或 F5）。输出在下方 Command Window。也可以在 Command Window 直接输入脚本名，例如 `01_discover`。需要停止时用红色 **Stop** 或 Ctrl-C。详细对应关系见 [`examples/README.md`](examples/README.md)。
+在编辑器中打开 `.m` 文件后，先保存，再点绿色 **Run**（或 F5）。输出在下方 Command Window。也可以在 Command Window 直接输入脚本名，例如 `ex01_discover`。需要停止时用红色 **Stop** 或 Ctrl-C。详细对应关系见 [`examples/README.md`](examples/README.md)。
 
 配置完成后可用下面命令检查：
 
@@ -83,7 +83,7 @@ yunlink_examples
 pyenv
 ```
 
-`Version` 应为 3.10、3.11、3.12 或 3.13。若 MATLAB 已经加载了其他 Python，请关闭 MATLAB 后重新打开，再运行 `00_setup.m`。
+`Version` 应为 3.10、3.11、3.12 或 3.13。若 MATLAB 已经加载了其他 Python，请关闭 MATLAB 后重新打开，再运行 `ex00_setup.m`。
 
 ## 连接模型
 
@@ -122,18 +122,18 @@ yunlink_land(uav);
 yunlink_close(client);
 ```
 
-示例脚本按编号排列，说明见 [`examples/README.md`](examples/README.md)。运行 `yunlink_examples` 后，在 Current Folder 中按 `00_setup.m` → `01_discover.m` → `02_connect_and_inspect.m` 的顺序执行。控制类示例从 `04_flight_basics.m` 开始。
+示例脚本按编号排列，说明见 [`examples/README.md`](examples/README.md)。运行 `yunlink_examples` 后，在 Current Folder 中按 `ex00_setup.m` → `ex01_discover.m` → `ex02_connect_and_inspect.m` 的顺序执行。控制类示例从 `ex04_flight_basics.m` 开始。
 
 运行示例前先修改其中的地址和 `entity_uid`。`state.armed` / `state.disarmed` 只表示状态，没有解锁或上锁函数。`state.fresh` 为 false 时不要起飞。
 
-推荐顺序：完成 `00_setup.m` → 只读 `read_state_demo.m` → 确认状态新鲜后再运行控制示例。
+推荐顺序：完成 `ex00_setup.m` → 只读 `read_state_demo.m` → 确认状态新鲜后再运行控制示例。
 
 ## 常用函数
 
 | 函数 | 作用 |
 | --- | --- |
 | `yunlink_examples` | 打开示例目录 |
-| `yunlink_setup` | 配置 Python 和通信库；一般通过 `00_setup.m` 调用 |
+| `yunlink_setup` | 配置 Python 和通信库；一般通过 `ex00_setup.m` 调用 |
 | `yunlink_discover` | 搜索局域网中的 Bridge |
 | `yunlink_connect` | 连接 Bridge，不 attach 设备 |
 | `yunlink_entities` | 读取设备目录，不 attach |
@@ -161,13 +161,13 @@ yunlink_emergency_lock(uav, true);
 
 ## 更新
 
-下载新的发布包，重新安装 `.mltbx`，然后再次运行 `00_setup.m`（或 `yunlink_update`），并选择新的解压目录。
+下载新的发布包，重新安装 `.mltbx`，然后再次运行 `ex00_setup.m`（或 `yunlink_update`），并选择新的解压目录。
 
 ## 常见问题
 
 - **Add-On Explorer 搜不到：** 本工具箱不在 MathWorks 商店中。请双击本地 `.mltbx`。
 - **报错 cp314 / Python 3.14：** 当前选中了不支持的 Python。请改为 3.10–3.13 的可执行文件，并在必要时重启 MATLAB。
-- **PythonAlreadyLoaded：** MATLAB 已加载其他 Python。关闭 MATLAB 后重开，再运行 `00_setup.m`。
+- **PythonAlreadyLoaded：** MATLAB 已加载其他 Python。关闭 MATLAB 后重开，再运行 `ex00_setup.m`。
 - **无法导入 yunlink：** 确认 `bundleDir` 指向解压后的整个发布包目录，且 Python 版本为 3.10–3.13。
 - **连接失败：** 检查 Bridge 是否已启动，以及地址、端口、`entity_uid` 是否与现场一致。
 - **平台：** Windows 64 位、macOS Apple Silicon、Linux x86_64。

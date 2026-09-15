@@ -17,8 +17,8 @@
 
 %% 配置一次
 %   yunlink_examples
-% 打开 00_setup.m，填写 pythonExe 和 bundleDir，点击 Run。
-% 然后按 01_discover.m、02_connect_and_inspect.m、03_watch_state.m 的顺序运行。
+% 打开 ex00_setup.m，填写 pythonExe 和 bundleDir，点击 Run。
+% 然后按 ex01_discover.m、ex02_connect_and_inspect.m、ex03_watch_state.m 的顺序运行。
 % 完整列表见 examples/README.md。
 
 %% 连接并读取状态

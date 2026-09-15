@@ -1,5 +1,5 @@
 % 00_SETUP  填写 pythonExe 和 bundleDir，然后点击 Run。
-% 下一步运行本目录的 01_discover.m。
+% 下一步运行本目录的 ex01_discover.m。
 
 % pythonExe：Python 3.10–3.13 的可执行文件，不要用 MATLAB 自带的 3.14。
 %   Windows:  "C:\Users\<用户>\AppData\Local\Programs\Python\Python313\python.exe"
@@ -22,12 +22,12 @@ end
 if ~isfile(char(pythonExe))
     error('yunlink:MissingPython', ...
         ['未找到 Python 可执行文件。\n', ...
-         '请在 00_setup.m 开头把 pythonExe 设为 Python 3.10、3.11、3.12 或 3.13。']);
+         '请在 ex00_setup.m 开头把 pythonExe 设为 Python 3.10、3.11、3.12 或 3.13。']);
 end
 if ~isfolder(bundleDir)
     error('yunlink:MissingBundle', ...
         ['未找到发布包目录。\n', ...
-         '请在 00_setup.m 开头把 bundleDir 设为解压后的 zip 目录。']);
+         '请在 ex00_setup.m 开头把 bundleDir 设为解压后的 zip 目录。']);
 end
 
 fprintf('Python: %s\nBundle: %s\n', pythonExe, bundleDir);
@@ -37,10 +37,10 @@ cd(thisDir);
 if usejava('desktop')
     filebrowser;
     commandwindow;
-    edit(fullfile(thisDir, '01_discover.m'));
+    edit(fullfile(thisDir, 'ex01_discover.m'));
 end
-fprintf(['\n配置完成。接下来运行 01_discover.m，然后运行 02_connect_and_inspect.m。\n', ...
-         '飞行示例从 04_flight_basics.m 开始。说明见本目录 README.md。\n']);
+fprintf(['\n配置完成。接下来运行 ex01_discover.m，然后运行 ex02_connect_and_inspect.m。\n', ...
+         '飞行示例从 ex04_flight_basics.m 开始。说明见本目录 README.md。\n']);
 
 function pythonExe = local_find_python()
 homeDir = getenv('USERPROFILE');
@@ -75,7 +75,7 @@ for index = 1:numel(candidates)
 end
 error('yunlink:MissingPython', ...
     ['未找到 Python 3.10–3.13。\n', ...
-     '请在 00_setup.m 开头填写 pythonExe。']);
+     '请在 ex00_setup.m 开头填写 pythonExe。']);
 end
 
 function bundleDir = local_find_bundle()
@@ -108,6 +108,6 @@ for rootIndex = 1:numel(roots)
 end
 if strlength(bundleDir) == 0
     error('yunlink:MissingBundle', ...
-        '未找到解压后的发布包目录。请在 00_setup.m 开头填写 bundleDir。');
+        '未找到解压后的发布包目录。请在 ex00_setup.m 开头填写 bundleDir。');
 end
 end

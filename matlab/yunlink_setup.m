@@ -10,7 +10,7 @@ if nargin == 0
     if ~usejava('desktop') || ~usejava('awt')
         error('yunlink:SetupRequiresDesktop', ...
             ['yunlink_setup with no arguments needs the MATLAB desktop. ', ...
-             'Prefer examples/00_setup.m: fill pythonExe and bundleDir, then Run.']);
+             'Prefer examples/ex00_setup.m: fill pythonExe and bundleDir, then Run.']);
     end
     [pythonExecutable, sdkSource, bindingSource] = select_sources();
 elseif nargin == 2 || nargin == 3
@@ -34,7 +34,7 @@ elseif nargin == 2 || nargin == 3
     end
 else
     error('yunlink:InvalidArguments', ...
-        ['Use examples/00_setup.m, yunlink_setup(python, bundleDir), ', ...
+        ['Use examples/ex00_setup.m, yunlink_setup(python, bundleDir), ', ...
          'or yunlink_setup(python, sdk, binding).']);
 end
 

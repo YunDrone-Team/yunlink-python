@@ -2,9 +2,9 @@ YunLink MATLAB 1.1.0
 
 1. 安装 Python 3.10、3.11、3.12 或 3.13（Windows / macOS / Linux 均可）。不要使用 MATLAB 自带的 3.14。
 2. 解压本 zip，双击 yunlink-sunray-matlab-1.1.0.mltbx，在 Toolbox 安装器中点击 Install。
-3. 在 MATLAB 中运行 yunlink_examples，打开 examples/00_setup.m。
+3. 在 MATLAB 中运行 yunlink_examples，打开 examples/ex00_setup.m。
 4. 填写 pythonExe（Python 可执行文件）和 bundleDir（本 zip 解压后的目录），然后 Run。
-5. 在 read_state_demo.m 中填入 Bridge 的 host:port 和设备 entity_uid，再运行。
+5. 运行 ex01_discover.m，再按编号继续。控制类示例从 ex04_flight_basics.m 开始。
 
 不要在 Add-On Explorer 中搜索本工具箱，也不要使用 Add Package Repository。
 完整说明见 README.md。
