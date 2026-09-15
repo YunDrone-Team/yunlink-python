@@ -49,6 +49,11 @@ fprintf('ugv=%s fresh=%d pos=[%.3f %.3f %.3f]\n', ...
 
 if doFlight
     fprintf('\n== UAV takeoff / hover / land ==\n');
+    if ~yunlink_state(uav).landed
+        fprintf('already airborne, landing first\n');
+        yunlink_land(uav, 30);
+        pause(2);
+    end
     yunlink_takeoff(uav, 1.0, 30);
     airborne = yunlink_state(uav);
     assert(~airborne.landed, 'UAV still landed after takeoff');
