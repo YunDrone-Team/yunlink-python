@@ -1,10 +1,12 @@
 # YunLink MATLAB 使用说明
 
-通过 MATLAB 控制 Sunray 无人机时，从本仓库的 GitHub Release 下载用户包即可。不必克隆源码。本仓库的 Release 仅用于 MATLAB 用户包。
+本分支仅用于 SunrayV2 标签 **浙江万里学院发货**。新仿真请用 `main` 与 Release `matlab-1.1.0`。
+
+通过 MATLAB 控制 Sunray 无人机时，从本仓库的 GitHub Release 下载用户包即可。不必克隆源码。
 
 发布包：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-wanli/yunlink-sunray-matlab-wanli-bundle.zip
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 

@@ -3,7 +3,7 @@ name: MATLAB Release
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: ["浙江万里学院适配"]
     paths:
       - "matlab/**"
       - "src/yunlink_python/**"
@@ -71,23 +71,24 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: yunlink-sunray-matlab-1.1.0-bundle
+          name: yunlink-sunray-matlab-wanli-bundle
           path: dist/yunlink-sunray-matlab-1.1.0-bundle.zip
           if-no-files-found: error
 
       - name: Publish GitHub Release
-        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/浙江万里学院适配'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view matlab-1.1.0 >/dev/null 2>&1; then
-            gh release upload matlab-1.1.0 \
-              dist/yunlink-sunray-matlab-1.1.0-bundle.zip \
+          cp dist/yunlink-sunray-matlab-1.1.0-bundle.zip dist/yunlink-sunray-matlab-wanli-bundle.zip
+          if gh release view matlab-wanli >/dev/null 2>&1; then
+            gh release upload matlab-wanli \
+              dist/yunlink-sunray-matlab-wanli-bundle.zip \
               --clobber
           else
-            gh release create matlab-1.1.0 \
-              dist/yunlink-sunray-matlab-1.1.0-bundle.zip \
-              --title "YunLink MATLAB 1.1.0" \
-              --notes-file matlab/developer/release_notes.md \
-              --latest
+            gh release create matlab-wanli \
+              dist/yunlink-sunray-matlab-wanli-bundle.zip \
+              --title "YunLink MATLAB 浙江万里学院" \
+              --notes-file WANLI.md \
+              --latest=false
           fi

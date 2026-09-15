@@ -39,4 +39,8 @@ rm -f "$zip_file"
   zip -r "yunlink-sunray-matlab-1.1.0-bundle.zip" "yunlink-sunray-matlab-1.1.0-bundle"
 )
 
+if [[ "${YUNLINK_MATLAB_RELEASE:-}" == "wanli" ]]; then
+  cp "$zip_file" "$root/dist/yunlink-sunray-matlab-wanli-bundle.zip"
+  echo "Created $root/dist/yunlink-sunray-matlab-wanli-bundle.zip"
+fi
 echo "Created $zip_file"
