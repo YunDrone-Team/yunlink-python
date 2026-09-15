@@ -1,5 +1,6 @@
 function infos = yunlink_entities(client)
-%YUNLINK_ENTITIES Read the Bridge directory. This does not attach a device.
+%YUNLINK_ENTITIES 读取 Bridge 实时目录。
+%   返回结构体数组，字段 uid/name/kind。不 attach 设备，也不申请权限。
 raw = client.entities();
 count = double(py.len(raw));
 if count == 0

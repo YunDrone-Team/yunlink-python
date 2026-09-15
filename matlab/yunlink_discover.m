@@ -1,6 +1,6 @@
 function bridges = yunlink_discover(timeout)
-%YUNLINK_DISCOVER Search the LAN for YunLink Bridges.
-%   Does not connect, attach, or send flight commands.
+%YUNLINK_DISCOVER 搜索局域网 Bridge。
+%   不连接、不 attach、不控制。timeout 默认 5 秒。返回 discoveryId=endpoint_uid@ip:port。
 if nargin < 1
     timeout = 5;
 end

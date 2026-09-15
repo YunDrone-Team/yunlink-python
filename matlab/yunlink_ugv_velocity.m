@@ -1,5 +1,5 @@
 function result = yunlink_ugv_velocity(ugv, vx, duration_s, timeout)
-%YUNLINK_UGV_VELOCITY Send a short UGV velocity lease.
+%YUNLINK_UGV_VELOCITY 无人车短时速度租约。到期后常见 CANCELLED。
 if nargin < 3
     duration_s = 1.0;
 end

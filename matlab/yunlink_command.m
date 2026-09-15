@@ -1,5 +1,5 @@
 function result = yunlink_command(vehicle, kind, options)
-%YUNLINK_COMMAND Dispatch one of the finite high-level Sunray commands.
+%YUNLINK_COMMAND 有限高阶指令分发：takeoff/position/velocity/hover/return_home/land/emergency_lock。
 if nargin < 3
     options = struct();
 end

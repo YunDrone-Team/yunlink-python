@@ -1,10 +1,11 @@
 function result = yunlink_setup(varargin)
-%YUNLINK_SETUP Configure Python and install YunLink MATLAB dependencies.
+%YUNLINK_SETUP 配置 MATLAB 使用的 Python，并安装通信库。
 %
-%   yunlink_setup(PYTHON, BUNDLE_DIR) is the normal path: PYTHON is a
-%   3.10-3.13 executable, BUNDLE_DIR is the unzipped release folder.
-%   yunlink_setup(PYTHON, SDK, BINDING) installs explicit wheel paths.
-%   yunlink_setup with no arguments still opens the file-selection wizard.
+%   推荐：yunlink_setup(python可执行文件, 解压后的bundle目录)
+%   Python 必须是 3.10–3.13，不要用 MATLAB 自带 3.14。
+%   安装时直接解压 wheel，不走 pip（MATLAB 下 Homebrew pip 会因 libexpat 失败）。
+%   会同时安装 protobuf>=7，与 yunlink 生成代码主版本一致。
+%   Homebrew 的 python3.12 与 opt/python@3.12 真实路径视为同一个解释器。
 
 if nargin == 0
     if ~usejava('desktop') || ~usejava('awt')
@@ -232,7 +233,8 @@ end
 end
 
 function install_protobuf(pythonExecutable)
-check = sprintf('%s%s -c "import google.protobuf"', ...
+check = sprintf(['%s%s -c "from google.protobuf import __version__ as v; ', ...
+    'raise SystemExit(0 if int(v.split(chr(46))[0])>=7 else 1)"'], ...
     clean_env_prefix(), shell_quote(char(pythonExecutable)));
 [status, ~] = system(check);
 if status == 0
@@ -287,8 +289,14 @@ source = [
     '            break', newline, ...
     'if chosen is None:', newline, ...
     '    raise SystemExit("no protobuf wheel matched this Python")', newline, ...
+    'import shutil', newline, ...
     'dest_dir = pathlib.Path(site.getsitepackages()[0])', newline, ...
     'dest_dir.mkdir(parents=True, exist_ok=True)', newline, ...
+    'for old in dest_dir.glob("protobuf-*.dist-info"):', newline, ...
+    '    shutil.rmtree(old, ignore_errors=True)', newline, ...
+    'gp = dest_dir / "google" / "protobuf"', newline, ...
+    'if gp.exists():', newline, ...
+    '    shutil.rmtree(gp, ignore_errors=True)', newline, ...
     'wheel = dest_dir / chosen["filename"]', newline, ...
     'urllib.request.urlretrieve(chosen["url"], wheel)', newline, ...
     'zipfile.ZipFile(wheel).extractall(dest_dir)', newline, ...
@@ -329,7 +337,18 @@ value = ['"', strrep(value, '"', '\\"'), '"'];
 end
 
 function equal = same_path(first, second)
-equal = strcmpi(strtrim(char(first)), strtrim(char(second)));
+equal = strcmpi(resolved_path(first), resolved_path(second));
+end
+
+function path = resolved_path(value)
+path = strtrim(char(string(value)));
+if strlength(path) == 0
+    return
+end
+try
+    path = char(java.io.File(path).getCanonicalPath());
+catch
+end
 end
 
 function wheel = match_sdk_wheel(directory)

@@ -1,5 +1,7 @@
 function result = yunlink_velocity_control(vehicle, vx, vy, vz, options)
-%YUNLINK_VELOCITY_CONTROL Send a bounded velocity action.
+%YUNLINK_VELOCITY_CONTROL 有时限的速度控制。
+%   options 可含 duration_s、lease_ms、timeout、wait、frame_id、height_lock_m。
+%   租约到期后飞控常以 CANCELLED 结束，不一定是失败。
 if nargin < 4
     vz = 0;
 end

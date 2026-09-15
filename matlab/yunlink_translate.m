@@ -1,5 +1,6 @@
 function result = yunlink_translate(vehicle, direction, speed_mps, duration_s, timeout)
-%YUNLINK_TRANSLATE Body-frame nudge: forward, backward, left, right, up, down.
+%YUNLINK_TRANSLATE 机体轴短时平移：forward/backward/left/right/up/down。
+%   默认速度 0.15 m/s、持续 0.8 s。用于基础飞行动作演示。
 if nargin < 3
     speed_mps = 0.15;
 end

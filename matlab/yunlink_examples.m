@@ -1,5 +1,6 @@
 function exampleDir = yunlink_examples()
-%YUNLINK_EXAMPLES Open the MATLAB example folder in Current Folder.
+%YUNLINK_EXAMPLES 把 MATLAB 当前文件夹切到示例目录并打开文件浏览器。
+%   先运行 ex00_setup，再按 ex01_discover 往下做。
 
 root = fileparts(mfilename('fullpath'));
 exampleDir = fullfile(root, 'examples');

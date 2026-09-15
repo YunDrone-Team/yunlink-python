@@ -1,5 +1,6 @@
 function state = yunlink_state(vehicle)
-%YUNLINK_STATE Return a MATLAB struct with the latest UAV state.
+%YUNLINK_STATE 把最新 UAV 状态转成 MATLAB 结构体。
+%   字段用 camelCase。fresh 为 false 时不要起飞。不发送控制。
 raw = yunlink_state_raw(vehicle);
 
 state = struct();

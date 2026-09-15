@@ -1,6 +1,6 @@
 function result = yunlink_waypoints(vehicle, points, timeout)
-%YUNLINK_WAYPOINTS Execute a Planner multi-waypoint mission.
-%   points is an N-by-3 matrix of x, y, z.
+%YUNLINK_WAYPOINTS 多航点 Planner 任务。
+%   points 为 N×3 的 x/y/z。会发送飞行指令。
 if nargin < 3
     timeout = 120;
 end

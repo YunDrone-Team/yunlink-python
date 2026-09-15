@@ -1,5 +1,5 @@
 function state = yunlink_ugv_state(ugv)
-%YUNLINK_UGV_STATE Return a MATLAB struct with the latest UGV state.
+%YUNLINK_UGV_STATE 最新无人车状态。不发送运动指令。
 raw = ugv.state;
 state = struct();
 state.ugvId = char(string(ugv.uid));

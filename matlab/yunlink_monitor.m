@@ -1,5 +1,6 @@
 function history = yunlink_monitor(vehicle, duration_s, options)
-%YUNLINK_MONITOR Poll and return readable UAV state structs.
+%YUNLINK_MONITOR 按周期采样 UAV 状态，返回结构体数组。
+%   options.print=true 时在命令窗口打印。不发送控制。
 if nargin < 2
     duration_s = 30;
 end
