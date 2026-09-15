@@ -1,7 +1,10 @@
 % 12_MULTI_UAV_WAYPOINTS  给每架 UAV 一条两点短航线。
 % 本示例会发送飞行指令。
 
-address = "192.168.31.236:9696";
+address = string(getenv('YUNLINK_ADDRESS'));
+if strlength(address) == 0
+    address = "192.168.10.10:9696";
+end
 height = 1.0;
 
 client = yunlink_connect(address);
@@ -16,7 +19,9 @@ vehicles = cell(1, numel(uavs));
 try
     for index = 1:numel(uavs)
         vehicles{index} = yunlink_vehicle(client, uavs(index).uid);
-        disp(yunlink_takeoff(vehicles{index}, height, 30));
+        if yunlink_state(vehicles{index}).landed
+            yunlink_takeoff(vehicles{index}, height, 30);
+        end
     end
     for index = 1:numel(uavs)
         pos = yunlink_state(vehicles{index}).position;
@@ -25,12 +30,12 @@ try
             pos.x + offset, pos.y, height
             pos.x + offset, pos.y + 0.2, height
             ];
-        disp(yunlink_waypoints(vehicles{index}, points, 120));
+        yunlink_waypoints(vehicles{index}, points, 120);
     end
 finally
     for index = 1:numel(vehicles)
         if ~isempty(vehicles{index}) && ~yunlink_state(vehicles{index}).landed
-            disp(yunlink_land(vehicles{index}, 30));
+            yunlink_land(vehicles{index}, 30);
         end
     end
 end

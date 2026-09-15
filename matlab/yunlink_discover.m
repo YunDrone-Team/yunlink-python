@@ -4,6 +4,7 @@ function bridges = yunlink_discover(timeout)
 if nargin < 1
     timeout = 5;
 end
+yunlink_prepare_runtime();
 sdk = py.importlib.import_module("yunlink_python");
 raw = sdk.discover(pyargs('timeout', double(timeout)));
 count = double(py.len(raw));
@@ -40,7 +41,7 @@ bridge.ip = ip;
 bridge.tcpPort = port;
 bridge.address = sprintf('%s:%d', ip, port);
 bridge.discoveryId = sprintf('%s@%s:%d', uid, ip, port);
-bridge.name = char(string(item.name));
+bridge.name = char(string(item.display_name));
 bridge.entities = convert_entities(item.entities);
 end
 

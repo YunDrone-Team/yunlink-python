@@ -1,7 +1,10 @@
 % 11_MULTI_DEVICE_CONTROL  attach 目录中全部 UAV/UGV 并打印状态。
 % 本示例不发送运动指令。
 
-address = "192.168.31.236:9696";
+address = string(getenv('YUNLINK_ADDRESS'));
+if strlength(address) == 0
+    address = "192.168.10.10:9696";
+end
 
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));

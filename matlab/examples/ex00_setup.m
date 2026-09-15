@@ -34,13 +34,12 @@ fprintf('Python: %s\nBundle: %s\n', pythonExe, bundleDir);
 yunlink_setup(pythonExe, bundleDir);
 
 cd(thisDir);
+fprintf(['\n配置完成。接下来运行 ex01_discover，然后运行 ex02_connect_and_inspect。\n', ...
+         '飞行示例从 ex04_flight_basics 开始。说明见本目录 README.md。\n']);
 if usejava('desktop')
     filebrowser;
     commandwindow;
-    edit(fullfile(thisDir, 'ex01_discover.m'));
 end
-fprintf(['\n配置完成。接下来运行 ex01_discover.m，然后运行 ex02_connect_and_inspect.m。\n', ...
-         '飞行示例从 ex04_flight_basics.m 开始。说明见本目录 README.md。\n']);
 
 function pythonExe = local_find_python()
 homeDir = getenv('USERPROFILE');

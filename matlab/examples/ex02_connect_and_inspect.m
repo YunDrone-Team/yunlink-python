@@ -1,7 +1,10 @@
 % 02_CONNECT_AND_INSPECT  连接 Bridge 并打印设备目录。
 % 本示例不 attach 设备，也不发送飞行指令。
 
-address = "192.168.31.236:9696";
+address = string(getenv('YUNLINK_ADDRESS'));
+if strlength(address) == 0
+    address = "192.168.10.10:9696";
+end
 
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));

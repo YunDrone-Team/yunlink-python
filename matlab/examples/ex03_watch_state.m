@@ -1,7 +1,13 @@
 % 03_WATCH_STATE  attach 一架 UAV 并打印状态。本示例不发送飞行指令。
 
-address = "192.168.31.236:9696";
-uavUid = "e-f97f96-2-1";
+address = string(getenv('YUNLINK_ADDRESS'));
+if strlength(address) == 0
+    address = "192.168.10.10:9696";
+end
+uavUid = string(getenv('YUNLINK_UAV'));
+if strlength(uavUid) == 0
+    uavUid = "e-89c423-2-1";
+end
 
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));

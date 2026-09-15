@@ -1,8 +1,14 @@
 % 10_DISCOVER_SELECT_CONNECT  列出全部 Bridge，再按 Bridge ID 连接。
 % 本示例不发送飞行指令。
 
-bridgeId = "f97f96";
-uavUid = "e-f97f96-2-1";
+bridgeId = string(getenv('YUNLINK_BRIDGE_ID'));
+if strlength(bridgeId) == 0
+    bridgeId = "89c423";
+end
+uavUid = string(getenv('YUNLINK_UAV'));
+if strlength(uavUid) == 0
+    uavUid = "e-89c423-2-1";
+end
 timeoutS = 5;
 
 bridges = yunlink_discover(timeoutS);
