@@ -82,6 +82,7 @@ gh release upload matlab-1.2.0 \
 
 - 公共 `yunlink_*.m`
 - `README.md`
+- `API.md`（由 `developer/API.md` 复制）
 - `getting_started.m`
 - `getting_started.html`
 - `examples/*.m` 与 `examples/README.md`

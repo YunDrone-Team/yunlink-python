@@ -37,7 +37,7 @@ MATLAB 只会调用它官方支持的 CPython。版本对不上时会出现「Py
 
 Win11 上 Miniconda 的 `python.exe` 若是 3.12，而 MATLAB 是 R2022a，就会被拒绝。请升级 MATLAB，或安装上表中的 Python 后**重启 MATLAB**再跑 `ex00_setup`。命令请写 `ex01_discover`，不要带 `.m`。
 
-公开方法对照见 [`docs/API_CN.md`](../docs/API_CN.md)。MATLAB 每个封装函数的调用方式见 [`developer/API.md`](developer/API.md)。
+公开方法对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。MATLAB 每个封装函数见 [`developer/API.md`](developer/API.md)；安装进 Toolbox 后同目录也有 `API.md`。
 
 常见路径：
 

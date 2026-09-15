@@ -39,10 +39,12 @@ end
 copy_required(fullfile(root, 'README.md'), fullfile(stage, 'README.md'));
 copy_required(fullfile(root, 'getting_started.m'), fullfile(stage, 'getting_started.m'));
 copy_required(fullfile(root, 'getting_started.html'), fullfile(stage, 'getting_started.html'));
+copy_required(fullfile(root, 'developer', 'API.md'), fullfile(stage, 'API.md'));
 copy_required(fullfile(repoRoot, 'LICENSE'), fullfile(stage, 'LICENSE'));
 toolboxFiles(end + 1) = string(fullfile(stage, 'README.md'));
 toolboxFiles(end + 1) = string(fullfile(stage, 'getting_started.m'));
 toolboxFiles(end + 1) = string(fullfile(stage, 'getting_started.html'));
+toolboxFiles(end + 1) = string(fullfile(stage, 'API.md'));
 toolboxFiles(end + 1) = string(fullfile(stage, 'LICENSE'));
 
 exampleDirectory = fullfile(stage, 'examples');
