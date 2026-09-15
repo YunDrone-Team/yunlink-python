@@ -8,6 +8,8 @@ https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.2.0/y
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 
+**最低 MATLAB：R2022b。最低 Python：3.10。** 原因：底层 [yunlink](https://github.com/YunDrone-Team/yunlink) 绑定要求 CPython ≥ 3.10。R2022a 官方只有 3.8/3.9，对不上就会报「Python 命令需要支持的 CPython 版本」。这不是搜索失败，是 MATLAB 拒绝调用该解释器。
+
 发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`ex00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
 
 1. `yunlink-2.0.1-*.whl`：按操作系统和 Python 版本提供的原生绑定
@@ -35,7 +37,7 @@ MATLAB 只会调用它官方支持的 CPython。版本对不上时会出现「Py
 
 Win11 上 Miniconda 的 `python.exe` 若是 3.12，而 MATLAB 是 R2022a，就会被拒绝。请升级 MATLAB，或安装上表中的 Python 后**重启 MATLAB**再跑 `ex00_setup`。命令请写 `ex01_discover`，不要带 `.m`。
 
-公开方法对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。
+公开方法对照见 [`docs/API_CN.md`](../docs/API_CN.md)。MATLAB 每个封装函数的调用方式见 [`developer/API.md`](developer/API.md)。
 
 常见路径：
 

@@ -9,7 +9,8 @@
 % Add Package Repository 不是 .mltbx 安装入口。
 
 %% 准备 Python
-% 需要系统安装的 Python 3.10、3.11、3.12 或 3.13，不要使用 MATLAB 自带 3.14。
+% MATLAB R2022b 或更新。Python 3.10–3.13（yunlink 绑定要求 ≥ 3.10）。
+% 不要使用 MATLAB 自带 3.14。R2022a 不可用。
 % 填写的是可执行文件路径，例如：
 %   Windows:  C:\Users\<用户>\AppData\Local\Programs\Python\Python313\python.exe
 %   macOS:    /opt/homebrew/bin/python3.13  或  /usr/local/bin/python3.13

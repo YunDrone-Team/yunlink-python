@@ -1,6 +1,8 @@
 # MATLAB 开发说明
 
-用户安装和使用见 [../README.md](../README.md)。本页只覆盖源码开发、打包和发布。
+用户安装和使用见 [../README.md](../README.md)。封装函数调用见 [API.md](API.md)。本页只覆盖源码开发、打包和发布。
+
+打包机用 MATLAB R2026a。用户最低 **R2022b**，Python 最低 **3.10**（yunlink 绑定要求）。
 
 ## 用户交付物
 

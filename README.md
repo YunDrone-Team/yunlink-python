@@ -19,6 +19,12 @@ SunrayV2
 
 Python 从本仓库安装。MATLAB 从本仓库的 GitHub Release 下载用户包，不必克隆源码。
 
+## 环境要求
+
+Python **必须是 3.10、3.11、3.12 或 3.13**。底层通信库 [yunlink](https://github.com/YunDrone-Team/yunlink) 要求 CPython ≥ 3.10（依赖 `protobuf>=7`，该系列同样只要 3.10+），因此 3.8/3.9 无法使用。
+
+MATLAB 用户请用 **R2022b 或更新**。R2022a 官方只支持 Python 3.8/3.9，和 yunlink 的 3.10 底线没有交集，会出现「Python 命令需要支持的 CPython 版本」。R2022b 请安装 Python 3.10。
+
 ## 安装
 
 当前 SDK 版本为 `1.2.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
@@ -42,7 +48,7 @@ python -m pip install --no-deps -e .
 它同样会从包索引解析依赖。激活虚拟环境后，先复制 `examples/yunlink.env.example` 为 `examples/yunlink.env` 并填写目标，
 再运行 `python examples/01_discover.py`。不要每次 export 环境变量。
 
-支持 Python 3.10、3.11、3.12 和 3.13。
+支持 Python 3.10、3.11、3.12 和 3.13。不要用 3.8/3.9。
 
 完整中文使用手册见 [`docs/USAGE_GUIDE_CN.md`](docs/USAGE_GUIDE_CN.md)，公开方法对照见
 [`docs/API_CN.md`](docs/API_CN.md)，文档索引见 [`docs/README.md`](docs/README.md)。

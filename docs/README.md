@@ -19,6 +19,7 @@
 - [测试人员使用指南](../TESTER_GUIDE.md)
 - [兼容性说明](../COMPATIBILITY.md)
 - [MATLAB 用户指南](../matlab/README.md)（从 GitHub Release 下载用户包）
+- [MATLAB 封装函数说明](../matlab/developer/API.md)
 - [MATLAB 开发与打包](../matlab/developer/README.md)
 
 ## 最重要的连接边界

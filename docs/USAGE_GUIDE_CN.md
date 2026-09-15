@@ -18,7 +18,7 @@ SDK 不连接 ROS，不复制 ROS 服务，不自动选择第一台设备，也�
 
 1. YunLink Bridge 已启动并监听 TCP 端口，默认端口是 `9696`。
 2. 仿真或真实设备已经注册到 Bridge 的设备目录。
-3. Python 版本为 3.10、3.11、3.12 或 3.13，SDK 版本为 `1.2.0`。
+3. Python 版本为 3.10、3.11、3.12 或 3.13（yunlink 绑定要求 ≥ 3.10），SDK 版本为 `1.2.0`。MATLAB 为 R2022b 或更新。
 4. 第一次测试优先使用仿真实体，真实设备必须遵守现场安全规定。
 5. 运行 `examples/` 脚本前，复制 `examples/yunlink.env.example` 为 `examples/yunlink.env`，在文件里填写目标 Bridge 和设备 ID。不要每次 export。
 
