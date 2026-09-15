@@ -79,7 +79,7 @@ opts.AuthorName = 'YunDrone Team';
 opts.Summary = 'MATLAB wrappers for controlling Sunray vehicles through YunLink';
 opts.Description = ['Connect to a YunLink Bridge, inspect UAV state, and issue ', ...
     'basic Sunray control commands from MATLAB.'];
-opts.MinimumMatlabRelease = 'R2026a';
+opts.MinimumMatlabRelease = 'R2022a';
 opts.ToolboxFiles = cellstr(toolboxFiles);
 opts.ToolboxMatlabPath = stage;
 opts.ToolboxGettingStartedGuide = fullfile(stage, 'getting_started.m');

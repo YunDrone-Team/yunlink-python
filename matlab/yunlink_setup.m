@@ -400,17 +400,25 @@ end
 end
 
 function matched = matches_platform(name)
+arch = computer('arch');
 if ispc
-    matched = contains(name, "win");
+    if contains(arch, "64")
+        matched = contains(name, "win_amd64");
+    else
+        matched = contains(name, "win32") && ~contains(name, "win_amd64");
+    end
 elseif ismac
-    arch = computer('arch');
-    if contains(arch, 'arm') || strcmp(arch, 'maca64')
+    if contains(arch, "arm") || strcmp(arch, "maca64")
         matched = contains(name, "macosx") && (contains(name, "arm64") || contains(name, "aarch64"));
     else
         matched = contains(name, "macosx") && contains(name, "x86_64");
     end
 else
-    matched = contains(name, "manylinux") || contains(name, "linux");
+    if contains(arch, "arm") || contains(arch, "aarch")
+        matched = contains(name, "manylinux") && contains(name, "aarch64");
+    else
+        matched = contains(name, "manylinux") && contains(name, "x86_64");
+    end
 end
 end
 
@@ -424,8 +432,7 @@ tag = python_abi_tag(pythonExecutable);
 if ~python_is_supported(pythonExecutable)
     error('yunlink:UnsupportedPython', ...
         ['YunLink MATLAB supports Python 3.10, 3.11, 3.12, and 3.13.\n', ...
-         'Selected %s (%s).\nDo not use MATLAB''s bundled Python 3.14.\n', ...
-         'On this Mac pick /opt/homebrew/bin/python3.13'], ...
+         'Selected %s (%s).\nDo not use MATLAB''s bundled Python 3.14.'], ...
         pythonExecutable, tag);
 end
 end

@@ -1,6 +1,6 @@
 YunLink MATLAB 1.1.0
 
-1. 安装 Python 3.10、3.11、3.12 或 3.13（Windows / macOS / Linux 均可）。不要使用 MATLAB 自带的 3.14。
+1. 安装 Python 3.10、3.11、3.12 或 3.13（Windows / macOS / Linux 均可）。不要使用 MATLAB 自带的 3.14。MATLAB 最低 R2022a。
 2. 解压本 zip，双击 yunlink-sunray-matlab-1.1.0.mltbx，在 Toolbox 安装器中点击 Install。
 3. 在 MATLAB 中运行 yunlink_examples，打开 examples/ex00_setup.m。
 4. 填写 pythonExe（Python 可执行文件）和 bundleDir（本 zip 解压后的目录），然后 Run。

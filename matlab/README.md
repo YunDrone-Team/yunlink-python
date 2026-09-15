@@ -17,11 +17,15 @@ MATLAB 本身不内置可用的 3.10–3.13 解释器，所以仍要指定系统
 
 ## 环境要求
 
-- MATLAB R2026a 或更新版本
+- MATLAB **R2022a 或更新版本**
 - Windows、macOS 或 Linux 上已安装 **Python 3.10、3.11、3.12 或 3.13**
 - 正在运行的 YunLink Bridge，以及目标设备的 `entity_uid`
 
 不要使用 MATLAB 自带的 Python 3.14。需要的是系统里安装的 Python **可执行文件**，不是安装目录。
+
+R2022a / R2022b 官方文档列出的 Python 往往是 3.8/3.9。本工具箱没有对应 wheel，请仍用 Miniconda 或 python.org 的 3.10–3.13。封装接口本身从 R2022a 就能跑。
+
+公开方法对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。
 
 常见路径：
 

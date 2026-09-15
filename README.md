@@ -44,8 +44,8 @@ python -m pip install --no-deps -e .
 
 支持 Python 3.10、3.11、3.12 和 3.13。
 
-完整中文使用手册见 [`docs/USAGE_GUIDE_CN.md`](docs/USAGE_GUIDE_CN.md)，文档索引见
-[`docs/README.md`](docs/README.md)。
+完整中文使用手册见 [`docs/USAGE_GUIDE_CN.md`](docs/USAGE_GUIDE_CN.md)，公开方法对照见
+[`docs/API_CN.md`](docs/API_CN.md)，文档索引见 [`docs/README.md`](docs/README.md)。
 
 ## 第一个完整流程
 

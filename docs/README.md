@@ -14,6 +14,7 @@
 ## 文档索引
 
 - [完整中文使用手册](USAGE_GUIDE_CN.md)
+- [Python 与 MATLAB API 对照](API_CN.md)
 - [按步骤示例教程](../examples/README.md)
 - [测试人员使用指南](../TESTER_GUIDE.md)
 - [兼容性说明](../COMPATIBILITY.md)
