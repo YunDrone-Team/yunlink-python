@@ -7,7 +7,7 @@
 %   Linux:    "/usr/bin/python3.12"
 pythonExe = "";
 
-% bundleDir：解压后的 yunlink-sunray-matlab-1.1.0-bundle 目录。
+% bundleDir：解压后的 yunlink-sunray-matlab-1.2.0-bundle 目录。
 % 留空则在用户下载目录中查找。
 bundleDir = "";
 
@@ -52,6 +52,9 @@ candidates = {
     fullfile(localApp, 'Programs', 'Python', 'Python312', 'python.exe')
     fullfile(localApp, 'Programs', 'Python', 'Python311', 'python.exe')
     fullfile(localApp, 'Programs', 'Python', 'Python310', 'python.exe')
+    fullfile(homeDir, 'miniconda3', 'python.exe')
+    fullfile(homeDir, 'Miniconda3', 'python.exe')
+    fullfile(homeDir, 'anaconda3', 'python.exe')
     fullfile(homeDir, 'AppData', 'Local', 'Programs', 'Python', 'Python313', 'python.exe')
     '/opt/homebrew/bin/python3.13'
     '/opt/homebrew/bin/python3.12'
@@ -99,7 +102,8 @@ for rootIndex = 1:numel(roots)
         end
         candidate = fullfile(hits(index).folder, hits(index).name);
         stamp = datetime(hits(index).datenum, 'ConvertFrom', 'datenum');
-        if isfile(fullfile(candidate, 'yunlink-sunray-matlab-1.1.0.mltbx')) && stamp >= newest
+        mltbx = dir(fullfile(candidate, 'yunlink-sunray-matlab-*.mltbx'));
+        if ~isempty(mltbx) && stamp >= newest
             newest = stamp;
             bundleDir = candidate;
         end

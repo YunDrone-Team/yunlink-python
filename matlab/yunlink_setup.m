@@ -60,6 +60,7 @@ end
 
 pythonExecutable = string(pyenv().Executable);
 check_supported_python(pythonExecutable);
+yunlink_ensure_python("engine");
 if strlength(bindingSource) > 0
     install_package(pythonExecutable, bindingSource, 'YunLink binding');
 end

@@ -4,26 +4,36 @@
 
 发布包：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.2.0/yunlink-sunray-matlab-1.2.0-bundle.zip
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 
 发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`ex00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
 
 1. `yunlink-2.0.1-*.whl`：按操作系统和 Python 版本提供的原生绑定
-2. `yunlink_python-1.1.0-*.whl`：MATLAB 调用的 SDK
+2. `yunlink_python-1.2.0-*.whl`：MATLAB 调用的 SDK
 
 MATLAB 本身不内置可用的 3.10–3.13 解释器，所以仍要指定系统里的 Python 可执行文件。通信库不在 MATLAB 里现场编译。
 
 ## 环境要求
 
-- MATLAB **R2022a 或更新版本**
-- Windows、macOS 或 Linux 上已安装 **Python 3.10、3.11、3.12 或 3.13**
+- MATLAB **R2022b 或更新版本**
+- Windows、macOS 或 Linux 上已安装 **该 MATLAB 官方支持的 CPython 3.10–3.13**
 - 正在运行的 YunLink Bridge，以及目标设备的 `entity_uid`
 
 不要使用 MATLAB 自带的 Python 3.14。需要的是系统里安装的 Python **可执行文件**，不是安装目录。
 
-R2022a / R2022b 官方文档列出的 Python 往往是 3.8/3.9。本工具箱没有对应 wheel，请仍用 Miniconda 或 python.org 的 3.10–3.13。封装接口本身从 R2022a 就能跑。
+MATLAB 只会调用它官方支持的 CPython。版本对不上时会出现「Python 命令需要支持的 CPython 版本」。请先运行 `ex00_setup`，并按下表选解释器：
+
+| MATLAB | 本工具箱可用的 Python |
+| --- | --- |
+| R2022a | 不可用（官方只有 3.8/3.9，没有对应通信库） |
+| R2022b / R2023a | 3.10 |
+| R2023b / R2024a | 3.10、3.11 |
+| R2024b / R2025a | 3.10、3.11、3.12 |
+| R2025b / R2026a | 3.10、3.11、3.12、3.13 |
+
+Win11 上 Miniconda 的 `python.exe` 若是 3.12，而 MATLAB 是 R2022a，就会被拒绝。请升级 MATLAB，或安装上表中的 Python 后**重启 MATLAB**再跑 `ex00_setup`。命令请写 `ex01_discover`，不要带 `.m`。
 
 公开方法对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。
 
@@ -53,12 +63,12 @@ Linux:      python3 --version
 Add-On Explorer 只搜索 MathWorks 商店，搜索不到本工具箱是正常的。不要在里面搜索，也不要使用 **Add Package Repository**。
 
 1. 下载并解压发布包。不要在压缩包内部直接操作。
-2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.1.0.mltbx`。
+2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.2.0.mltbx`。
 3. MATLAB 打开 Toolbox 安装器后，确认名称为 **YunLink Sunray MATLAB Support**，点击 Install。
 4. 若双击没有唤起 MATLAB，可在命令窗口执行：
 
 ```matlab
-matlab.addons.install("完整路径/yunlink-sunray-matlab-1.1.0.mltbx")
+matlab.addons.install("完整路径/yunlink-sunray-matlab-1.2.0.mltbx")
 ```
 
 路径按本机实际情况填写。Windows 使用反斜杠或正斜杠均可。

@@ -122,8 +122,8 @@ Windows 上 `yunlink_setup` 只选 `win_amd64`（64 位 MATLAB），不会把 `w
 
 ## 环境
 
-- Python 3.10–3.13；MATLAB R2022a+
-- 绑定包 `yunlink` 2.0.1，SDK `yunlink_python` 1.1.x
+- Python 3.10–3.13，且必须是当前 MATLAB 官方支持的 CPython；MATLAB R2022b+
+- 绑定包 `yunlink` 2.0.1，SDK `yunlink_python` 1.2.x
 - Bridge 协商 `org.yunlink.mobility@1` 与 `com.yundrone.sunray@2`
 
 浙江万里学院出厂固件用分支 `浙江万里学院适配` 和 Release `matlab-wanli`，不要和本页 main 包混用。

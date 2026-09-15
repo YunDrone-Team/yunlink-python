@@ -21,7 +21,7 @@ Python 从本仓库安装。MATLAB 从本仓库的 GitHub Release 下载用户�
 
 ## 安装
 
-当前 SDK 版本为 `1.1.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
+当前 SDK 版本为 `1.2.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
 [yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
 里匹配本机的预编译 wheel，不必编译 C++。
 
@@ -184,7 +184,7 @@ result = handle.wait(timeout=30)
 
 MATLAB 用户从 GitHub Release 下载打包好的 Toolbox，不必克隆本仓库：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.1.0/yunlink-sunray-matlab-1.1.0-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.2.0/yunlink-sunray-matlab-1.2.0-bundle.zip
 
 本仓库的 Release 仅提供该 MATLAB 用户包。安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
 [`matlab/developer/README.md`](matlab/developer/README.md)。
