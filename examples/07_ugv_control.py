@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import time
 
 from _session import add_connection_arguments, open_bridge, select_ugv
 
@@ -15,6 +16,9 @@ args = parser.parse_args()
 with open_bridge(args.address) as client:
     # 这里使用明确的 UGV entity_uid；不会从目录中自动挑选第一台无人车。
     ugv = select_ugv(client, args.entity)
+    deadline = time.monotonic() + 5.0
+    while time.monotonic() < deadline and not (ugv.state.is_fresh() and ugv.state.frame_id):
+        time.sleep(0.1)
     print("initial:", ugv.state)
     start = ugv.state.position
     print(
