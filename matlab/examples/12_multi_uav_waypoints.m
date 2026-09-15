@@ -1,5 +1,5 @@
-% 12_MULTI_UAV_WAYPOINTS  Give each UAV a short two-point mission.
-% This example sends flight commands.
+% 12_MULTI_UAV_WAYPOINTS  给每架 UAV 一条两点短航线。
+% 本示例会发送飞行指令。
 
 address = "192.168.31.236:9696";
 height = 1.0;
@@ -9,7 +9,7 @@ cleanup = onCleanup(@() yunlink_close(client));
 infos = yunlink_entities(client);
 uavs = infos(strcmp({infos.kind}, 'sunray.uav'));
 if isempty(uavs)
-    error('yunlink:NoDevice', 'No UAV was listed in the Bridge directory.');
+    error('yunlink:NoDevice', 'Bridge 目录中没有 UAV。');
 end
 
 vehicles = cell(1, numel(uavs));

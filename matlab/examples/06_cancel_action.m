@@ -1,5 +1,5 @@
-% 06_CANCEL_ACTION  Start a move, cancel it, then hover and land.
-% This example sends flight commands.
+% 06_CANCEL_ACTION  启动一次移动后取消，再悬停降落。
+% 本示例会发送飞行指令。
 
 address = "192.168.31.236:9696";
 uavUid = "e-f97f96-2-1";

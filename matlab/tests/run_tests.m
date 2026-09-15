@@ -94,9 +94,9 @@ assert(contains(packSource, 'ToolboxFiles'));
 assert(contains(packSource, 'vendor'));
 
 demoSource = fileread(fullfile(root, 'examples', 'basic_flight_demo.m'));
-assert(contains(demoSource, 'sends flight commands') || contains(demoSource, 'flight commands'));
+assert(contains(demoSource, '会发送飞行指令') || contains(demoSource, 'flight commands'));
 readSource = fileread(fullfile(root, 'examples', 'read_state_demo.m'));
-assert(contains(readSource, 'does not send flight commands'));
+assert(contains(readSource, '不发送飞行指令') || contains(readSource, 'does not send flight commands'));
 
 % Parse every wrapper so syntax errors are caught even in a no-device run.
 addpath(root);

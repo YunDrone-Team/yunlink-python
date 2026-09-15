@@ -1,6 +1,6 @@
-% BASIC_FLIGHT_DEMO Minimal YunLink Sunray MATLAB demonstration.
-% This example sends flight commands. Use a vehicle that is allowed to move.
-% Replace the address and entity_uid with values from Python examples/01_discover.py.
+% BASIC_FLIGHT_DEMO  精简飞行示例。
+% 本示例会发送飞行指令。请只对允许运动的实体运行。
+% 请把地址和 entity_uid 换成 01_discover.m 确认过的值。
 client = yunlink_connect("192.168.31.236:9696");
 cleanup = onCleanup(@() yunlink_close(client));
 uav = yunlink_vehicle(client, "e-f97f96-2-1");

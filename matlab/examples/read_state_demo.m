@@ -1,5 +1,5 @@
-% READ_STATE_DEMO Connect and print UAV state. This example does not send flight commands.
-% Replace the address and entity_uid with values from Python examples/01_discover.py.
+% READ_STATE_DEMO  连接并打印 UAV 状态。本示例不发送飞行指令。
+% 请把地址和 entity_uid 换成 01_discover.m 确认过的值。
 client = yunlink_connect("192.168.31.236:9696");
 cleanup = onCleanup(@() yunlink_close(client));
 uav = yunlink_vehicle(client, "e-f97f96-2-1");

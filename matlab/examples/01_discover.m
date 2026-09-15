@@ -1,21 +1,21 @@
-% 01_DISCOVER  Search the LAN for YunLink Bridges.
-% This example does not connect, attach, or send flight commands.
+% 01_DISCOVER  搜索局域网中的 YunLink Bridge。
+% 本示例不连接、不 attach、不发送飞行指令。
 
 timeoutS = 5;
 
-fprintf('Searching for Bridges for %.0f seconds...\n', timeoutS);
+fprintf('正在搜索 Bridge，持续 %.0f 秒...\n', timeoutS);
 bridges = yunlink_discover(timeoutS);
 if isempty(bridges)
-    error('yunlink:NoBridge', 'No Bridge was discovered. Check that the Bridge is running.');
+    error('yunlink:NoBridge', '没有搜索到 Bridge。请确认 Bridge 已启动。');
 end
-fprintf('Found %d Bridge(s).\n\n', numel(bridges));
+fprintf('搜索到 %d 个 Bridge。\n\n', numel(bridges));
 for index = 1:numel(bridges)
     item = bridges(index);
     fprintf('[%d] %s  %s  %s\n', index, item.discoveryId, item.endpointUid, item.name);
-    fprintf('    connect address: %s\n', item.address);
+    fprintf('    连接地址: %s\n', item.address);
     for entityIndex = 1:numel(item.entities)
         entity = item.entities(entityIndex);
         fprintf('    %s  %s  %s\n', entity.uid, entity.name, entity.kind);
     end
 end
-fprintf('\nUse the connect address with yunlink_connect, and entity_uid with yunlink_vehicle.\n');
+fprintf('\n连接地址传给 yunlink_connect，entity_uid 传给 yunlink_vehicle。\n');

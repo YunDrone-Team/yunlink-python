@@ -1,14 +1,14 @@
-% 00_SETUP  Fill pythonExe and bundleDir, then click Run.
-% Next: edit read_state_demo.m in this folder.
+% 00_SETUP  填写 pythonExe 和 bundleDir，然后点击 Run。
+% 下一步运行本目录的 01_discover.m。
 
-% pythonExe: Python 3.10-3.13 executable, not MATLAB's Python 3.14.
-%   Windows:  "C:\Users\<user>\AppData\Local\Programs\Python\Python313\python.exe"
-%   macOS:    "/opt/homebrew/bin/python3.13"  or  "/usr/local/bin/python3.13"
+% pythonExe：Python 3.10–3.13 的可执行文件，不要用 MATLAB 自带的 3.14。
+%   Windows:  "C:\Users\<用户>\AppData\Local\Programs\Python\Python313\python.exe"
+%   macOS:    "/opt/homebrew/bin/python3.13"  或  "/usr/local/bin/python3.13"
 %   Linux:    "/usr/bin/python3.12"
 pythonExe = "";
 
-% bundleDir: unzipped yunlink-sunray-matlab-1.1.0-bundle folder.
-% Leave empty to search the user Downloads folder.
+% bundleDir：解压后的 yunlink-sunray-matlab-1.1.0-bundle 目录。
+% 留空则在用户下载目录中查找。
 bundleDir = "";
 
 thisDir = fileparts(mfilename('fullpath'));
@@ -21,13 +21,13 @@ if strlength(strtrim(string(bundleDir))) == 0
 end
 if ~isfile(char(pythonExe))
     error('yunlink:MissingPython', ...
-        ['Python executable not found.\n', ...
-         'Set pythonExe at the top of 00_setup.m to Python 3.10, 3.11, 3.12, or 3.13.']);
+        ['未找到 Python 可执行文件。\n', ...
+         '请在 00_setup.m 开头把 pythonExe 设为 Python 3.10、3.11、3.12 或 3.13。']);
 end
 if ~isfolder(bundleDir)
     error('yunlink:MissingBundle', ...
-        ['Release bundle folder not found.\n', ...
-         'Set bundleDir at the top of 00_setup.m to the unzipped zip.']);
+        ['未找到发布包目录。\n', ...
+         '请在 00_setup.m 开头把 bundleDir 设为解压后的 zip 目录。']);
 end
 
 fprintf('Python: %s\nBundle: %s\n', pythonExe, bundleDir);
@@ -39,8 +39,8 @@ if usejava('desktop')
     commandwindow;
     edit(fullfile(thisDir, '01_discover.m'));
 end
-fprintf(['\nSetup finished. Next run 01_discover.m, then 02_connect_and_inspect.m.\n', ...
-         'Flight examples start at 04_flight_basics.m. See README.md in this folder.\n']);
+fprintf(['\n配置完成。接下来运行 01_discover.m，然后运行 02_connect_and_inspect.m。\n', ...
+         '飞行示例从 04_flight_basics.m 开始。说明见本目录 README.md。\n']);
 
 function pythonExe = local_find_python()
 homeDir = getenv('USERPROFILE');
@@ -74,8 +74,8 @@ for index = 1:numel(candidates)
     end
 end
 error('yunlink:MissingPython', ...
-    ['Could not find Python 3.10-3.13.\n', ...
-     'Set pythonExe at the top of 00_setup.m to the interpreter executable.']);
+    ['未找到 Python 3.10–3.13。\n', ...
+     '请在 00_setup.m 开头填写 pythonExe。']);
 end
 
 function bundleDir = local_find_bundle()
@@ -108,6 +108,6 @@ for rootIndex = 1:numel(roots)
 end
 if strlength(bundleDir) == 0
     error('yunlink:MissingBundle', ...
-        'Could not find the unzipped release folder. Set bundleDir at the top of 00_setup.m.');
+        '未找到解压后的发布包目录。请在 00_setup.m 开头填写 bundleDir。');
 end
 end

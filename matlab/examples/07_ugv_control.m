@@ -1,5 +1,5 @@
-% 07_UGV_CONTROL  MovePoint, velocity lease, and Hold for a UGV.
-% This example sends UGV motion commands.
+% 07_UGV_CONTROL  无人车点位移动、速度控制和 Hold。
+% 本示例会发送无人车运动指令。
 
 address = "192.168.31.236:9696";
 ugvUid = "e-f97f96-3-1";

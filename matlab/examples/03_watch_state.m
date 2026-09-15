@@ -1,4 +1,4 @@
-% 03_WATCH_STATE  Attach a UAV and print state. This example does not send flight commands.
+% 03_WATCH_STATE  attach 一架 UAV 并打印状态。本示例不发送飞行指令。
 
 address = "192.168.31.236:9696";
 uavUid = "e-f97f96-2-1";

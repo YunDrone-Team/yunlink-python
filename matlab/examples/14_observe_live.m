@@ -1,5 +1,5 @@
-% 14_OBSERVE_LIVE  Refresh UAV/UGV state in the command window.
-% This example does not send flight commands. Ctrl-C to stop.
+% 14_OBSERVE_LIVE  在命令窗口刷新 UAV/UGV 状态。
+% 本示例不发送飞行指令。Ctrl-C 结束。
 
 address = "192.168.31.236:9696";
 uavUid = "";
@@ -14,7 +14,7 @@ if strlength(uavUid) > 0
 end
 infos = infos(ismember({infos.kind}, {'sunray.uav', 'sunray.ugv'}));
 if isempty(infos)
-    error('yunlink:NoDevice', 'No matching UAV/UGV was listed.');
+    error('yunlink:NoDevice', '目录中没有匹配的 UAV/UGV。');
 end
 
 devices = cell(1, numel(infos));
@@ -31,7 +31,7 @@ frames = 0;
 while seconds <= 0 || toc(started) < seconds
     frames = frames + 1;
     clc
-    fprintf('YunLink live observe  frames=%d  elapsed=%.1fs  Ctrl-C to stop\n', frames, toc(started));
+    fprintf('YunLink 实时观测  帧=%d  已运行=%.1fs  Ctrl-C 结束\n', frames, toc(started));
     fprintf('Bridge %s  %s\n\n', string(client.bridge_uid), string(client.bridge_address));
     for index = 1:numel(infos)
         if strcmp(infos(index).kind, 'sunray.uav')

@@ -1,5 +1,5 @@
-% 05_WAYPOINTS  Takeoff, fly a two-point Planner mission, then land.
-% This example sends flight commands.
+% 05_WAYPOINTS  起飞、执行两点航线，然后降落。
+% 本示例会发送飞行指令。
 
 address = "192.168.31.236:9696";
 uavUid = "e-f97f96-2-1";

@@ -1,5 +1,5 @@
-% 11_MULTI_DEVICE_CONTROL  Attach every UAV/UGV in the directory and print state.
-% This example does not send motion commands.
+% 11_MULTI_DEVICE_CONTROL  attach 目录中全部 UAV/UGV 并打印状态。
+% 本示例不发送运动指令。
 
 address = "192.168.31.236:9696";
 
@@ -24,5 +24,5 @@ for index = 1:numel(infos)
     end
 end
 if count == 0
-    error('yunlink:NoDevice', 'No UAV or UGV was listed in the Bridge directory.');
+    error('yunlink:NoDevice', 'Bridge 目录中没有 UAV 或 UGV。');
 end

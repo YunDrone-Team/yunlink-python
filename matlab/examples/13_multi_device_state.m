@@ -1,5 +1,5 @@
-% 13_MULTI_DEVICE_STATE  Print UAV/UGV state for several seconds.
-% This example does not send flight commands.
+% 13_MULTI_DEVICE_STATE  连续打印 UAV/UGV 状态若干秒。
+% 本示例不发送飞行指令。
 
 address = "192.168.31.236:9696";
 seconds = 8;
@@ -20,7 +20,7 @@ for index = 1:numel(infos)
     end
 end
 if isempty(devices)
-    error('yunlink:NoDevice', 'No UAV or UGV was listed in the Bridge directory.');
+    error('yunlink:NoDevice', 'Bridge 目录中没有 UAV 或 UGV。');
 end
 
 deadline = posixtime(datetime('now')) + seconds;
