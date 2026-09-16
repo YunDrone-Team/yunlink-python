@@ -6,9 +6,9 @@
 
 1. 运行 `yunlink_examples`，左侧会打开本目录。
 2. 打开 `ex00_setup.m`，点绿色 **Run**。配 Python 3.10–3.13 和 zip 包。
-3. 把 `yunlink.env.example` 复制为 `yunlink.env`。
+3. 配置写在 `yunlink.env`；没有这份文件就直接改同目录的 `yunlink.env.example`。程序先读环境变量，再 `yunlink.env`，再 `yunlink.env.example`。
 4. 运行 `ex01_discover`。把打印的 **连接地址** 写入 `YUNLINK_ADDRESS=`，把表里 **entity_uid** 那一列写入 `YUNLINK_UAV=` 或 `YUNLINK_UGV=`。不要填 `uav1`。
-5. 保存 `yunlink.env`，再按编号往下：`ex02` 看目录，`ex03` 只读状态，`ex04` 起会飞。
+5. 保存后再按编号往下：`ex02` 看目录，`ex03` 只读状态，`ex04` 起会飞。
 
 `yunlink_connect` 只连 Bridge。`yunlink_entities` 只读目录。只有 `yunlink_vehicle` / `yunlink_ugv` 才会 attach。
 

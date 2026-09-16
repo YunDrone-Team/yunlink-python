@@ -130,6 +130,9 @@ assert(contains(discoverSource, 'yunlink.env'));
 assert(contains(discoverSource, '防火墙') || contains(discoverSource, 'Windows 安全警报'));
 assert(contains(fileread(fullfile(root, 'examples', 'README.md')), 'UDP 9697'));
 assert(contains(fileread(fullfile(root, 'examples', 'yunlink.env.example')), 'YUNLINK_UAV='));
+loader = fileread(fullfile(root, 'yunlink_load_example_env.m'));
+assert(contains(loader, "'yunlink.env', 'yunlink.env.example'") || contains(loader, "'yunlink.env.example'"));
+assert(contains(loader, 'yunlink:MissingEnv'));
 assert(contains(fileread(fullfile(root, 'build_toolbox.m')), 'yunlink.env.example'));
 assert(contains(userGuide, 'Windows 安全警报') || contains(userGuide, '专用网络'));
 

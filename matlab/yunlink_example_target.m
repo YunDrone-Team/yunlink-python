@@ -1,6 +1,6 @@
 function [address, uavUid, ugvUid, bridgeId] = yunlink_example_target()
-%YUNLINK_EXAMPLE_TARGET 从 yunlink.env 或环境变量读取 Bridge/设备。
-%   优先 getenv，其次 examples/yunlink.env。
+%YUNLINK_EXAMPLE_TARGET 读取 Bridge/设备。
+%   顺序：环境变量，再 yunlink.env，再 yunlink.env.example。
 %   地址仍空则搜索局域网；只有一台 Bridge 才自动用它。
 
 cfg = yunlink_load_example_env();
