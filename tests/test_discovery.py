@@ -1,6 +1,11 @@
 import inspect
 
-from yunlink_python.discovery import _discovery_targets, _host_from_address, _subnet24_hosts, discover
+from yunlink_python.discovery import (
+    _discovery_targets,
+    _host_from_address,
+    _subnet24_hosts,
+    discover,
+)
 
 
 def test_host_from_address_strips_port_and_brackets():

@@ -6,11 +6,11 @@ from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink_python.profiles import (
     Waypoint,
     direct_body_velocity_payload,
-    mapping_start_payload,
-    mapping_stop_payload,
     direct_world_position_payload,
     direct_world_velocity_payload,
     emergency_kill_payload,
+    mapping_start_payload,
+    mapping_stop_payload,
     nav_payload,
     return_home_payload,
     takeoff_payload,
