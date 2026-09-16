@@ -64,6 +64,8 @@ switch name
         text = '只读状态，不会起飞';
     case 'basic_flight_demo.m'
         text = '会起飞、移动、降落';
+    case 'ex99_live_check.m'
+        text = '现场全量检查，默认不飞';
     otherwise
         text = '示例脚本';
 end

@@ -57,5 +57,6 @@ YUNLINK_ADDRESS=192.168.1.5:9696
 - `ex10` 多 Bridge 时按 Bridge ID 选
 - `ex11` `ex13` `ex14` 多机只读
 - `ex12` 多机短航线，会飞
+- `ex99_live_check` / `yunlink_live_check` 现场一次跑完搜索、连接、目录、状态、错误路径；默认不飞
 
 `04`、`05`、`06`、`07`、`12`、`basic_flight_demo` 会发真实控制。周围不要有人和障碍。

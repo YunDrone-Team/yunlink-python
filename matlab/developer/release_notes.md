@@ -1,3 +1,5 @@
+1.4.0：增加 yunlink_live_check / ex99_live_check，一次跑搜索、连接、目录、状态；默认不飞。没有 yunlink.env 时读 yunlink.env.example。
+
 1.3.2：示例改用 yunlink.env；打印带 entity_uid 表头；写清 Windows 防火墙与 UDP 9697 搜索。
 
 1.3.1：Windows 解压多一层目录时仍能找到 cp313 win_amd64 wheel；搜索忽略 ICMP RST；示例默认连搜到的 Bridge。
