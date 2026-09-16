@@ -124,7 +124,7 @@ Windows 上 `yunlink_setup` 只选 `win_amd64`（64 位 MATLAB），不会把 `w
 
 - Python 3.10–3.13：底层 [yunlink](https://github.com/YunDrone-Team/yunlink) 要求 ≥ 3.10
 - MATLAB R2022b 或更新，且解释器必须是该 MATLAB 官方支持的 CPython
-- 绑定包 `yunlink` 2.0.1，SDK `yunlink_python` 1.2.x
+- 绑定包 `yunlink` 2.0.1，SDK `yunlink_python` 1.3.x
 - Bridge 协商 `org.yunlink.mobility@1` 与 `com.yundrone.sunray@2`
 
 MATLAB 每个函数的参数与示例见 [`matlab/developer/API.md`](../matlab/developer/API.md)。

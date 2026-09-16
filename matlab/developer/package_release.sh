@@ -9,10 +9,10 @@ elif command -v matlab >/dev/null 2>&1; then
 else
   matlab_bin="/Applications/MATLAB_R2026a.app/bin/matlab"
 fi
-bundle_dir="$root/dist/yunlink-sunray-matlab-1.2.0-bundle"
-zip_file="$root/dist/yunlink-sunray-matlab-1.2.0-bundle.zip"
+bundle_dir="$root/dist/yunlink-sunray-matlab-1.3.0-bundle"
+zip_file="$root/dist/yunlink-sunray-matlab-1.3.0-bundle.zip"
 binding_dir="$root/dist/bindings"
-sdk_wheel="$root/dist/yunlink_python-1.2.0-py3-none-any.whl"
+sdk_wheel="$root/dist/yunlink_python-1.3.0-py3-none-any.whl"
 python_bin="${PYTHON:-python3}"
 
 cd "$root"
@@ -29,14 +29,14 @@ fi
 
 rm -rf "$binding_dir"
 mkdir -p "$binding_dir"
-gh release download v2.0.1 --repo YunDrone-Team/yunlink --dir "$binding_dir" --pattern 'yunlink-2.0.1-*.whl'
+gh release download v2.0.2 --repo YunDrone-Team/yunlink --dir "$binding_dir" --pattern 'yunlink-*.whl'
 
 "$matlab_bin" -batch "addpath('$root/matlab'); addpath('$root/matlab/developer'); build_release_bundle('$bundle_dir','$binding_dir')"
 
 rm -f "$zip_file"
 (
   cd "$root/dist"
-  zip -r "yunlink-sunray-matlab-1.2.0-bundle.zip" "yunlink-sunray-matlab-1.2.0-bundle"
+  zip -r "yunlink-sunray-matlab-1.3.0-bundle.zip" "yunlink-sunray-matlab-1.3.0-bundle"
 )
 
 echo "Created $zip_file"

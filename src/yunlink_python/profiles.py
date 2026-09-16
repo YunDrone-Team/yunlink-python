@@ -48,6 +48,8 @@ UGV_MOVE_POINT = type_ref("UgvMovePointGoal", 5)
 UGV_VELOCITY = type_ref("UgvVelocityGoal", 5)
 UGV_HOLD = type_ref("UgvHoldGoal", 5)
 PLANNER_CANCEL = type_ref("PlannerCancelTaskRequest", 1)
+MAPPING_START = type_ref("MappingStartRequest", 8)
+MAPPING_STOP = type_ref("MappingStopRequest", 8)
 
 
 @dataclass(frozen=True)
@@ -238,6 +240,14 @@ def ugv_hold_payload() -> bytes:
 
 def planner_cancel_payload() -> bytes:
     return sunray_pb2.PlannerCancelTaskRequest().SerializeToString()
+
+
+def mapping_start_payload() -> bytes:
+    return sunray_pb2.MappingStartRequest().SerializeToString()
+
+
+def mapping_stop_payload() -> bytes:
+    return sunray_pb2.MappingStopRequest().SerializeToString()
 
 
 def nav_payload(x: float, y: float, z: float, yaw_rad: float, frame_id: str) -> bytes:

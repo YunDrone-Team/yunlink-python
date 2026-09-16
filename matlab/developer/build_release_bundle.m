@@ -3,7 +3,7 @@ function bundleDir = build_release_bundle(bundleDir, bindingDir)
 repoRoot = fileparts(fileparts(fileparts(mfilename('fullpath'))));
 matlabRoot = fullfile(repoRoot, 'matlab');
 if nargin < 1 || strlength(string(bundleDir)) == 0
-    bundleDir = fullfile(repoRoot, 'dist', 'yunlink-sunray-matlab-1.2.0-bundle');
+    bundleDir = fullfile(repoRoot, 'dist', 'yunlink-sunray-matlab-1.3.0-bundle');
 else
     bundleDir = char(string(bundleDir));
 end
@@ -18,15 +18,15 @@ if isfolder(bundleDir)
 end
 mkdir(bundleDir);
 
-mltbx = fullfile(bundleDir, 'yunlink-sunray-matlab-1.2.0.mltbx');
-sdkWheel = fullfile(repoRoot, 'dist', 'yunlink_python-1.2.0-py3-none-any.whl');
+mltbx = fullfile(bundleDir, 'yunlink-sunray-matlab-1.3.0.mltbx');
+sdkWheel = fullfile(repoRoot, 'dist', 'yunlink_python-1.3.0-py3-none-any.whl');
 addpath(matlabRoot);
 build_toolbox(mltbx, sdkWheel);
 
 if ~isfile(sdkWheel)
     error('yunlink:MissingSdkWheel', 'SDK wheel does not exist: %s', sdkWheel);
 end
-copyfile(sdkWheel, fullfile(bundleDir, 'yunlink_python-1.2.0-py3-none-any.whl'));
+copyfile(sdkWheel, fullfile(bundleDir, 'yunlink_python-1.3.0-py3-none-any.whl'));
 copyfile(fullfile(matlabRoot, 'INSTALL.txt'), fullfile(bundleDir, 'INSTALL.txt'));
 copyfile(fullfile(matlabRoot, 'README.md'), fullfile(bundleDir, 'README.md'));
 

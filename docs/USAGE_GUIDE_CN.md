@@ -18,7 +18,7 @@ SDK 不连接 ROS，不复制 ROS 服务，不自动选择第一台设备，也�
 
 1. YunLink Bridge 已启动并监听 TCP 端口，默认端口是 `9696`。
 2. 仿真或真实设备已经注册到 Bridge 的设备目录。
-3. Python 版本为 3.10、3.11、3.12 或 3.13（yunlink 绑定要求 ≥ 3.10），SDK 版本为 `1.2.0`。MATLAB 为 R2022b 或更新。
+3. Python 版本为 3.10、3.11、3.12 或 3.13（yunlink 绑定要求 ≥ 3.10），SDK 版本为 `1.3.0`。MATLAB 为 R2022b 或更新。
 4. 第一次测试优先使用仿真实体，真实设备必须遵守现场安全规定。
 5. 运行 `examples/` 脚本前，复制 `examples/yunlink.env.example` 为 `examples/yunlink.env`，在文件里填写目标 Bridge 和设备 ID。不要每次 export。
 
@@ -56,13 +56,13 @@ IP 地址只是连接地址，不是设备 ID。显示名称例如 `uav1` 可以
 ## 4. 安装 YunLink binding 与 SDK
 
 YunLink binding 含平台原生库，请从
-[yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
+[yunlink v2.0.2](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.2)
 下载匹配本机系统和 Python 版本的预编译 wheel，不必编译 C++。
 
 ```bash
 # 先安装通用 YunLink Python binding，文件名按系统和 Python 版本替换。
 python -m pip install \
-  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.1/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
+  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.2/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
 
 git clone https://github.com/YunDrone-Team/yunlink-python.git
 cd yunlink-python

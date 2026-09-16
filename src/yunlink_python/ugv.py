@@ -13,6 +13,7 @@ from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
 
 from .actions import ActionHandle, ActionResult
 from .errors import ActionFailedError, ConnectionError
+from .mapping import MappingState, mapping_state_from_sample, start_mapping, stop_mapping
 from .profiles import (
     PLANNER_CANCEL,
     UGV_HOLD,
@@ -37,6 +38,8 @@ class Ugv:
         transport.on_connection_change(self._on_connection)
         transport.attach(uid)
         self._state.set_connected(True)
+        self._mapping_state: MappingState | None = None
+        self._mapping_watching = False
         self._subscribe("odometry", self._on_odometry)
         self._subscribe("ugv_control_state", self._on_control_state)
         self._subscribe("ugv_planning_state", self._on_planning_state)
@@ -79,6 +82,22 @@ class Ugv:
 
     def hold(self, timeout: float = 15.0, *, wait: bool = True) -> ActionResult | ActionHandle:
         return self._run(UGV_HOLD, ugv_hold_payload(), timeout, wait)
+
+    def start_mapping(self, timeout: float = 8.0) -> ActionResult:
+        return start_mapping(self._transport, self.uid, timeout)
+
+    def stop_mapping(self, timeout: float = 8.0) -> ActionResult:
+        return stop_mapping(self._transport, self.uid, timeout)
+
+    @property
+    def mapping_state(self) -> MappingState | None:
+        if not self._mapping_watching:
+            self._subscribe("mapping_state", self._on_mapping_state)
+            self._mapping_watching = True
+        return self._mapping_state
+
+    def _on_mapping_state(self, _event, sample) -> None:
+        self._mapping_state = mapping_state_from_sample(sample)
 
     def cancel(self, timeout: float = 15.0) -> ActionResult:
         with self._lock:

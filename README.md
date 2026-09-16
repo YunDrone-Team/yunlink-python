@@ -27,8 +27,8 @@ MATLAB 用户请用 **R2022b 或更新**。R2022a 官方只支持 Python 3.8/3.9
 
 ## 安装
 
-当前 SDK 版本为 `1.2.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
-[yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
+当前 SDK 版本为 `1.3.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
+[yunlink v2.0.2](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.2)
 里匹配本机的预编译 wheel，不必编译 C++。
 
 按文件名选择：`cp310`/`cp311`/`cp312`/`cp313` 对应 Python 3.10 到 3.13；
@@ -37,7 +37,7 @@ MATLAB 用户请用 **R2022b 或更新**。R2022a 官方只支持 Python 3.8/3.9
 
 ```bash
 python -m pip install \
-  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.1/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
+  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.2/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
 
 git clone https://github.com/YunDrone-Team/yunlink-python.git
 cd yunlink-python
@@ -190,7 +190,7 @@ result = handle.wait(timeout=30)
 
 MATLAB 用户从 GitHub Release 下载打包好的 Toolbox，不必克隆本仓库：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.2.0/yunlink-sunray-matlab-1.2.0-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.3.0/yunlink-sunray-matlab-1.3.0-bundle.zip
 
 本仓库的 Release 仅提供该 MATLAB 用户包。安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
 [`matlab/developer/README.md`](matlab/developer/README.md)。

@@ -9,12 +9,12 @@
 用户只下载 GitHub Release 里的一个 zip：
 
 ```text
-yunlink-sunray-matlab-1.2.0-bundle.zip
+yunlink-sunray-matlab-1.3.0-bundle.zip
 ```
 
 发布地址：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/tag/matlab-1.2.0
+https://github.com/YunDrone-Team/yunlink-python/releases/tag/matlab-1.3.0
 
 zip 内包含 Toolbox、纯 Python SDK wheel、各平台 YunLink binding wheel 和安装说明。用户不需要克隆本仓库。
 
@@ -38,7 +38,7 @@ cd /path/to/yunlink-python
 无桌面环境不要调用无参数 `yunlink_setup`。显式安装：
 
 ```matlab
-yunlink_setup("/path/to/python3.12", "/path/to/yunlink_python-1.2.0-py3-none-any.whl", "/path/to/yunlink-binding.whl")
+yunlink_setup("/path/to/python3.12", "/path/to/yunlink_python-1.3.0-py3-none-any.whl", "/path/to/yunlink-binding.whl")
 ```
 
 非 Planner 联通测试：
@@ -61,18 +61,18 @@ bash matlab/developer/package_release.sh
 
 1. 构建纯 Python SDK wheel。
 2. 构建 `.mltbx`。
-3. 从 `YunDrone-Team/yunlink` 的 `v2.0.1` Release 下载各平台 binding wheel。
-4. 生成 `dist/yunlink-sunray-matlab-1.2.0-bundle/` 和对应 zip。
+3. 从 `YunDrone-Team/yunlink` 的 `v2.0.2` Release 下载各平台 binding wheel。
+4. 生成 `dist/yunlink-sunray-matlab-1.3.0-bundle/` 和对应 zip。
 
 不要把 `dist/`、wheel 或 zip 提交进 git。
 
-GitHub Actions 工作流 `MATLAB Release` 会在 `main` 上的 MATLAB/SDK 变更后自动打包 `.mltbx` 和发布 zip，并更新 `matlab-1.2.0` Release。本仓库的 GitHub Release 只用于 MATLAB 用户包。
+GitHub Actions 工作流 `MATLAB Release` 会在 `main` 上的 MATLAB/SDK 变更后自动打包 `.mltbx` 和发布 zip，并更新 `matlab-1.3.0` Release。本仓库的 GitHub Release 只用于 MATLAB 用户包。
 
 本地创建或覆盖 Release：
 
 ```bash
-gh release upload matlab-1.2.0 \
-  dist/yunlink-sunray-matlab-1.2.0-bundle.zip \
+gh release upload matlab-1.3.0 \
+  dist/yunlink-sunray-matlab-1.3.0-bundle.zip \
   --clobber
 ```
 

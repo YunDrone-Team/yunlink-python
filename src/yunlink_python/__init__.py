@@ -28,6 +28,7 @@ from .errors import (
     TimeoutError,
     YunLinkPythonError,
 )
+from .mapping import MappingLidarState, MappingState
 from .profiles import Waypoint
 from .state import LocalizationState, PlannerState, Quaternion, UgvState, Vector3, VehicleState
 from .ugv import Ugv
@@ -44,6 +45,8 @@ __all__ = [
     "EntityInfo",
     "EntityNotFoundError",
     "LocalizationState",
+    "MappingLidarState",
+    "MappingState",
     "PlannerState",
     "Quaternion",
     "TimeoutError",
@@ -68,4 +71,4 @@ __all__ = [
     "vehicle_key",
 ]
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"

@@ -14,6 +14,7 @@ from yunlink.profiles.org.yunlink.telemetry.v1 import telemetry_pb2
 
 from .actions import ActionHandle, ActionResult
 from .errors import ActionFailedError, ConnectionError, TimeoutError
+from .mapping import MappingState, mapping_state_from_sample, start_mapping, stop_mapping
 from .profiles import (
     EMERGENCY_KILL,
     HOVER,
@@ -49,6 +50,8 @@ class Vehicle:
         transport.on_connection_change(self._on_connection)
         self._state.set_connected(True)
         transport.attach(uid)
+        self._mapping_state: MappingState | None = None
+        self._mapping_watching = False
         self._subscribe("odometry", self._on_odometry)
         self._subscribe("odom_status", self._on_odom_status)
         self._subscribe("flight_control_state", self._on_flight_state)
@@ -288,6 +291,24 @@ class Vehicle:
             timeout,
             wait,
         )
+
+    def start_mapping(self, timeout: float = 8.0) -> ActionResult:
+        """Start Livox point-cloud accumulation on this entity."""
+        return start_mapping(self._transport, self.uid, timeout)
+
+    def stop_mapping(self, timeout: float = 8.0) -> ActionResult:
+        """Stop Livox point-cloud accumulation on this entity."""
+        return stop_mapping(self._transport, self.uid, timeout)
+
+    @property
+    def mapping_state(self) -> MappingState | None:
+        if not self._mapping_watching:
+            self._subscribe("mapping_state", self._on_mapping_state)
+            self._mapping_watching = True
+        return self._mapping_state
+
+    def _on_mapping_state(self, _event, sample) -> None:
+        self._mapping_state = mapping_state_from_sample(sample)
 
     def cancel(self, timeout: float = 15.0) -> ActionResult | None:
         with self._action_lock:

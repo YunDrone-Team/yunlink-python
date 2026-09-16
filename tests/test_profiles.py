@@ -6,6 +6,8 @@ from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink_python.profiles import (
     Waypoint,
     direct_body_velocity_payload,
+    mapping_start_payload,
+    mapping_stop_payload,
     direct_world_position_payload,
     direct_world_velocity_payload,
     emergency_kill_payload,
@@ -75,6 +77,11 @@ def test_direct_and_ugv_payloads_use_expected_targets():
     assert move.local_frame_id == "world"
     velocity = sunray_pb2.UgvVelocityGoal.FromString(ugv_velocity_payload(0.2, 0.0, body=True))
     assert velocity.WhichOneof("target") == "body"
+
+
+def test_mapping_payloads_are_empty_requests():
+    assert sunray_pb2.MappingStartRequest.FromString(mapping_start_payload())
+    assert sunray_pb2.MappingStopRequest.FromString(mapping_stop_payload())
 
 
 def test_velocity_lease_accepts_matlab_float_integer_and_rejects_fraction():

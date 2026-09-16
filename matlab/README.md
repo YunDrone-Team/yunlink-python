@@ -4,7 +4,7 @@
 
 发布包：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.2.0/yunlink-sunray-matlab-1.2.0-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.3.0/yunlink-sunray-matlab-1.3.0-bundle.zip
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 
@@ -13,7 +13,7 @@ MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**�
 发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`ex00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
 
 1. `yunlink-2.0.1-*.whl`：按操作系统和 Python 版本提供的原生绑定
-2. `yunlink_python-1.2.0-*.whl`：MATLAB 调用的 SDK
+2. `yunlink_python-1.3.0-*.whl`：MATLAB 调用的 SDK
 
 MATLAB 本身不内置可用的 3.10–3.13 解释器，所以仍要指定系统里的 Python 可执行文件。通信库不在 MATLAB 里现场编译。
 
@@ -65,12 +65,12 @@ Linux:      python3 --version
 Add-On Explorer 只搜索 MathWorks 商店，搜索不到本工具箱是正常的。不要在里面搜索，也不要使用 **Add Package Repository**。
 
 1. 下载并解压发布包。不要在压缩包内部直接操作。
-2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.2.0.mltbx`。
+2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.3.0.mltbx`。
 3. MATLAB 打开 Toolbox 安装器后，确认名称为 **YunLink Sunray MATLAB Support**，点击 Install。
 4. 若双击没有唤起 MATLAB，可在命令窗口执行：
 
 ```matlab
-matlab.addons.install("完整路径/yunlink-sunray-matlab-1.2.0.mltbx")
+matlab.addons.install("完整路径/yunlink-sunray-matlab-1.3.0.mltbx")
 ```
 
 路径按本机实际情况填写。Windows 使用反斜杠或正斜杠均可。

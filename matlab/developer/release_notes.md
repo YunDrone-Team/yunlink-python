@@ -1,4 +1,4 @@
-1.2.0：修复 Windows 多 wheel 误匹配；在调用 py.* 前检查 MATLAB 与 CPython 是否匹配，避免只看到「Python 命令需要支持的 CPython 版本」；Toolbox 最低 R2022b。
+1.3.0：跟进最新 yunlink（含 Livox 点云累积 MappingStart/Stop）。MATLAB R2022b + Python 3.10 起。
 
 MATLAB 用户请下载这个 zip，不必克隆仓库。
 

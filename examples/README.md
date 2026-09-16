@@ -9,7 +9,7 @@
 ## 运行前准备
 
 先安装预编译的 YunLink Python binding，再安装本 SDK。binding 从
-[yunlink v2.0.1](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.1)
+[yunlink v2.0.2](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.2)
 下载，不必编译 C++：
 
 ```bash

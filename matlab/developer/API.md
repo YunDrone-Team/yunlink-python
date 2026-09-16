@@ -141,6 +141,17 @@ yunlink_command(uav, "land")
 
 `kind`：`takeoff` / `position` / `velocity` / `hover` / `return_home` / `land` / `emergency_lock`。
 
+## 建图（Livox 点云累积）
+
+UAV 和 UGV 都可以调用。对应 Bridge `com.yundrone.sunray.mapping.v1`。
+
+```matlab
+yunlink_mapping_start(uav)
+yunlink_mapping_stop(uav)
+```
+
+Python：`uav.start_mapping()` / `uav.stop_mapping()`；`uav.mapping_state` 会订阅 `mapping_state` 流。
+
 ## UGV 控制（会走）
 
 `frame_id` 为空时不要 `move_to`，等 `yunlink_ugv_state` 新鲜。
