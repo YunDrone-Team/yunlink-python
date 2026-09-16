@@ -1,11 +1,11 @@
 function outputFile = build_toolbox(outputFile, sdkWheel)
 %BUILD_TOOLBOX Build the end-user YunLink Sunray MATLAB Toolbox.
-%   build_toolbox() writes dist/yunlink-sunray-matlab-1.3.0.mltbx.
+%   build_toolbox() writes dist/yunlink-sunray-matlab-1.3.1.mltbx.
 %   An optional SDK wheel path selects the pure-Python yunlink-python wheel.
 
 if nargin < 1 || strlength(string(outputFile)) == 0
     outputFile = fullfile(fileparts(fileparts(mfilename('fullpath'))), ...
-        'dist', 'yunlink-sunray-matlab-1.3.0.mltbx');
+        'dist', 'yunlink-sunray-matlab-1.3.1.mltbx');
 else
     outputFile = char(string(outputFile));
 end
@@ -76,7 +76,7 @@ end
 
 opts = matlab.addons.toolbox.ToolboxOptions(stage, 'yunlink-sunray');
 opts.ToolboxName = 'YunLink Sunray MATLAB Support';
-opts.ToolboxVersion = '1.3.0';
+opts.ToolboxVersion = '1.3.1';
 opts.AuthorName = 'YunDrone Team';
 opts.Summary = 'MATLAB wrappers for controlling Sunray vehicles through YunLink';
 opts.Description = ['Connect to a YunLink Bridge, inspect UAV state, and issue ', ...

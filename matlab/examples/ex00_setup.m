@@ -7,7 +7,7 @@
 %   Linux:    "/usr/bin/python3.12"
 pythonExe = "";
 
-% bundleDir：解压后的 yunlink-sunray-matlab-1.3.0-bundle 目录。
+% bundleDir：解压后的 yunlink-sunray-matlab-1.3.1-bundle 目录。
 % 留空则在用户下载目录中查找。
 bundleDir = "";
 
