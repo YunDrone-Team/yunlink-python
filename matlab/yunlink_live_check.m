@@ -1,19 +1,15 @@
 function results = yunlink_live_check()
 %YUNLINK_LIVE_CHECK 对着现场 Bridge 跑一遍示例会用到的路径。
 %   先搜索、再连接。每一项打印 PASS / FAIL / SKIP。
-%   默认不起飞、不跑航点。桌面会问要不要做短时控制。
-%
-%   若只想手跑几个 example，最小集是：
-%     ex00_setup → ex01_discover → ex02_connect_and_inspect →
-%     ex03_watch_state → ex08_errors
-%   这几条过了，只读和报错路径就算通；ex04 起才是真飞。
+%   有 UAV 就会起飞、短航线、降落；有 UGV 就点位 + Hold。不限仿真。
+%   桌面会先确认一次，默认「继续飞」。
 
 yunlink_prepare_runtime();
 results = struct('name', {}, 'status', {}, 'detail', {});
 
 fprintf(['\nYunLink 现场检查\n', ...
     '搜索 UDP 9697，连接 TCP 9696。Windows 若弹防火墙请允许专用网络。\n', ...
-    '最小手测集：ex00、ex01、ex02、ex03、ex08。本脚本覆盖这些路径。\n\n']);
+    '后面会起飞、短航线、降落（有 UAV）以及无人车点位（有 UGV）。不限仿真。\n\n']);
 
 cfgTimeout = 5;
 try
@@ -162,52 +158,98 @@ else
     results = add(results, 'mapping_stop', 'SKIP', '没有 UAV');
 end
 
-wantMotion = false;
+wantMotion = true;
 if usejava('desktop')
     answer = questdlg( ...
-        ['默认到此结束（覆盖 ex01/ex02/ex03/ex08/ex11 只读路径）。', newline, ...
-         '点「短时控制」才会：UAV 已在空中则 hover；UGV 则 Hold。', newline, ...
-         '不会自动起飞，也不会跑航点。'], ...
-        'YunLink 现场检查', '只读结束', '短时控制', '只读结束');
-    wantMotion = strcmp(answer, '短时控制');
+        ['接下来会起飞、短平移、两点航线、悬停、降落。', newline, ...
+         '有无人车则点位移动和 Hold。不限仿真。周围请空出。'], ...
+        'YunLink 现场检查', '继续飞', '只读结束', '继续飞');
+    wantMotion = strcmp(answer, '继续飞');
 end
 
 if ~wantMotion
-    results = add(results, 'uav_hover', 'SKIP', '未勾选短时控制 / 非桌面');
-    results = add(results, 'ugv_hold', 'SKIP', '未勾选短时控制 / 非桌面');
-    results = add(results, 'uav_takeoff', 'SKIP', '本脚本不自动起飞');
-    results = add(results, 'uav_waypoints', 'SKIP', '本脚本不跑航点');
+    results = add(results, 'uav_takeoff', 'SKIP', '用户取消飞行');
+    results = add(results, 'uav_translate', 'SKIP', '用户取消飞行');
+    results = add(results, 'uav_waypoints', 'SKIP', '用户取消飞行');
+    results = add(results, 'uav_hover', 'SKIP', '用户取消飞行');
+    results = add(results, 'uav_land', 'SKIP', '用户取消飞行');
+    results = add(results, 'ugv_move', 'SKIP', '用户取消运动');
+    results = add(results, 'ugv_hold', 'SKIP', '用户取消运动');
     print_summary(results);
     return
 end
 
-fprintf('\n8) 短时控制（不起飞、不航点）\n');
+height = 1.0;
+fprintf('\n8) UAV 起飞 / 平移 / 航点 / 降落\n');
 if exist('uav', 'var') && ~isempty(uav)
     try
-        state = yunlink_state(uav);
-        if state.landed
-            results = add(results, 'uav_hover', 'SKIP', '在地上，未起飞所以不 hover');
+        if yunlink_state(uav).landed
+            yunlink_takeoff(uav, height, 30);
+            results = add(results, 'uav_takeoff', 'PASS', sprintf('z=%.1f', height));
         else
-            yunlink_hover(uav, 8);
-            results = add(results, 'uav_hover', 'PASS', '已 hover');
+            results = add(results, 'uav_takeoff', 'PASS', '已在空中，跳过起飞');
         end
+    catch exception
+        results = add(results, 'uav_takeoff', 'FAIL', first_line(exception.message));
+    end
+    try
+        yunlink_translate(uav, "forward", 0.15, 0.6, 15);
+        results = add(results, 'uav_translate', 'PASS', '前进 0.15m');
+    catch exception
+        results = add(results, 'uav_translate', 'FAIL', first_line(exception.message));
+    end
+    try
+        pos = yunlink_state(uav).position;
+        points = [
+            pos.x + 0.25, pos.y, height
+            pos.x + 0.25, pos.y + 0.25, height
+            ];
+        yunlink_waypoints(uav, points, 120);
+        results = add(results, 'uav_waypoints', 'PASS', '两点航线');
+    catch exception
+        results = add(results, 'uav_waypoints', 'FAIL', first_line(exception.message));
+    end
+    try
+        yunlink_hover(uav, 15);
+        results = add(results, 'uav_hover', 'PASS', '已悬停');
     catch exception
         results = add(results, 'uav_hover', 'FAIL', first_line(exception.message));
     end
+    try
+        if ~yunlink_state(uav).landed
+            yunlink_land(uav, 30);
+            results = add(results, 'uav_land', 'PASS', '已降落');
+        else
+            results = add(results, 'uav_land', 'PASS', '已在地上');
+        end
+    catch exception
+        results = add(results, 'uav_land', 'FAIL', first_line(exception.message));
+    end
 else
+    results = add(results, 'uav_takeoff', 'SKIP', '没有 UAV');
+    results = add(results, 'uav_translate', 'SKIP', '没有 UAV');
+    results = add(results, 'uav_waypoints', 'SKIP', '没有 UAV');
     results = add(results, 'uav_hover', 'SKIP', '没有 UAV');
+    results = add(results, 'uav_land', 'SKIP', '没有 UAV');
 end
-results = add(results, 'uav_takeoff', 'SKIP', '本脚本不自动起飞');
-results = add(results, 'uav_waypoints', 'SKIP', '本脚本不跑航点');
 
+fprintf('\n9) UGV 点位 / Hold\n');
 if exist('ugv', 'var') && ~isempty(ugv)
     try
-        yunlink_ugv_hold(ugv, 8);
+        start = yunlink_ugv_state(ugv).position;
+        yunlink_ugv_move_to(ugv, start.x + 0.3, start.y, 45);
+        results = add(results, 'ugv_move', 'PASS', '+0.3m');
+    catch exception
+        results = add(results, 'ugv_move', 'FAIL', first_line(exception.message));
+    end
+    try
+        yunlink_ugv_hold(ugv, 15);
         results = add(results, 'ugv_hold', 'PASS', '已 Hold');
     catch exception
         results = add(results, 'ugv_hold', 'FAIL', first_line(exception.message));
     end
 else
+    results = add(results, 'ugv_move', 'SKIP', '没有 UGV');
     results = add(results, 'ugv_hold', 'SKIP', '没有 UGV');
 end
 
@@ -241,8 +283,7 @@ for index = 1:numel(results)
 end
 fprintf('通过 %d  失败 %d  跳过 %d\n', passN, failN, skipN);
 if failN == 0
-    fprintf('失败项为 0。只读路径可视为已覆盖其余只读 example。\n');
-    fprintf('起飞/航点请另外手跑 ex04 / ex05，本脚本故意不自动飞。\n');
+    fprintf('失败项为 0。搜索、连接、状态、起飞/航点/降落路径已覆盖对应 example。\n');
 else
     fprintf('有失败项。先看 discover / connect / catalog，再往下查。\n');
 end
