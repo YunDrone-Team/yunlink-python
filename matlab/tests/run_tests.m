@@ -137,9 +137,8 @@ assert(contains(loader, 'yunlink:MissingEnv'));
 liveSource = fileread(fullfile(root, 'yunlink_live_check.m'));
 assert(contains(liveSource, 'PASS') && contains(liveSource, 'SKIP'));
 assert(contains(liveSource, 'yunlink_takeoff'));
-assert(contains(liveSource, 'yunlink_waypoints'));
 assert(contains(liveSource, 'yunlink_land'));
-assert(contains(liveSource, 'uav_hover_before_wp'));
+assert(~contains(liveSource, 'yunlink_waypoints'));
 assert(contains(fileread(fullfile(root, 'build_toolbox.m')), 'yunlink.env.example'));
 assert(contains(userGuide, 'Windows 安全警报') || contains(userGuide, '专用网络'));
 

@@ -50,13 +50,11 @@ YUNLINK_ADDRESS=192.168.1.5:9696
 - `ex02` 连接并打印带表头的目录
 - `ex03` / `read_state_demo` 只读 UAV
 - `ex04` / `basic_flight_demo` 会飞
-- `ex05` 航点，会飞
 - `ex06` 取消，会飞
 - `ex07` 无人车，会走
 - `ex08` 看错误信息
 - `ex10` 多 Bridge 时按 Bridge ID 选
 - `ex11` `ex13` `ex14` 多机只读
-- `ex12` 多机短航线，会飞
-- `ex99_live_check` / `yunlink_live_check` 现场一次跑完搜索、连接、目录、状态、起飞、航点、降落；不限仿真
+- `ex99_live_check` / `yunlink_live_check` 现场一次跑完搜索、连接、目录、状态、起飞、平移、降落；不限仿真
 
-`04`、`05`、`06`、`07`、`12`、`basic_flight_demo` 会发真实控制。周围不要有人和障碍。
+`04`、`06`、`07`、`basic_flight_demo` 会发真实控制。周围不要有人和障碍。

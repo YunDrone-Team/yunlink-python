@@ -20,7 +20,11 @@ fprintf('\n示例目录：\n  %s\n\n', exampleDir);
 fprintf('在左侧 Current Folder 里打开脚本。先运行 ex00_setup.m，再按编号往下做。\n');
 fprintf('配置写在 yunlink.env；没有就直接改 yunlink.env.example。填连接地址和 entity_uid（不是 uav1）。\n');
 fprintf('Windows 搜索若弹出防火墙，请允许专用网络。UDP 9697，TCP 9696。\n\n');
+hidden = {'ex05_waypoints.m', 'ex12_multi_uav_waypoints.m'};
 for index = 1:numel(files)
+    if any(strcmp(files(index).name, hidden))
+        continue
+    end
     fprintf('  %-32s  %s\n', files(index).name, example_blurb(files(index).name));
 end
 fprintf('\n说明见本目录 README.md。以后运行 yunlink_examples 会回到这里。\n');
@@ -42,8 +46,6 @@ switch name
         text = '读取 UAV 状态，不飞';
     case 'ex04_flight_basics.m'
         text = '起飞、平移、悬停、降落';
-    case 'ex05_waypoints.m'
-        text = '多航点 Planner 任务';
     case 'ex06_cancel_action.m'
         text = '启动移动后取消';
     case 'ex07_ugv_control.m'
@@ -54,8 +56,6 @@ switch name
         text = '按 Bridge ID 选择连接';
     case 'ex11_multi_device_control.m'
         text = '多设备状态，不飞';
-    case 'ex12_multi_uav_waypoints.m'
-        text = '多机短航线，会飞';
     case 'ex13_multi_device_state.m'
         text = '连续打印多设备状态';
     case 'ex14_observe_live.m'

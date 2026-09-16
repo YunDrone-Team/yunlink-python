@@ -1,11 +1,11 @@
 %% YunLink MATLAB 快速开始
 % 下载发布包即可，不必克隆代码仓库：
 %
-%   https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.2/yunlink-sunray-matlab-1.4.2-bundle.zip
+%   https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.3/yunlink-sunray-matlab-1.4.3-bundle.zip
 
 %% 安装 Toolbox
 % 不要在 Add-On Explorer 中搜索。解压发布包后，在资源管理器、Finder
-% 或文件管理器中双击 yunlink-sunray-matlab-1.4.2.mltbx，点击 Install。
+% 或文件管理器中双击 yunlink-sunray-matlab-1.4.3.mltbx，点击 Install。
 % Add Package Repository 不是 .mltbx 安装入口。
 
 %% 准备 Python

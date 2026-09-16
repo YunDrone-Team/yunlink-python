@@ -1,7 +1,7 @@
-YunLink MATLAB 1.4.2
+YunLink MATLAB 1.4.3
 
 1. MATLAB R2022b 或更新。安装该 MATLAB 支持的 Python 3.10–3.13。不要使用 MATLAB 自带的 3.14。
-2. 解压本 zip，双击 yunlink-sunray-matlab-1.4.2.mltbx，在 Toolbox 安装器中点击 Install。
+2. 解压本 zip，双击 yunlink-sunray-matlab-1.4.3.mltbx，在 Toolbox 安装器中点击 Install。
 3. 在 MATLAB 中运行 yunlink_examples，打开 examples/ex00_setup.m。
 4. 填写 pythonExe（Python 可执行文件）和 bundleDir（本 zip 解压后的目录），然后 Run。
 5. 运行 ex01_discover（不要带 .m），再按编号继续。控制类示例从 ex04_flight_basics 开始。

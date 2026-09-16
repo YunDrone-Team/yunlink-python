@@ -35,13 +35,7 @@ try
     yunlink_translate(uav, "up", 0.1, 0.5, 15);
     fprintf('7) 下降\n');
     yunlink_translate(uav, "down", 0.1, 0.5, 15);
-    % 直控结束后先悬停，让 Planner 回到 WAIT_MISSION，再交航点。
-    fprintf('7b) 悬停，准备航点\n');
-    yunlink_hover(uav, 15);
-    pos = yunlink_state(uav).position;
-    fprintf('8) Planner 目标移动\n');
-    yunlink_move_to(uav, pos.x + 0.3, pos.y, height, 60);
-    fprintf('9) 悬停\n');
+    fprintf('8) 悬停\n');
     yunlink_hover(uav, 15);
 finally
     % 无论中间是否出错，尽量降落。
