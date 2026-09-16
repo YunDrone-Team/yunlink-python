@@ -1,4 +1,4 @@
-% 14_OBSERVE_LIVE  命令窗口刷新遥测。
+% 11_OBSERVE_LIVE  命令窗口刷新遥测。
 %
 % 做什么：只读。不飞。桌面下 Ctrl-C 结束。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS。可把 YUNLINK_UAV 填成只看一架。

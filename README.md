@@ -190,7 +190,7 @@ result = handle.wait(timeout=30)
 
 MATLAB 用户从 GitHub Release 下载打包好的 Toolbox，不必克隆本仓库：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.4/yunlink-sunray-matlab-1.4.4-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip
 
 本仓库的 Release 仅提供该 MATLAB 用户包。安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
 [`matlab/developer/README.md`](matlab/developer/README.md)。

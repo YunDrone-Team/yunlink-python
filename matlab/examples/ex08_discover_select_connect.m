@@ -1,4 +1,4 @@
-% 10_DISCOVER_SELECT_CONNECT  多台 Bridge 时按 Bridge ID 选一台再连接。
+% 08_DISCOVER_SELECT_CONNECT  多台 Bridge 时按 Bridge ID 选一台再连接。
 %
 % 做什么：搜索、挑选、连接、attach 一台 UAV。不飞。
 % 本步要读：yunlink.env 的 YUNLINK_BRIDGE_ID、YUNLINK_UAV。

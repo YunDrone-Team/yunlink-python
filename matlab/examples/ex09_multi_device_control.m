@@ -1,4 +1,4 @@
-% 11_MULTI_DEVICE_CONTROL  attach 目录里全部 UAV/UGV，只打印状态。
+% 09_MULTI_DEVICE_CONTROL  attach 目录里全部 UAV/UGV，只打印状态。
 %
 % 做什么：不飞、不走。看多机目录。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS。

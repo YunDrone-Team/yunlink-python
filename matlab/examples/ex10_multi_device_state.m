@@ -1,4 +1,4 @@
-% 13_MULTI_DEVICE_STATE  连续打印全部 UAV/UGV 状态。
+% 10_MULTI_DEVICE_STATE  连续打印全部 UAV/UGV 状态。
 %
 % 做什么：只读，不飞。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS。

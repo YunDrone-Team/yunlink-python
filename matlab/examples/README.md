@@ -8,7 +8,7 @@
 2. 打开 `ex00_setup.m`，点绿色 **Run**。配 Python 3.10–3.13 和 zip 包。
 3. 配置写在 `yunlink.env`；没有这份文件就直接改同目录的 `yunlink.env.example`。程序先读环境变量，再 `yunlink.env`，再 `yunlink.env.example`。
 4. 运行 `ex01_discover`。把打印的 **连接地址** 写入 `YUNLINK_ADDRESS=`，把表里 **entity_uid** 那一列写入 `YUNLINK_UAV=` 或 `YUNLINK_UGV=`。不要填 `uav1`。
-5. 保存后再按编号往下：`ex02` 看目录，`ex03` 只读状态，`ex04` 起会飞。最后用 `ex08_live_check` 一次跑完。
+5. 保存后再按编号往下：`ex02` 看目录，`ex03` 只读状态，`ex04` 起会飞。最后用 `ex12_live_check` 一次跑完。
 
 `yunlink_connect` 只连 Bridge。`yunlink_entities` 只读目录。只有 `yunlink_vehicle` / `yunlink_ugv` 才会 attach。地面站已经连上并控制设备时，MATLAB 仍可只读遥测，不必申请控制权。
 
@@ -45,7 +45,7 @@ YUNLINK_ADDRESS=192.168.1.5:9696
 
 ## 编号说明
 
-主线连续编号：
+连续编号，中间不空号：
 
 - `ex00` 配 Python，不连飞机
 - `ex01` 搜索，抄地址和 entity_uid
@@ -55,11 +55,10 @@ YUNLINK_ADDRESS=192.168.1.5:9696
 - `ex05` 取消，会飞
 - `ex06` 无人车，会走
 - `ex07` 看错误信息
-- `ex08` / `yunlink_live_check` 现场一次跑完搜索、连接、目录、状态、起飞、平移、降落
+- `ex08` 多 Bridge 时按 Bridge ID 选
+- `ex09` 多机 attach，只读
+- `ex10` 连续打印多设备状态
+- `ex11` 命令窗口刷新遥测
+- `ex12` / `yunlink_live_check` 现场一次跑完搜索、连接、目录、状态、起飞、平移、降落
 
-可选：
-
-- `ex10` 多 Bridge 时按 Bridge ID 选
-- `ex11` `ex13` `ex14` 多机只读
-
-`04`、`05`、`06`、`ex08`、`basic_flight_demo` 会发真实控制。周围不要有人和障碍。
+`04`、`05`、`06`、`ex12`、`basic_flight_demo` 会发真实控制。周围不要有人和障碍。

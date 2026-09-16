@@ -1,6 +1,6 @@
 function exampleDir = yunlink_examples()
 %YUNLINK_EXAMPLES 把 MATLAB 当前文件夹切到示例目录并打开文件浏览器。
-%   先运行 ex00_setup，再按 ex01_discover 一直做到 ex08_live_check。
+%   先运行 ex00_setup，再按编号一直做到 ex12_live_check。
 
 root = fileparts(mfilename('fullpath'));
 exampleDir = fullfile(root, 'examples');
@@ -17,24 +17,29 @@ end
 
 files = dir(fullfile(exampleDir, '*.m'));
 fprintf('\n示例目录：\n  %s\n\n', exampleDir);
-fprintf('在左侧 Current Folder 里打开脚本。先运行 ex00_setup.m，再按 01、02、…、08 往下做。\n');
+fprintf('在左侧 Current Folder 里打开脚本。先运行 ex00_setup.m，再按 01、02、…、12 往下做。\n');
 fprintf('配置写在 yunlink.env；没有就直接改 yunlink.env.example。填连接地址和 entity_uid（不是 uav1）。\n');
 fprintf('Windows 搜索若弹出防火墙，请允许专用网络。UDP 9697，TCP 9696。\n\n');
-fprintf('主线（连续编号）：\n');
-mainNames = { ...
+ordered = { ...
     'ex00_setup.m', 'ex01_discover.m', 'ex02_connect_and_inspect.m', ...
     'ex03_watch_state.m', 'ex04_flight_basics.m', 'ex05_cancel_action.m', ...
-    'ex06_ugv_control.m', 'ex07_errors.m', 'ex08_live_check.m'};
-for index = 1:numel(mainNames)
-    fprintf('  %-32s  %s\n', mainNames{index}, example_blurb(mainNames{index}));
+    'ex06_ugv_control.m', 'ex07_errors.m', 'ex08_discover_select_connect.m', ...
+    'ex09_multi_device_control.m', 'ex10_multi_device_state.m', ...
+    'ex11_observe_live.m', 'ex12_live_check.m'};
+printed = false(1, numel(files));
+for index = 1:numel(ordered)
+    fprintf('  %-36s  %s\n', ordered{index}, example_blurb(ordered{index}));
+    for fileIndex = 1:numel(files)
+        if strcmp(files(fileIndex).name, ordered{index})
+            printed(fileIndex) = true;
+        end
+    end
 end
-fprintf('\n其余（可选）：\n');
 for index = 1:numel(files)
-    name = files(index).name;
-    if any(strcmp(name, mainNames))
+    if printed(index)
         continue
     end
-    fprintf('  %-32s  %s\n', name, example_blurb(name));
+    fprintf('  %-36s  %s\n', files(index).name, example_blurb(files(index).name));
 end
 fprintf('\n说明见本目录 README.md。以后运行 yunlink_examples 会回到这里。\n');
 
@@ -61,16 +66,16 @@ switch name
         text = '无人车点位、速度、Hold';
     case 'ex07_errors.m'
         text = '连接和动作异常处理';
-    case 'ex08_live_check.m'
-        text = '现场全量检查，会起飞降落';
-    case 'ex10_discover_select_connect.m'
+    case 'ex08_discover_select_connect.m'
         text = '按 Bridge ID 选择连接';
-    case 'ex11_multi_device_control.m'
+    case 'ex09_multi_device_control.m'
         text = '多设备状态，不飞';
-    case 'ex13_multi_device_state.m'
+    case 'ex10_multi_device_state.m'
         text = '连续打印多设备状态';
-    case 'ex14_observe_live.m'
+    case 'ex11_observe_live.m'
         text = '命令窗口刷新遥测';
+    case 'ex12_live_check.m'
+        text = '现场全量检查，会起飞降落';
     case 'read_state_demo.m'
         text = '只读状态，不会起飞';
     case 'basic_flight_demo.m'
