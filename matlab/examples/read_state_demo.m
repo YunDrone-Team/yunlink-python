@@ -1,14 +1,17 @@
-% READ_STATE_DEMO  连接并打印 UAV 状态。本示例不发送飞行指令。
-% 请把地址和 entity_uid 换成 ex01_discover.m 确认过的值。
-[address, envUav, envUgv] = yunlink_example_target();
-uavUid = envUav;
+% READ_STATE_DEMO  连接并打印一架 UAV 状态。
+%
+% 做什么：只读，不飞。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UAV（entity_uid）。
+% 上一步：ex01/ex02 表的第一列。
+
+[address, uavUid] = yunlink_example_target();
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
 uav = yunlink_vehicle(client, uavUid);
 
 state = yunlink_state(uav);
-disp(state.uavId);
+fprintf('entity_uid=%s  （这就是 YUNLINK_UAV 应填的值）\n', state.uavId);
 disp(state.position);
 disp(state.velocity);
 disp(state.batteryPercent);

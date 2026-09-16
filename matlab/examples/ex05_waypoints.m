@@ -1,10 +1,13 @@
-% 05_WAYPOINTS  起飞、执行两点航线，然后降落。
-% 本示例会发送飞行指令。
+% 05_WAYPOINTS  起飞后走两点航线，再降落。
+%
+% 做什么：Planner 多航点。会飞。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UAV。
+% 上一步：ex04。不要改本文件中间的变量。
 
-[address, envUav, envUgv] = yunlink_example_target();
-uavUid = envUav;
+[address, uavUid] = yunlink_example_target();
 height = 1.0;
 
+fprintf('本脚本会起飞并提交航线。\n');
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
@@ -16,11 +19,12 @@ try
         yunlink_takeoff(uav, height, 30);
     end
     pos = yunlink_state(uav).position;
+    % N×3，每行一个 x y z。
     points = [
         pos.x + 0.25, pos.y, height
         pos.x + 0.25, pos.y + 0.25, height
         ];
-    fprintf('航点任务\n');
+    fprintf('航点任务（两点）\n');
     yunlink_waypoints(uav, points, 120);
     disp(yunlink_state(uav).planner);
 finally

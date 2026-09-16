@@ -1,5 +1,7 @@
-% 13_MULTI_DEVICE_STATE  连续打印 UAV/UGV 状态若干秒。
-% 本示例不发送飞行指令。
+% 13_MULTI_DEVICE_STATE  连续打印全部 UAV/UGV 状态。
+%
+% 做什么：只读，不飞。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS。
 
 [address, ~, ~] = yunlink_example_target();
 seconds = 8;
@@ -26,7 +28,7 @@ end
 deadline = posixtime(datetime('now')) + seconds;
 while posixtime(datetime('now')) < deadline
     clc
-    fprintf('t+%.1fs\n', seconds - (deadline - posixtime(datetime('now'))));
+    fprintf('只读刷新，不会飞。t+%.1fs\n', seconds - (deadline - posixtime(datetime('now'))));
     for index = 1:numel(devices)
         if startsWith(labels{index}, "UAV")
             state = yunlink_state(devices{index});

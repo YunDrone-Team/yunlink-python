@@ -1,9 +1,12 @@
 % 12_MULTI_UAV_WAYPOINTS  给每架 UAV 一条两点短航线。
-% 本示例会发送飞行指令。
+%
+% 做什么：会飞。目录里所有 UAV 都会动。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS。确认现场允许多机起飞。
 
 [address, ~, ~] = yunlink_example_target();
 height = 1.0;
 
+fprintf('本脚本会让目录中每一架 UAV 起飞。\n');
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 infos = yunlink_entities(client);
@@ -11,6 +14,8 @@ uavs = infos(strcmp({infos.kind}, 'sunray.uav'));
 if isempty(uavs)
     error('yunlink:NoDevice', 'Bridge 目录中没有 UAV。');
 end
+fprintf('将控制 %d 架 UAV。entity_uid：\n', numel(uavs));
+yunlink_print_catalog(uavs);
 
 vehicles = cell(1, numel(uavs));
 try
@@ -36,3 +41,4 @@ finally
         end
     end
 end
+fprintf('完成。\n');

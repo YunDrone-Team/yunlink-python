@@ -1,10 +1,12 @@
-% 06_CANCEL_ACTION  启动一次移动后取消，再悬停降落。
-% 本示例会发送飞行指令。
+% 06_CANCEL_ACTION  开始移动后取消，再悬停降落。
+%
+% 做什么：演示 yunlink_cancel。会飞。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UAV。
 
-[address, envUav, envUgv] = yunlink_example_target();
-uavUid = envUav;
+[address, uavUid] = yunlink_example_target();
 height = 1.0;
 
+fprintf('本脚本会起飞，然后取消一次移动。\n');
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
@@ -16,7 +18,8 @@ try
         yunlink_takeoff(uav, height, 30);
     end
     pos = yunlink_state(uav).position;
-    fprintf('开始移动并取消\n');
+    fprintf('非阻塞 move_to，随后 cancel\n');
+    % wait=false 立刻返回，任务在后台跑。
     uav.move_to(pos.x + 2.0, pos.y, height, pyargs('timeout', 60, 'wait', false));
     pause(0.4);
     yunlink_cancel(uav, 15);

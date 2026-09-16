@@ -4,7 +4,7 @@
 
 发布包：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.3.1/yunlink-sunray-matlab-1.3.1-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.3.2/yunlink-sunray-matlab-1.3.2-bundle.zip
 
 MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
 
@@ -39,6 +39,16 @@ Win11 上 Miniconda 的 `python.exe` 若是 3.12，而 MATLAB 是 R2022a，就�
 
 公开方法对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。MATLAB 每个封装函数见 [`developer/API.md`](developer/API.md)；安装进 Toolbox 后同目录也有 `API.md`。
 
+## 搜索原理与 Windows 防火墙
+
+搜索 **不是** 去连 TCP 9696。本机向 **UDP 9697** 发查询：`255.255.255.255`、网卡广播地址、以及本网段 `/24` 里每个 IP。不少 Wi-Fi 会丢掉有限广播，所以 SDK 会补单播。Bridge 用 9697 回答，然后再用 TCP 9696 建 Session。
+
+Windows 第一次运行 MATLAB 或 `python.exe` 时，可能弹出全屏「Windows 安全警报」。请勾选 **专用网络** 并允许访问。点取消或只允许公用网络，就会搜不到或偶发失败。
+
+也可以跳过搜索：在示例目录把 `yunlink.env.example` 复制为 `yunlink.env`，写入 `YUNLINK_ADDRESS=ip:9696`。地址用 `ex01_discover` 打印的「连接地址」，不要用文档里的示例 IP。
+
+目标飞机/无人车的 ID 叫 **entity_uid**（例如 `e-52c218-2-1`），不是显示名 `uav1`。写入 `YUNLINK_UAV=` / `YUNLINK_UGV=`。
+
 常见路径：
 
 | 系统 | 示例 |
@@ -65,12 +75,12 @@ Linux:      python3 --version
 Add-On Explorer 只搜索 MathWorks 商店，搜索不到本工具箱是正常的。不要在里面搜索，也不要使用 **Add Package Repository**。
 
 1. 下载并解压发布包。不要在压缩包内部直接操作。
-2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.3.1.mltbx`。
+2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.3.2.mltbx`。
 3. MATLAB 打开 Toolbox 安装器后，确认名称为 **YunLink Sunray MATLAB Support**，点击 Install。
 4. 若双击没有唤起 MATLAB，可在命令窗口执行：
 
 ```matlab
-matlab.addons.install("完整路径/yunlink-sunray-matlab-1.3.1.mltbx")
+matlab.addons.install("完整路径/yunlink-sunray-matlab-1.3.2.mltbx")
 ```
 
 路径按本机实际情况填写。Windows 使用反斜杠或正斜杠均可。

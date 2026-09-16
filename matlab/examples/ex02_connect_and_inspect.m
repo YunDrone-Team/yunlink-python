@@ -1,19 +1,24 @@
-% 02_CONNECT_AND_INSPECT  连接 Bridge 并打印设备目录。
-% 本示例不 attach 设备，也不发送飞行指令。
+% 02_CONNECT_AND_INSPECT  连接 Bridge，只看设备目录。
+%
+% 做什么：TCP 连接 Session，打印目录。不 attach、不飞。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS（可留空则搜唯一 Bridge）。
+% 本步要抄：下面表里的 entity_uid，写入 YUNLINK_UAV= / YUNLINK_UGV=。
+% 上一步：ex01_discover。
 
+% 读 yunlink.env；地址空则再搜一次。
 [address, ~, ~] = yunlink_example_target();
 
+% 只建立 Bridge Session，不会选中任何飞机。
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 fprintf('已连接 Bridge %s  %s\n', string(client.bridge_uid), string(client.bridge_address));
+
+% 只读目录，不申请控制权。
 infos = yunlink_entities(client);
 if isempty(infos)
-    fprintf('Bridge 目录为空。\n');
+    fprintf('Bridge 目录为空。确认仿真里 UAV/UGV 已起来。\n');
     return
 end
-fprintf('设备目录（%d）：\n', numel(infos));
-for index = 1:numel(infos)
-    item = infos(index);
-    fprintf('  %s  %s  %s\n', item.uid, item.name, item.kind);
-end
-fprintf('\n请记下 entity_uid，供后续示例使用。yunlink_connect 不会 attach 设备。\n');
+fprintf('设备目录（%d）。第一列 entity_uid 才是后续脚本要填的 ID：\n', numel(infos));
+yunlink_print_catalog(infos);
+fprintf('yunlink_connect 不会 attach。下一步 ex03_watch_state。\n');

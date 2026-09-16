@@ -18,7 +18,8 @@ end
 files = dir(fullfile(exampleDir, '*.m'));
 fprintf('\n示例目录：\n  %s\n\n', exampleDir);
 fprintf('在左侧 Current Folder 里打开脚本。先运行 ex00_setup.m，再按编号往下做。\n');
-fprintf('控制类示例请先改 address 和 entity_uid。\n\n');
+fprintf('把 yunlink.env.example 复制为 yunlink.env，填连接地址和 entity_uid（不是 uav1）。\n');
+fprintf('Windows 搜索若弹出防火墙，请允许专用网络。UDP 9697，TCP 9696。\n\n');
 for index = 1:numel(files)
     fprintf('  %-32s  %s\n', files(index).name, example_blurb(files(index).name));
 end

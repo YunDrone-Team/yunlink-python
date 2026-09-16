@@ -1,11 +1,16 @@
-% 11_MULTI_DEVICE_CONTROL  attach 目录中全部 UAV/UGV 并打印状态。
-% 本示例不发送运动指令。
+% 11_MULTI_DEVICE_CONTROL  attach 目录里全部 UAV/UGV，只打印状态。
+%
+% 做什么：不飞、不走。看多机目录。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS。
 
 [address, ~, ~] = yunlink_example_target();
 
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 infos = yunlink_entities(client);
+fprintf('目录（第一列 entity_uid）：\n');
+yunlink_print_catalog(infos);
+
 count = 0;
 for index = 1:numel(infos)
     item = infos(index);

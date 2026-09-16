@@ -1,41 +1,55 @@
-% 00_SETUP  填写 pythonExe 和 bundleDir，然后点击 Run。
-% 下一步运行本目录的 ex01_discover.m。
+% 00_SETUP  第一次必跑：给 MATLAB 配上 Python 3.10–3.13 和 zip 里的通信库。
+%
+% 做什么：安装 yunlink / yunlink_python wheel。不连飞机，不飞。
+% 本步要填：下面的 pythonExe、bundleDir（可留空自动找）。
+% 下一步：复制 yunlink.env.example 为 yunlink.env，再跑 ex01_discover。
+%
+% Windows 第一次搜机或第一次调 Python 时，可能弹出「Windows 安全警报」。
+% 请勾选「专用网络」并允许访问。搜索用 UDP 9697，连接用 TCP 9696。
 
-% pythonExe：Python 3.10–3.13 的可执行文件，不要用 MATLAB 自带的 3.14。
+% pythonExe：Python 可执行文件，不要用 MATLAB 自带 3.14。
 %   Windows:  "C:\Users\<用户>\AppData\Local\Programs\Python\Python313\python.exe"
-%   macOS:    "/opt/homebrew/bin/python3.13"  或  "/usr/local/bin/python3.13"
+%   macOS:    "/opt/homebrew/bin/python3.13"
 %   Linux:    "/usr/bin/python3.12"
 pythonExe = "";
 
-% bundleDir：解压后的 yunlink-sunray-matlab-1.3.1-bundle 目录。
-% 留空则在用户下载目录中查找。
+% bundleDir：解压后的 zip 目录。里面应有 .mltbx 和 wheels 文件夹。
+% 若 Windows 解压多了一层，指到内层那一层也可以；setup 会自动解开。
 bundleDir = "";
 
 thisDir = fileparts(mfilename('fullpath'));
+% 工具箱函数在 examples 的上一级。
 addpath(fileparts(thisDir));
+
+% 留空则按常见安装路径猜测 Python。
 if strlength(strtrim(string(pythonExe))) == 0
     pythonExe = local_find_python();
 end
+% 留空则在下载目录里找解压后的 bundle。
 if strlength(strtrim(string(bundleDir))) == 0
     bundleDir = local_find_bundle();
 end
 if ~isfile(char(pythonExe))
     error('yunlink:MissingPython', ...
         ['未找到 Python 可执行文件。\n', ...
-         '请在 ex00_setup.m 开头把 pythonExe 设为 Python 3.10、3.11、3.12 或 3.13。']);
+         '请在本文件开头把 pythonExe 设为 Python 3.10、3.11、3.12 或 3.13。']);
 end
 if ~isfolder(bundleDir)
     error('yunlink:MissingBundle', ...
         ['未找到发布包目录。\n', ...
-         '请在 ex00_setup.m 开头把 bundleDir 设为解压后的 zip 目录。']);
+         '请把 bundleDir 设为解压后的 zip 目录（含 .mltbx 和 wheels）。']);
 end
 
 fprintf('Python: %s\nBundle: %s\n', pythonExe, bundleDir);
+% 解压 wheel 到该 Python，并记住路径。不走 pip。
 yunlink_setup(pythonExe, bundleDir);
 
 cd(thisDir);
-fprintf(['\n配置完成。接下来运行 ex01_discover，然后运行 ex02_connect_and_inspect。\n', ...
-         '飞行示例从 ex04_flight_basics 开始。说明见本目录 README.md。\n']);
+fprintf(['\n配置完成。\n', ...
+    '1) 把本目录 yunlink.env.example 复制为 yunlink.env。\n', ...
+    '2) 运行 ex01_discover（不要带 .m）。\n', ...
+    '3) 把打印的连接地址和 entity_uid 写入 yunlink.env。\n', ...
+    'Windows 若弹出防火墙，请允许专用网络。\n']);
 if usejava('desktop')
     filebrowser;
     commandwindow;

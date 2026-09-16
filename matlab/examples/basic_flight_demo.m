@@ -1,8 +1,11 @@
-% BASIC_FLIGHT_DEMO  精简飞行示例。
-% 本示例会发送飞行指令。请只对允许运动的实体运行。
-% 请把地址和 entity_uid 换成 ex01_discover.m 确认过的值。
-[address, envUav, envUgv] = yunlink_example_target();
-uavUid = envUav;
+% BASIC_FLIGHT_DEMO  精简起飞、位置、悬停、降落。
+%
+% 做什么：会飞。只对仿真或允许运动的飞机运行。
+% 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UAV。
+% 完整版见 ex04_flight_basics。
+
+[address, uavUid] = yunlink_example_target();
+fprintf('本脚本会起飞。\n');
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
