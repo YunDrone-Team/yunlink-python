@@ -19,6 +19,7 @@ elseif nargin == 2 || nargin == 3
     second = string(varargin{2});
     if isfolder(second)
         check_supported_python(pythonExecutable);
+        second = resolve_bundle_dir(second);
         bindingSource = match_binding_wheel(second, pythonExecutable);
         sdkSource = match_sdk_wheel(second);
         if strlength(sdkSource) == 0
@@ -377,10 +378,17 @@ for index = 1:numel(files)
 end
 files = files(keep);
 if numel(files) == 0
+    found = list_wheels(directory, 'yunlink-*.whl');
+    names = "none";
+    if ~isempty(found)
+        names = strjoin(string({found.name}), ', ');
+    end
     error('yunlink:BindingNotFound', ...
         ['No YunLink binding wheel matching this computer and %s was found in %s.\n', ...
+         'Looked for win_amd64/macos/manylinux + %s. Wheels seen: %s\n', ...
+         'If the zip extracted an extra folder, point bundleDir at the inner folder that contains wheels/ and the .mltbx.\n', ...
          'Python 3.14 (cp314) is not supported. Use 3.10, 3.11, 3.12, or 3.13.'], ...
-        abi, directory);
+        abi, directory, abi, names);
 elseif numel(files) > 1
     error('yunlink:MultipleBindingWheels', ...
         'Multiple matching YunLink binding wheels were found in %s. Select one file instead.', directory);
@@ -388,16 +396,52 @@ end
 wheel = string(fullfile(files(1).folder, files(1).name));
 end
 
+function directory = resolve_bundle_dir(directory)
+directory = char(string(directory));
+if bundle_looks_ready(directory)
+    return
+end
+nested = dir(fullfile(directory, 'yunlink-sunray-matlab-*-bundle'));
+for index = 1:numel(nested)
+    if ~nested(index).isdir
+        continue
+    end
+    candidate = fullfile(nested(index).folder, nested(index).name);
+    if bundle_looks_ready(candidate)
+        directory = candidate;
+        return
+    end
+end
+end
+
+function ready = bundle_looks_ready(directory)
+ready = isfolder(fullfile(directory, 'wheels')) || ...
+    ~isempty(dir(fullfile(directory, 'yunlink-sunray-matlab-*.mltbx'))) || ...
+    ~isempty(dir(fullfile(directory, '**', 'yunlink-*-win_amd64.whl'))) || ...
+    ~isempty(dir(fullfile(directory, '**', 'yunlink-*-macosx_*.whl'))) || ...
+    ~isempty(dir(fullfile(directory, '**', 'yunlink-*-manylinux_*.whl')));
+end
+
 function files = list_wheels(directory, pattern)
 files = dir(fullfile(directory, pattern));
-entries = dir(directory);
-for index = 1:numel(entries)
-    if ~entries(index).isdir || startsWith(entries(index).name, '.')
-        continue;
-    end
-    extra = dir(fullfile(entries(index).folder, entries(index).name, pattern));
-    files = [files; extra]; %#ok<AGROW>
+deep = dir(fullfile(directory, '**', pattern));
+if ~isempty(deep)
+    files = [files; deep]; %#ok<AGROW>
 end
+if isempty(files)
+    return
+end
+seen = strings(0, 1);
+keep = false(numel(files), 1);
+for index = 1:numel(files)
+    path = string(fullfile(files(index).folder, files(index).name));
+    if any(seen == path)
+        continue
+    end
+    seen(end + 1, 1) = path; %#ok<AGROW>
+    keep(index) = true;
+end
+files = files(keep);
 end
 
 function matched = matches_platform(name)

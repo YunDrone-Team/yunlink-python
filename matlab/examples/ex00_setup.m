@@ -103,6 +103,13 @@ for rootIndex = 1:numel(roots)
         candidate = fullfile(hits(index).folder, hits(index).name);
         stamp = datetime(hits(index).datenum, 'ConvertFrom', 'datenum');
         mltbx = dir(fullfile(candidate, 'yunlink-sunray-matlab-*.mltbx'));
+        if isempty(mltbx)
+            nested = dir(fullfile(candidate, 'yunlink-sunray-matlab-*-bundle'));
+            if ~isempty(nested) && nested(1).isdir
+                candidate = fullfile(nested(1).folder, nested(1).name);
+                mltbx = dir(fullfile(candidate, 'yunlink-sunray-matlab-*.mltbx'));
+            end
+        end
         if ~isempty(mltbx) && stamp >= newest
             newest = stamp;
             bundleDir = candidate;
