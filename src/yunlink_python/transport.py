@@ -78,7 +78,18 @@ class Transport:
         return self._port
 
     def _connect_session(self, timeout: float = 8.0) -> None:
-        peer = self.runtime.connect(self._host, self._port)
+        try:
+            peer = self.runtime.connect(self._host, self._port)
+        except yunlink.Error as error:
+            detail = f"YUNLINK_V2_ERROR({error.code})"
+            if getattr(error, "code", None) == 7:
+                raise TimeoutError(
+                    f"connecting to {self._host}:{self._port} timed out ({detail}). "
+                    "Use the address printed by discover(), not a sample IP from the docs."
+                ) from error
+            raise ConnectionError(
+                f"could not connect to {self._host}:{self._port} ({detail})"
+            ) from error
         session_id = self.runtime.open_session(peer)
         with self._condition:
             self._peer, self._session_id = peer, session_id

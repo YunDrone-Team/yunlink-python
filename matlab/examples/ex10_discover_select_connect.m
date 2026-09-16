@@ -2,13 +2,7 @@
 % 本示例不发送飞行指令。
 
 bridgeId = string(getenv('YUNLINK_BRIDGE_ID'));
-if strlength(bridgeId) == 0
-    bridgeId = "89c423";
-end
 uavUid = string(getenv('YUNLINK_UAV'));
-if strlength(uavUid) == 0
-    uavUid = "e-89c423-2-1";
-end
 timeoutS = 5;
 
 bridges = yunlink_discover(timeoutS);
@@ -21,18 +15,26 @@ for index = 1:numel(bridges)
     fprintf('  %s  %s\n', item.discoveryId, item.endpointUid);
 end
 
-match = bridges(strcmp({bridges.endpointUid}, char(bridgeId)));
-if isempty(match)
-    error('yunlink:BridgeNotFound', ...
-        '搜索结果中没有 Bridge %s。请在本文件开头修改 bridgeId。', bridgeId);
-end
-if numel(match) > 1
-    error('yunlink:MultipleBridges', '有多台 Bridge 匹配 %s。', bridgeId);
+if strlength(strtrim(bridgeId)) == 0
+    if numel(bridges) ~= 1
+        error('yunlink:MultipleBridges', '请设置 YUNLINK_BRIDGE_ID。');
+    end
+    match = bridges(1);
+else
+    match = bridges(strcmp({bridges.endpointUid}, char(bridgeId)));
+    if isempty(match)
+        error('yunlink:BridgeNotFound', ...
+            '搜索结果中没有 Bridge %s。请在本文件开头修改 bridgeId。', bridgeId);
+    end
+    if numel(match) > 1
+        error('yunlink:MultipleBridges', '有多台 Bridge 匹配 %s。', bridgeId);
+    end
 end
 
 client = yunlink_connect(match.address);
 cleanup = onCleanup(@() yunlink_close(client));
 fprintf('已连接 %s  %s\n', match.endpointUid, match.address);
+uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
 uav = yunlink_vehicle(client, uavUid);
 disp(yunlink_state(uav).uavId);
 disp(yunlink_state(uav).fresh);

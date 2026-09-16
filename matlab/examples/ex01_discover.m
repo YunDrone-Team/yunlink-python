@@ -18,4 +18,5 @@ for index = 1:numel(bridges)
         fprintf('    %s  %s  %s\n', entity.uid, entity.name, entity.kind);
     end
 end
-fprintf('\n连接地址传给 yunlink_connect，entity_uid 传给 yunlink_vehicle。\n');
+fprintf('\n下一步运行 ex02_connect_and_inspect。不要改成文档里的示例 IP。\n');
+fprintf('连接地址传给 yunlink_connect，entity_uid 传给 yunlink_vehicle。\n');

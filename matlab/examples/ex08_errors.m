@@ -1,14 +1,8 @@
 % 08_ERRORS  演示连接失败、实体不存在和动作超时。
 % 本示例可能发出一次预期会超时的起飞。
 
-address = string(getenv('YUNLINK_ADDRESS'));
-if strlength(address) == 0
-    address = "192.168.10.10:9696";
-end
-uavUid = string(getenv('YUNLINK_UAV'));
-if strlength(uavUid) == 0
-    uavUid = "e-89c423-2-1";
-end
+[address, envUav, envUgv] = yunlink_example_target();
+uavUid = envUav;
 
 try
     client = yunlink_connect(address);
@@ -18,6 +12,7 @@ try
     catch exception
         fprintf('实体错误：%s\n', exception.message);
     end
+    uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
     uav = yunlink_vehicle(client, uavUid);
     try
         yunlink_takeoff(uav, 1.0, 0.001);

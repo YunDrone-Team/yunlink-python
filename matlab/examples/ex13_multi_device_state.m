@@ -1,10 +1,7 @@
 % 13_MULTI_DEVICE_STATE  连续打印 UAV/UGV 状态若干秒。
 % 本示例不发送飞行指令。
 
-address = string(getenv('YUNLINK_ADDRESS'));
-if strlength(address) == 0
-    address = "192.168.10.10:9696";
-end
+[address, ~, ~] = yunlink_example_target();
 seconds = 8;
 
 client = yunlink_connect(address);

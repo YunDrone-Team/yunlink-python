@@ -61,6 +61,10 @@ def discover(
                 payload, sender = udp.recvfrom(8192)
             except TimeoutError:
                 continue
+            except (ConnectionResetError, ConnectionRefusedError, OSError):
+                # Windows surfaces ICMP Port Unreachable from /24 probes as
+                # WinError 10054 on the next recvfrom. Ignore and keep listening.
+                continue
             advertisement = _decode(lib, payload, secret, nonce, sender[0])
             if advertisement is not None:
                 found[advertisement.endpoint_uid] = advertisement

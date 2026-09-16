@@ -1,17 +1,12 @@
 % 07_UGV_CONTROL  无人车点位移动、速度控制和 Hold。
 % 本示例会发送无人车运动指令。
 
-address = string(getenv('YUNLINK_ADDRESS'));
-if strlength(address) == 0
-    address = "192.168.10.10:9696";
-end
-ugvUid = string(getenv('YUNLINK_UGV'));
-if strlength(ugvUid) == 0
-    ugvUid = "e-89c423-3-1";
-end
+[address, envUav, envUgv] = yunlink_example_target();
+ugvUid = envUgv;
 
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
+ugvUid = yunlink_example_pick(client, "sunray.ugv", ugvUid);
 ugv = yunlink_ugv(client, ugvUid);
 disp(yunlink_ugv_state(ugv));
 start = yunlink_ugv_state(ugv).position;

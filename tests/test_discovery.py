@@ -1,4 +1,6 @@
-from yunlink_python.discovery import _discovery_targets, _host_from_address, _subnet24_hosts
+import inspect
+
+from yunlink_python.discovery import _discovery_targets, _host_from_address, _subnet24_hosts, discover
 
 
 def test_host_from_address_strips_port_and_brackets():
@@ -13,6 +15,11 @@ def test_subnet24_hosts_excludes_self_and_covers_peers():
     assert "192.168.31.236" in hosts
     assert "192.168.31.1" in hosts
     assert len(hosts) == 253
+
+
+def test_discover_swallows_windows_connection_reset():
+    source = inspect.getsource(discover)
+    assert "ConnectionResetError" in source
 
 
 def test_discovery_targets_include_known_bridge_and_broadcast():

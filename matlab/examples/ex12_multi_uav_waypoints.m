@@ -1,10 +1,7 @@
 % 12_MULTI_UAV_WAYPOINTS  给每架 UAV 一条两点短航线。
 % 本示例会发送飞行指令。
 
-address = string(getenv('YUNLINK_ADDRESS'));
-if strlength(address) == 0
-    address = "192.168.10.10:9696";
-end
+[address, ~, ~] = yunlink_example_target();
 height = 1.0;
 
 client = yunlink_connect(address);

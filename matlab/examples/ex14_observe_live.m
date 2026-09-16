@@ -1,10 +1,7 @@
 % 14_OBSERVE_LIVE  在命令窗口刷新 UAV/UGV 状态。
 % 本示例不发送飞行指令。Ctrl-C 结束。
 
-address = string(getenv('YUNLINK_ADDRESS'));
-if strlength(address) == 0
-    address = "192.168.10.10:9696";
-end
+[address, ~, ~] = yunlink_example_target();
 uavUid = "";
 seconds = 0;
 hz = 2;
