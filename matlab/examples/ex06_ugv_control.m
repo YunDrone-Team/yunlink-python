@@ -1,4 +1,4 @@
-% 07_UGV_CONTROL  无人车点位、速度、Hold。
+% 06_UGV_CONTROL  无人车点位、速度、Hold。
 %
 % 做什么：会发无人车运动指令。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UGV（entity_uid，不是 ugv1）。

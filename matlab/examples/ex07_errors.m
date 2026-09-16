@@ -1,4 +1,4 @@
-% 08_ERRORS  看错误长什么样：不存在的设备和过短超时。
+% 07_ERRORS  看错误长什么样：不存在的设备和过短超时。
 %
 % 做什么：可能发一次预期会失败的起飞。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UAV。

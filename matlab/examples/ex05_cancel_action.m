@@ -1,13 +1,12 @@
-% 05_WAYPOINTS  起飞后走两点航线，再降落。
+% 05_CANCEL_ACTION  开始移动后取消，再悬停降落。
 %
-% 做什么：Planner 多航点。会飞。
+% 做什么：演示 yunlink_cancel。会飞。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS、YUNLINK_UAV。
-% 上一步：ex04。不要改本文件中间的变量。
 
 [address, uavUid] = yunlink_example_target();
 height = 1.0;
 
-fprintf('本脚本会起飞并提交航线。\n');
+fprintf('本脚本会起飞，然后取消一次移动。\n');
 client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 uavUid = yunlink_example_pick(client, "sunray.uav", uavUid);
@@ -19,14 +18,12 @@ try
         yunlink_takeoff(uav, height, 30);
     end
     pos = yunlink_state(uav).position;
-    % N×3，每行一个 x y z。
-    points = [
-        pos.x + 0.25, pos.y, height
-        pos.x + 0.25, pos.y + 0.25, height
-        ];
-    fprintf('航点任务（两点）\n');
-    yunlink_waypoints(uav, points, 120);
-    disp(yunlink_state(uav).planner);
+    fprintf('非阻塞 move_to，随后 cancel\n');
+    % wait=false 立刻返回，任务在后台跑。
+    uav.move_to(pos.x + 2.0, pos.y, height, pyargs('timeout', 60, 'wait', false));
+    pause(0.4);
+    yunlink_cancel(uav, 15);
+    yunlink_hover(uav, 15);
 finally
     if ~yunlink_state(uav).landed
         fprintf('降落\n');

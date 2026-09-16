@@ -75,7 +75,7 @@ end
 uavs = filter_kind(infos, 'sunray.uav');
 ugvs = filter_kind(infos, 'sunray.ugv');
 
-fprintf('\n4) 故意 attach 一个不存在的设备（应对应 ex08）\n');
+fprintf('\n4) 故意 attach 一个不存在的设备（应对应 ex07）\n');
 try
     yunlink_vehicle(client, 'does-not-exist');
     results = add(results, 'missing_entity', 'FAIL', '应当报错却成功了');

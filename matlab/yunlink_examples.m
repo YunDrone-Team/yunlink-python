@@ -1,6 +1,6 @@
 function exampleDir = yunlink_examples()
 %YUNLINK_EXAMPLES 把 MATLAB 当前文件夹切到示例目录并打开文件浏览器。
-%   先运行 ex00_setup，再按 ex01_discover 往下做。
+%   先运行 ex00_setup，再按 ex01_discover 一直做到 ex08_live_check。
 
 root = fileparts(mfilename('fullpath'));
 exampleDir = fullfile(root, 'examples');
@@ -17,15 +17,24 @@ end
 
 files = dir(fullfile(exampleDir, '*.m'));
 fprintf('\n示例目录：\n  %s\n\n', exampleDir);
-fprintf('在左侧 Current Folder 里打开脚本。先运行 ex00_setup.m，再按编号往下做。\n');
+fprintf('在左侧 Current Folder 里打开脚本。先运行 ex00_setup.m，再按 01、02、…、08 往下做。\n');
 fprintf('配置写在 yunlink.env；没有就直接改 yunlink.env.example。填连接地址和 entity_uid（不是 uav1）。\n');
 fprintf('Windows 搜索若弹出防火墙，请允许专用网络。UDP 9697，TCP 9696。\n\n');
-hidden = {'ex05_waypoints.m', 'ex12_multi_uav_waypoints.m'};
+fprintf('主线（连续编号）：\n');
+mainNames = { ...
+    'ex00_setup.m', 'ex01_discover.m', 'ex02_connect_and_inspect.m', ...
+    'ex03_watch_state.m', 'ex04_flight_basics.m', 'ex05_cancel_action.m', ...
+    'ex06_ugv_control.m', 'ex07_errors.m', 'ex08_live_check.m'};
+for index = 1:numel(mainNames)
+    fprintf('  %-32s  %s\n', mainNames{index}, example_blurb(mainNames{index}));
+end
+fprintf('\n其余（可选）：\n');
 for index = 1:numel(files)
-    if any(strcmp(files(index).name, hidden))
+    name = files(index).name;
+    if any(strcmp(name, mainNames))
         continue
     end
-    fprintf('  %-32s  %s\n', files(index).name, example_blurb(files(index).name));
+    fprintf('  %-32s  %s\n', name, example_blurb(name));
 end
 fprintf('\n说明见本目录 README.md。以后运行 yunlink_examples 会回到这里。\n');
 
@@ -46,12 +55,14 @@ switch name
         text = '读取 UAV 状态，不飞';
     case 'ex04_flight_basics.m'
         text = '起飞、平移、悬停、降落';
-    case 'ex06_cancel_action.m'
+    case 'ex05_cancel_action.m'
         text = '启动移动后取消';
-    case 'ex07_ugv_control.m'
+    case 'ex06_ugv_control.m'
         text = '无人车点位、速度、Hold';
-    case 'ex08_errors.m'
+    case 'ex07_errors.m'
         text = '连接和动作异常处理';
+    case 'ex08_live_check.m'
+        text = '现场全量检查，会起飞降落';
     case 'ex10_discover_select_connect.m'
         text = '按 Bridge ID 选择连接';
     case 'ex11_multi_device_control.m'
@@ -64,8 +75,6 @@ switch name
         text = '只读状态，不会起飞';
     case 'basic_flight_demo.m'
         text = '会起飞、移动、降落';
-    case 'ex99_live_check.m'
-        text = '现场全量检查，会起飞降落';
     otherwise
         text = '示例脚本';
 end
