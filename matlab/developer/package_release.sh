@@ -9,8 +9,8 @@ elif command -v matlab >/dev/null 2>&1; then
 else
   matlab_bin="/Applications/MATLAB_R2026a.app/bin/matlab"
 fi
-bundle_dir="$root/dist/yunlink-sunray-matlab-1.4.1-bundle"
-zip_file="$root/dist/yunlink-sunray-matlab-1.4.1-bundle.zip"
+bundle_dir="$root/dist/yunlink-sunray-matlab-1.4.2-bundle"
+zip_file="$root/dist/yunlink-sunray-matlab-1.4.2-bundle.zip"
 binding_dir="$root/dist/bindings"
 sdk_wheel="$root/dist/yunlink_python-1.3.0-py3-none-any.whl"
 python_bin="${PYTHON:-python3}"
@@ -36,7 +36,7 @@ gh release download v2.0.2 --repo YunDrone-Team/yunlink --dir "$binding_dir" --p
 rm -f "$zip_file"
 (
   cd "$root/dist"
-  zip -r "yunlink-sunray-matlab-1.4.1-bundle.zip" "yunlink-sunray-matlab-1.4.1-bundle"
+  zip -r "yunlink-sunray-matlab-1.4.2-bundle.zip" "yunlink-sunray-matlab-1.4.2-bundle"
 )
 
 echo "Created $zip_file"

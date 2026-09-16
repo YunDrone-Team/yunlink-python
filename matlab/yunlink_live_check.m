@@ -198,6 +198,13 @@ if exist('uav', 'var') && ~isempty(uav)
     catch exception
         results = add(results, 'uav_translate', 'FAIL', first_line(exception.message));
     end
+    % 直控平移后 Planner 还不在 WAIT_MISSION，先悬停再交航点。
+    try
+        yunlink_hover(uav, 15);
+        results = add(results, 'uav_hover_before_wp', 'PASS', '平移后悬停');
+    catch exception
+        results = add(results, 'uav_hover_before_wp', 'FAIL', first_line(exception.message));
+    end
     try
         pos = yunlink_state(uav).position;
         points = [

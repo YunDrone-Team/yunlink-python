@@ -6,7 +6,7 @@
 -->
 <yunlinkSunrayToolbox>
   <name>YunLink Sunray MATLAB Support</name>
-  <version>1.4.1</version>
+  <version>1.4.2</version>
   <minimumRelease>R2022b</minimumRelease>
   <sourceDirectory>matlab</sourceDirectory>
   <buildScript>matlab/build_toolbox.m</buildScript>

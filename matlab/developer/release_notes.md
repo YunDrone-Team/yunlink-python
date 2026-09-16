@@ -1,3 +1,5 @@
+1.4.2：直控平移后先悬停再交航点；Planner 未就绪时等 15 秒并给出明确错误。
+
 1.4.1：现场检查会起飞、短航线、降落、无人车点位。不限仿真。桌面确认默认「继续飞」。
 
 1.4.0：增加 yunlink_live_check / ex99_live_check。没有 yunlink.env 时读 yunlink.env.example。
