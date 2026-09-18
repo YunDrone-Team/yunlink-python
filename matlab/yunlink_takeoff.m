@@ -1,7 +1,8 @@
 function result = yunlink_takeoff(vehicle, height_m, timeout)
-%YUNLINK_TAKEOFF 相对高度起飞，单位米。
+%YUNLINK_TAKEOFF 相对高度起飞。
+%   第 2 个参数 height_m：相对高度，单位米。例如 1.0 就是大约 1 米。
+%   第 3 个参数 timeout：等待起飞结束的超时秒，默认 30。不是飞 30 米。
 %   会申请控制权并发送起飞。若飞机已在空中，飞控可能拒绝（INIT）。
-%   timeout 默认 30 秒，等待动作结束。
 if nargin < 3
     timeout = 30;
 end

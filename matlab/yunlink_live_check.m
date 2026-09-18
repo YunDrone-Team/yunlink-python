@@ -3,6 +3,7 @@ function results = yunlink_live_check()
 %   先搜索、再连接。每一项打印 PASS / FAIL / SKIP。
 %   有 UAV 就会起飞、平移、悬停、降落；有 UGV 就点位 + Hold。不限仿真。
 %   桌面会先确认一次，默认「继续飞」。
+%   起飞高度 1.0 米。前进：0.15 m/s × 0.6 秒 ≈ 0.09 米。无人车 +0.3 米。
 
 yunlink_prepare_runtime();
 results = struct('name', {}, 'status', {}, 'detail', {});
@@ -178,11 +179,13 @@ if ~wantMotion
     return
 end
 
+% 起飞相对高度，单位米。
 height = 1.0;
 fprintf('\n8) UAV 起飞 / 平移 / 悬停 / 降落\n');
 if exist('uav', 'var') && ~isempty(uav)
     try
         if yunlink_state(uav).landed
+            % 1.0 米高度，最多等 30 秒。
             yunlink_takeoff(uav, height, 30);
             results = add(results, 'uav_takeoff', 'PASS', sprintf('z=%.1f', height));
         else
@@ -192,8 +195,9 @@ if exist('uav', 'var') && ~isempty(uav)
         results = add(results, 'uav_takeoff', 'FAIL', first_line(exception.message));
     end
     try
+        % 0.15 = 速度 m/s，0.6 = 持续秒，大约走 0.09 米。15 = 等待超时秒。
         yunlink_translate(uav, "forward", 0.15, 0.6, 15);
-        results = add(results, 'uav_translate', 'PASS', '前进 0.15m');
+        results = add(results, 'uav_translate', 'PASS', '前进 0.15 m/s × 0.6 s');
     catch exception
         results = add(results, 'uav_translate', 'FAIL', first_line(exception.message));
     end
@@ -224,6 +228,7 @@ fprintf('\n9) UGV 点位 / Hold\n');
 if exist('ugv', 'var') && ~isempty(ugv)
     try
         start = yunlink_ugv_state(ugv).position;
+        % +0.3 米是目标位移。45 是等待超时秒。
         yunlink_ugv_move_to(ugv, start.x + 0.3, start.y, 45);
         results = add(results, 'ugv_move', 'PASS', '+0.3m');
     catch exception

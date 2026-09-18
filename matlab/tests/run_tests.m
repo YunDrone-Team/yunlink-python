@@ -28,7 +28,8 @@ examples = { ...
 developer = {'developer/README.md', 'developer/API.md', 'developer/read_windows_debug.ps1', ...
     'developer/build_release_bundle.m', ...
     'developer/package_release.sh', 'developer/release_notes.md', ...
-    'build_toolbox.m', 'yunlink_sunray.prj', 'tests/home_connectivity.m'};
+    'build_toolbox.m', 'yunlink_sunray.prj', 'tests/home_connectivity.m', ...
+    'docs/yunlink-matlab-manual.typ', 'docs/README.md'};
 for index = 1:numel(required)
     assert(isfile(fullfile(root, required{index})), ...
         'Missing MATLAB wrapper: %s', required{index});
@@ -129,7 +130,28 @@ discoverSource = fileread(fullfile(root, 'examples', 'ex01_discover.m'));
 assert(contains(discoverSource, 'entity_uid'));
 assert(contains(discoverSource, 'yunlink.env'));
 assert(contains(discoverSource, '防火墙') || contains(discoverSource, 'Windows 安全警报'));
-assert(contains(fileread(fullfile(root, 'examples', 'README.md')), 'UDP 9697'));
+exampleGuide = fileread(fullfile(root, 'examples', 'README.md'));
+assert(contains(exampleGuide, 'UDP 9697'));
+assert(contains(exampleGuide, '| 编号 |'), 'examples/README.md must have an example table.');
+assert(contains(exampleGuide, 'ex00_setup.m') && contains(exampleGuide, 'ex12_live_check.m'));
+assert(contains(exampleGuide, '这就是教程') || contains(exampleGuide, '按编号跑'));
+assert(contains(userGuide, '按编号') || contains(userGuide, 'example'));
+assert(~contains(userGuide, '不提供独立的设备搜索'), ...
+    'User guide must not say MATLAB cannot discover Bridges.');
+flightSource = fileread(fullfile(root, 'examples', 'ex04_flight_basics.m'));
+assert(contains(flightSource, 'm/s') && contains(flightSource, '持续'), ...
+    'ex04 must comment translate speed vs duration.');
+assert(contains(fileread(fullfile(root, 'yunlink_translate.m')), 'm/s'));
+assert(contains(fileread(fullfile(root, 'getting_started.html')), 'ex12_live_check'));
+assert(contains(fileread(fullfile(root, 'docs', 'yunlink-matlab-manual.typ')), 'chapters/06-examples.typ'));
+assert(contains(fileread(fullfile(root, 'docs', 'chapters', '06-examples.typ')), 'ex00_setup'));
+assert(contains(fileread(fullfile(root, 'docs', 'chapters', '08-api.typ')), 'yunlink_translate'));
+assert(contains(fileread(fullfile(root, 'docs', 'chapters', '02-prepare.typ')), '命令窗口'));
+assert(contains(userGuide, 'yunlink-matlab-manual.pdf'));
+assert(contains(userGuide, '从哪里开始') || contains(userGuide, 'yunlink_examples'));
+assert(contains(userGuide, 'developer/API.md') || contains(userGuide, 'API.md'));
+assert(contains(userGuide, 'typst compile'));
+assert(contains(fileread(fullfile(root, 'docs', 'README.md')), 'typst compile'));
 assert(contains(fileread(fullfile(root, 'examples', 'yunlink.env.example')), 'YUNLINK_UAV='));
 loader = fileread(fullfile(root, 'yunlink_load_example_env.m'));
 assert(contains(loader, "'yunlink.env', 'yunlink.env.example'") || contains(loader, "'yunlink.env.example'"));

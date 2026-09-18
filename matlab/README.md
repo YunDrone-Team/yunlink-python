@@ -6,7 +6,21 @@
 
 https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip
 
-MATLAB 通过本机 Python 调用 YunLink。连接对象是 **YunLink Bridge**，不是飞控本身。
+## 从哪里开始
+
+请按下面顺序使用本工具箱。示例脚本是入门教程；接口文档供熟悉示例之后查阅。
+
+1. 解压发布包，双击 `.mltbx` 安装。命令窗口运行 `yunlink_examples`。
+2. 打开并运行 `ex00_setup.m`，填写本机 Python 3.10–3.13 与 zip 解压目录。
+3. 按编号运行 `ex01` 至 `ex12`。打开脚本阅读注释。目标写在 `examples/yunlink.env`。完整表格见 [`examples/README.md`](examples/README.md)。
+4. 需要自己写脚本时，查阅 MATLAB 封装说明 [`developer/API.md`](developer/API.md)（安装进 Toolbox 后同目录也有 `API.md`）。Python 对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。
+5. 需要从安装 MATLAB、打开命令窗口讲起的逐步说明书时，使用 Typst 源码 [`docs/`](docs/README.md)。Release 提供已编译的 [`yunlink-matlab-manual.pdf`](https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-matlab-manual.pdf)。仓库不存放 PDF；本机编译：
+
+```bash
+typst compile matlab/docs/yunlink-matlab-manual.typ matlab/docs/yunlink-matlab-manual.pdf
+```
+
+MATLAB 通过本机 Python 调用 YunLink。通信对端为正在运行的 **YunLink Bridge**。
 
 **最低 MATLAB：R2022b。最低 Python：3.10。** 原因：底层 [yunlink](https://github.com/YunDrone-Team/yunlink) 绑定要求 CPython ≥ 3.10。R2022a 官方只有 3.8/3.9，对不上就会报「Python 命令需要支持的 CPython 版本」。这不是搜索失败，是 MATLAB 拒绝调用该解释器。
 
@@ -37,15 +51,13 @@ MATLAB 只会调用它官方支持的 CPython。版本对不上时会出现「Py
 
 Win11 上 Miniconda 的 `python.exe` 若是 3.12，而 MATLAB 是 R2022a，就会被拒绝。请升级 MATLAB，或安装上表中的 Python 后**重启 MATLAB**再跑 `ex00_setup`。命令请写 `ex01_discover`，不要带 `.m`。
 
-公开方法对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。MATLAB 每个封装函数见 [`developer/API.md`](developer/API.md)；安装进 Toolbox 后同目录也有 `API.md`。
-
 ## 搜索原理与 Windows 防火墙
 
-搜索 **不是** 去连 TCP 9696。本机向 **UDP 9697** 发查询：`255.255.255.255`、网卡广播地址、以及本网段 `/24` 里每个 IP。不少 Wi-Fi 会丢掉有限广播，所以 SDK 会补单播。Bridge 用 9697 回答，然后再用 TCP 9696 建 Session。
+`yunlink_discover` 向 **UDP 9697** 发送查询：`255.255.255.255`、网卡广播地址、以及本网段 `/24` 里每个 IP。部分 Wi-Fi 会丢弃有限广播，因此 SDK 会补单播。Bridge 用 9697 回答。随后 `yunlink_connect` 使用 **TCP 9696** 建立会话。
 
 Windows 第一次运行 MATLAB 或 `python.exe` 时，可能弹出全屏「Windows 安全警报」。请勾选 **专用网络** 并允许访问。点取消或只允许公用网络，就会搜不到或偶发失败。
 
-也可以跳过搜索：在示例目录把 `yunlink.env.example` 复制为 `yunlink.env`，写入 `YUNLINK_ADDRESS=ip:9696`。地址用 `ex01_discover` 打印的「连接地址」，不要用文档里的示例 IP。
+也可以跳过搜索：在示例目录把 `yunlink.env.example` 复制为 `yunlink.env`，写入 `YUNLINK_ADDRESS=` 为 `ex01_discover` 打印的「连接地址」。
 
 目标飞机/无人车的 ID 叫 **entity_uid**（例如 `e-52c218-2-1`），不是显示名 `uav1`。写入 `YUNLINK_UAV=` / `YUNLINK_UGV=`。
 
@@ -72,7 +84,7 @@ Linux:      python3 --version
 
 ## 安装 Toolbox
 
-Add-On Explorer 只搜索 MathWorks 商店，搜索不到本工具箱是正常的。不要在里面搜索，也不要使用 **Add Package Repository**。
+本工具箱通过本地 `.mltbx` 安装。Add-On Explorer 检索 MathWorks 商店，其中不含本工具箱。**Add Package Repository** 用于其他场景，与本 `.mltbx` 无关。
 
 1. 下载并解压发布包。不要在压缩包内部直接操作。
 2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.4.5.mltbx`。
@@ -111,9 +123,28 @@ pyenv
 
 `Version` 应为 3.10、3.11、3.12 或 3.13。若 MATLAB 已经加载了其他 Python，请关闭 MATLAB 后重新打开，再运行 `ex00_setup.m`。
 
+## 怎么学：按编号跑 example
+
+**MATLAB 这边的教程就是 `examples/` 里的脚本。** 装好 Toolbox 后请先按编号运行 example，对着注释学习每一行。函数表与 [`developer/API.md`](developer/API.md) 供熟悉示例之后查阅。
+
+```matlab
+yunlink_examples
+```
+
+然后按编号：`ex00_setup` → `ex01_discover` → `ex02_connect_and_inspect` → `ex03_watch_state`。控制从 `ex04_flight_basics` 开始。一次验收跑 `ex12_live_check`。
+
+每个脚本做什么、会不会飞，见 [`examples/README.md`](examples/README.md) 的表格。目标写在 `examples/yunlink.env`，不要改脚本中间的变量。填 **entity_uid**（例如 `e-f97f96-2-1`），不要填显示名 `uav1`。
+
+`yunlink_connect` 只连接 Bridge，不会 attach 设备。
+`yunlink_vehicle(client, entity_uid)` 才会 attach 并订阅状态。
+`yunlink_takeoff` 等函数才会申请控制权并发送动作。
+地面站已经连上设备时，MATLAB 仍可只读遥测。
+
+`state.armed` / `state.disarmed` 只表示状态，没有解锁或上锁函数。`state.fresh` 为 false 时不要起飞。
+
 ## 连接模型
 
-MATLAB 不提供独立的设备搜索。请先从地面站或 Python 示例 `01_discover.py` 取得地址和设备 ID。
+搜索用 MATLAB 自己的 `yunlink_discover`（`ex01_discover`），不必先跑 Python。
 
 | 字段 | 用途 |
 | --- | --- |
@@ -121,38 +152,17 @@ MATLAB 不提供独立的设备搜索。请先从地面站或 Python 示例 `01_
 | `entity_uid` | 传给 `yunlink_vehicle`，例如 `e-f97f96-2-1` |
 | 显示名 `uav1` | 仅供阅读；多设备时不要当作唯一 ID |
 
-`yunlink_connect` 只连接 Bridge，不会 attach 设备。
-`yunlink_vehicle(client, entity_uid)` 才会 attach 并订阅状态。
-`yunlink_takeoff` 等函数才会申请控制权并发送动作。
-
-## 使用
-
-将地址和 `entity_uid` 换成现场确认过的值：
+看完 example 之后，若要自己写脚本，可以对照：
 
 ```matlab
 client = yunlink_connect("192.168.31.236:9696");
 uav = yunlink_vehicle(client, "e-f97f96-2-1");
-
 state = yunlink_state(uav);
-disp(state.position);
-disp(state.batteryPercent);
-disp(state.armed);
-disp(state.landed);
-disp(state.fresh);
-
-yunlink_takeoff(uav, 1.5);
-yunlink_position_control(uav, 2.0, 0.0, 1.5);
+yunlink_takeoff(uav, 1.5);   % 1.5 是相对高度，单位米
 yunlink_hover(uav);
 yunlink_land(uav);
-
 yunlink_close(client);
 ```
-
-示例脚本按编号排列，说明见 [`examples/README.md`](examples/README.md)。运行 `yunlink_examples` 后，在 Current Folder 中按 `ex00_setup.m` → `ex01_discover.m` → `ex02_connect_and_inspect.m` 的顺序执行。控制类示例从 `ex04_flight_basics.m` 开始。
-
-运行示例前先修改其中的地址和 `entity_uid`。`state.armed` / `state.disarmed` 只表示状态，没有解锁或上锁函数。`state.fresh` 为 false 时不要起飞。
-
-推荐顺序：完成 `ex00_setup.m` → 只读 `read_state_demo.m` → 确认状态新鲜后再运行控制示例。
 
 ## 常用函数
 

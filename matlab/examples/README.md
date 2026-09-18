@@ -1,16 +1,43 @@
-# YunLink MATLAB 示例
+# YunLink MATLAB 示例（这就是教程）
 
-把用户当第一次用 MATLAB 的人：不要改脚本中间的变量。目标写在本目录 `yunlink.env`。
+装好 Toolbox 之后，请先按编号跑 `ex00` 到 `ex12`，对着脚本里的注释看每一行在干什么。熟悉示例后再查阅 [`../developer/API.md`](../developer/API.md)。
+
+从安装 MATLAB 与打开命令窗口讲起的逐步说明书：Typst 源码见 [`../docs/README.md`](../docs/README.md)，可自行编译 PDF；GitHub Release 提供已编译的 `yunlink-matlab-manual.pdf`。
+
+不要改脚本中间的变量。连接地址和 `entity_uid` 写在本目录 `yunlink.env`（没有就直接改 `yunlink.env.example`）。程序先读环境变量，再 `yunlink.env`，再 `yunlink.env.example`。
 
 ## 第一次怎么跑
 
-1. 运行 `yunlink_examples`，左侧会打开本目录。
+1. 命令窗口输入 `yunlink_examples`（不要带 `.m`）。左侧会打开本目录。
 2. 打开 `ex00_setup.m`，点绿色 **Run**。配 Python 3.10–3.13 和 zip 包。
-3. 配置写在 `yunlink.env`；没有这份文件就直接改同目录的 `yunlink.env.example`。程序先读环境变量，再 `yunlink.env`，再 `yunlink.env.example`。
-4. 运行 `ex01_discover`。把打印的 **连接地址** 写入 `YUNLINK_ADDRESS=`，把表里 **entity_uid** 那一列写入 `YUNLINK_UAV=` 或 `YUNLINK_UGV=`。不要填 `uav1`。
-5. 保存后再按编号往下：`ex02` 看目录，`ex03` 只读状态，`ex04` 起会飞。最后用 `ex12_live_check` 一次跑完。
+3. 运行 `ex01_discover`。把打印的 **连接地址** 写入 `YUNLINK_ADDRESS=`，把表里 **entity_uid** 那一列写入 `YUNLINK_UAV=` 或 `YUNLINK_UGV=`。不要填 `uav1`。
+4. 按编号往下。`ex03` 只读；`ex04` 起会飞。一次跑完用 `ex12_live_check`。
 
-`yunlink_connect` 只连 Bridge。`yunlink_entities` 只读目录。只有 `yunlink_vehicle` / `yunlink_ugv` 才会 attach。地面站已经连上并控制设备时，MATLAB 仍可只读遥测，不必申请控制权。
+`yunlink_connect` 只连 Bridge。`yunlink_entities` 只读目录。只有 `yunlink_vehicle` / `yunlink_ugv` 才会 attach。地面站已经连上并控制设备时，MATLAB 仍可只读遥测，不必申请控制权。起飞、平移、Hold 才会发控制。
+
+## 每个 example 做什么
+
+| 编号 | 脚本 | 会发控制 | 学什么 |
+| --- | --- | --- | --- |
+| 00 | `ex00_setup.m` | 否 | 给 MATLAB 配 Python，把 zip 里的通信库装进去 |
+| 01 | `ex01_discover.m` | 否 | UDP 9697 搜索 Bridge，抄连接地址和 entity_uid |
+| 02 | `ex02_connect_and_inspect.m` | 否 | TCP 9696 连接，只打印设备目录 |
+| 03 | `ex03_watch_state.m` | 否 | attach 一架 UAV，读状态。`fresh=1` 才能飞 |
+| 04 | `ex04_flight_basics.m` | **会飞** | 起飞约 1 m，机体轴短移，悬停，降落 |
+| 05 | `ex05_cancel_action.m` | **会飞** | 起飞后非阻塞移动，再 `yunlink_cancel` |
+| 06 | `ex06_ugv_control.m` | **会走** | 无人车点位约 0.3 m、短时速度、Hold |
+| 07 | `ex07_errors.m` | 可能一次失败起飞 | 看错误信息长什么样 |
+| 08 | `ex08_discover_select_connect.m` | 否 | 多台 Bridge 时按 Bridge ID 选一台 |
+| 09 | `ex09_multi_device_control.m` | 否 | attach 目录里全部 UAV/UGV，只读 |
+| 10 | `ex10_multi_device_state.m` | 否 | 连续打印多设备状态，约 8 秒 |
+| 11 | `ex11_observe_live.m` | 否 | 命令窗口刷新遥测，桌面 Ctrl-C 结束 |
+| 12 | `ex12_live_check.m` | **会飞/会走** | 现场全量检查：搜索、连接、起飞、平移、降落 |
+| — | `read_state_demo.m` | 否 | `ex03` 的短版 |
+| — | `basic_flight_demo.m` | **会飞** | `ex04` 的短版 |
+
+`ex04` 运动量（理想情况）：起飞高度 **1 米**；前进/后退约 **12 cm**（0.15 m/s × 0.8 s）；左右约 **7.5 cm**（0.15 m/s × 0.5 s）；升降约 **5 cm**。周围请空出前后左右各 1 米、头上 2 米。
+
+`yunlink_translate` 的数字：**第 3 个是速度 m/s，第 4 个是持续秒，第 5 个是等待超时秒。** 不是「飞 0.15 米」。
 
 ## 搜不到 Bridge / Windows 防火墙
 
@@ -42,23 +69,3 @@ YUNLINK_ADDRESS=192.168.1.5:9696
 | 绿色 **Run** | 执行当前脚本 |
 
 在 Command Window 输入脚本名（不要带 `.m`）：`ex01_discover`。Current Folder 必须是 `examples`；刚打开 MATLAB 先 `yunlink_examples`。
-
-## 编号说明
-
-连续编号，中间不空号：
-
-- `ex00` 配 Python，不连飞机
-- `ex01` 搜索，抄地址和 entity_uid
-- `ex02` 连接并打印带表头的目录
-- `ex03` / `read_state_demo` 只读 UAV
-- `ex04` / `basic_flight_demo` 会飞
-- `ex05` 取消，会飞
-- `ex06` 无人车，会走
-- `ex07` 看错误信息
-- `ex08` 多 Bridge 时按 Bridge ID 选
-- `ex09` 多机 attach，只读
-- `ex10` 连续打印多设备状态
-- `ex11` 命令窗口刷新遥测
-- `ex12` / `yunlink_live_check` 现场一次跑完搜索、连接、目录、状态、起飞、平移、降落
-
-`04`、`05`、`06`、`ex12`、`basic_flight_demo` 会发真实控制。周围不要有人和障碍。

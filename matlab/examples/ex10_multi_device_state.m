@@ -1,9 +1,12 @@
 % 10_MULTI_DEVICE_STATE  连续打印全部 UAV/UGV 状态。
 %
 % 做什么：只读，不飞。
+% 会不会飞：不会。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS。
+% 上一步：ex09。下一步：ex11 刷遥测，或 ex12 全量检查。
 
 [address, ~, ~] = yunlink_example_target();
+% 刷新多久，单位秒。不是高度。
 seconds = 8;
 
 client = yunlink_connect(address);
@@ -14,6 +17,7 @@ labels = {};
 for index = 1:numel(infos)
     item = infos(index);
     if strcmp(item.kind, 'sunray.uav')
+        % attach 后才能 yunlink_state。
         devices{end + 1} = yunlink_vehicle(client, item.uid); %#ok<AGROW>
         labels{end + 1} = "UAV " + string(item.uid); %#ok<AGROW>
     elseif strcmp(item.kind, 'sunray.ugv')
@@ -40,5 +44,6 @@ while posixtime(datetime('now')) < deadline
                 labels{index}, state.fresh, state.position.x, state.position.y, state.position.z);
         end
     end
+    % 两次打印间隔 0.5 秒。
     pause(0.5);
 end

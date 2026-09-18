@@ -192,6 +192,8 @@ MATLAB 用户从 GitHub Release 下载打包好的 Toolbox，不必克隆本仓�
 
 https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip
 
+请先安装 `.mltbx`，运行 `yunlink_examples` 与 `ex00_setup`，再按编号跑 example。熟悉之后查阅 [`matlab/developer/API.md`](matlab/developer/API.md)。逐步说明书的 Typst 源码在 [`matlab/docs`](matlab/docs/README.md)，可自行编译 PDF；Release 同时提供 `yunlink-matlab-manual.pdf`。
+
 本仓库的 Release 仅提供该 MATLAB 用户包。安装和使用见 [`matlab/README.md`](matlab/README.md)。开发者打包见
 [`matlab/developer/README.md`](matlab/developer/README.md)。
 

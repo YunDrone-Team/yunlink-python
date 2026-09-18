@@ -1,10 +1,15 @@
 YunLink MATLAB 1.4.5
 
-1. MATLAB R2022b 或更新。安装该 MATLAB 支持的 Python 3.10–3.13。不要使用 MATLAB 自带的 3.14。
+1. MATLAB R2022b 或更新。安装该 MATLAB 支持的 Python 3.10–3.13。
 2. 解压本 zip，双击 yunlink-sunray-matlab-1.4.5.mltbx，在 Toolbox 安装器中点击 Install。
-3. 在 MATLAB 中运行 yunlink_examples，打开 examples/ex00_setup.m。
-4. 填写 pythonExe（Python 可执行文件）和 bundleDir（本 zip 解压后的目录），然后 Run。
-5. 运行 ex01_discover（不要带 .m），再按编号继续。控制类示例从 ex04_flight_basics 开始。
+3. 在 MATLAB 中运行 yunlink_examples。示例脚本是入门教程。
+4. 先跑 examples/ex00_setup.m。填写 pythonExe（Python 可执行文件）和 bundleDir（本 zip 解压后的目录），然后 Run。
+5. 再跑 ex01_discover，把连接地址和 entity_uid 写入 yunlink.env。
+6. 按编号继续。ex03 只读；控制从 ex04_flight_basics 开始；一次验收跑 ex12_live_check。
+7. 自己写脚本时查阅 API.md（工具箱内）或仓库 matlab/developer/API.md。
 
-不要在 Add-On Explorer 中搜索本工具箱，也不要使用 Add Package Repository。
-完整说明见 README.md。
+GitHub Release 同时提供 yunlink-matlab-manual.pdf。Typst 源码在仓库 matlab/docs/，可自行编译：
+  typst compile matlab/docs/yunlink-matlab-manual.typ matlab/docs/yunlink-matlab-manual.pdf
+
+Add-On Explorer 检索 MathWorks 商店，其中不含本工具箱。请双击本地 .mltbx 安装。
+完整表格见 examples/README.md，说明见 README.md。

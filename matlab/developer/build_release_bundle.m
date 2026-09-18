@@ -29,6 +29,10 @@ end
 copyfile(sdkWheel, fullfile(bundleDir, 'yunlink_python-1.3.0-py3-none-any.whl'));
 copyfile(fullfile(matlabRoot, 'INSTALL.txt'), fullfile(bundleDir, 'INSTALL.txt'));
 copyfile(fullfile(matlabRoot, 'README.md'), fullfile(bundleDir, 'README.md'));
+manualPdf = fullfile(matlabRoot, 'docs', 'yunlink-matlab-manual.pdf');
+if isfile(manualPdf)
+    copyfile(manualPdf, fullfile(bundleDir, 'yunlink-matlab-manual.pdf'));
+end
 
 if strlength(string(bindingDir)) == 0
     error('yunlink:MissingBindingDir', 'A directory of YunLink binding wheels is required.');

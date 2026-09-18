@@ -1,6 +1,9 @@
 function result = yunlink_translate(vehicle, direction, speed_mps, duration_s, timeout)
 %YUNLINK_TRANSLATE 机体轴短时平移：forward/backward/left/right/up/down。
-%   默认速度 0.15 m/s、持续 0.8 s。用于基础飞行动作演示。
+%   第 3 个参数 speed_mps：速度，单位 m/s，不是米。默认 0.15。
+%   第 4 个参数 duration_s：持续秒。默认 0.8。大约位移 = 速度 × 时间。
+%   第 5 个参数 timeout：等待动作结束的超时秒。默认 15。
+%   例如 forward、0.15、0.8 大约走 0.12 米。租约结束常为 CANCELLED，不是失败。
 if nargin < 3
     speed_mps = 0.15;
 end

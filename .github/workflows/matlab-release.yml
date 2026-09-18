@@ -44,6 +44,18 @@ jobs:
             --dir dist/bindings \
             --pattern 'yunlink-*.whl'
 
+      - name: Compile MATLAB user manual
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15.0"
+
+      - name: Install CJK fonts and compile Typst PDF
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+          typst compile matlab/docs/yunlink-matlab-manual.typ matlab/docs/yunlink-matlab-manual.pdf
+          test -s matlab/docs/yunlink-matlab-manual.pdf
+
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v3
         with:
@@ -83,10 +95,12 @@ jobs:
           if gh release view matlab-1.4.5 >/dev/null 2>&1; then
             gh release upload matlab-1.4.5 \
               dist/yunlink-sunray-matlab-1.4.5-bundle.zip \
+              matlab/docs/yunlink-matlab-manual.pdf \
               --clobber
           else
             gh release create matlab-1.4.5 \
               dist/yunlink-sunray-matlab-1.4.5-bundle.zip \
+              matlab/docs/yunlink-matlab-manual.pdf \
               --title "YunLink MATLAB 1.4.5" \
               --notes-file matlab/developer/release_notes.md \
               --latest

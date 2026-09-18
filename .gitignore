@@ -9,3 +9,4 @@ __pycache__/
 .DS_Store
 examples/yunlink.env
 matlab/examples/yunlink.env
+matlab/docs/yunlink-matlab-manual.pdf

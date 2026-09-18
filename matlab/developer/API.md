@@ -1,6 +1,8 @@
 # MATLAB 封装函数
 
-用户安装见 [../README.md](../README.md)。Python 对照见 [../../docs/API_CN.md](../../docs/API_CN.md)。行为以 Python SDK 为准，这里只写 MATLAB 怎么调。
+请先按 [`../examples/README.md`](../examples/README.md) 运行 `ex00`–`ex12`，再查阅本章。用户安装见 [../README.md](../README.md)。Python 对照见 [../../docs/API_CN.md](../../docs/API_CN.md)。行为以 Python SDK 为准，这里只写 MATLAB 怎么调。
+
+逐步说明书（Typst，可编译为 PDF）见 [`../docs/README.md`](../docs/README.md)。
 
 命令窗口里函数名不要带 `.m`：写 `ex01_discover`，不要写 `ex01_discover.m`。
 

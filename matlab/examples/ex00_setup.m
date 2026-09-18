@@ -1,8 +1,10 @@
 % 00_SETUP  第一次必跑：给 MATLAB 配上 Python 3.10–3.13 和 zip 里的通信库。
 %
 % 做什么：安装 yunlink / yunlink_python wheel。不连飞机，不飞。
+% 会不会飞：不会。这是教程的第 0 步。
 % 本步要填：下面的 pythonExe、bundleDir（可留空自动找）。
 % 下一步：复制 yunlink.env.example 为 yunlink.env，再跑 ex01_discover。
+% 这些 example 就是教程：打开脚本看注释，按编号学，不要先抄 README 里的函数。
 %
 % Windows 第一次搜机或第一次调 Python 时，可能弹出「Windows 安全警报」。
 % 请勾选「专用网络」并允许访问。搜索用 UDP 9697，连接用 TCP 9696。

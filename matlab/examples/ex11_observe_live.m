@@ -1,10 +1,14 @@
 % 11_OBSERVE_LIVE  命令窗口刷新遥测。
 %
 % 做什么：只读。不飞。桌面下 Ctrl-C 结束。
+% 会不会飞：不会。
 % 本步要读：yunlink.env 的 YUNLINK_ADDRESS。可把 YUNLINK_UAV 填成只看一架。
+% 上一步：ex10。下一步：ex12 全量检查。
 
 [address, uavUid] = yunlink_example_target();
+% 0 表示一直刷到 Ctrl-C。无桌面（-batch）时下面会改成 2 秒，避免挂死。
 seconds = 0;
+% 刷新频率，单位 Hz。2 表示大约每 0.5 秒清屏打一次。
 hz = 2;
 if seconds <= 0 && ~usejava('desktop')
     seconds = 2;
@@ -14,6 +18,7 @@ client = yunlink_connect(address);
 cleanup = onCleanup(@() yunlink_close(client));
 infos = yunlink_entities(client);
 if strlength(uavUid) > 0
+    % 填了 YUNLINK_UAV 就只看这一台。
     infos = infos(strcmp({infos.uid}, char(uavUid)) | strcmp({infos.name}, char(uavUid)));
 end
 infos = infos(ismember({infos.kind}, {'sunray.uav', 'sunray.ugv'}));
@@ -54,5 +59,6 @@ while seconds <= 0 || toc(started) < seconds
             fprintf('  新鲜     %d   控制 %g   规划 %g\n\n', state.fresh, state.controlState, state.plannerState);
         end
     end
+    % 1/hz 秒睡一次，例如 hz=2 就是 0.5 秒。
     pause(1 / hz);
 end
