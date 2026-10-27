@@ -16,7 +16,7 @@ yunlink-sunray-matlab-1.5.0-bundle.zip
 
 https://github.com/YunDrone-Team/yunlink-python/releases/tag/matlab-1.5.0
 
-zip 内包含 Toolbox、纯 Python SDK wheel、各平台 YunLink binding wheel 和安装说明。用户不需要克隆本仓库。
+zip 内包含 Toolbox、纯 Python SDK wheel、各平台 YunLink binding wheel 和安装说明。Release 同时单独附带 `yunlink_python-1.5.0-py3-none-any.whl`，用户不需要克隆本仓库。
 
 ## 环境
 
