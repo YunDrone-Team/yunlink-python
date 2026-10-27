@@ -27,7 +27,8 @@ def core_type(name: str) -> yunlink.TypeRef:
 
 
 class FakeBridge:
-    def __init__(self) -> None:
+    def __init__(self, *, latest_localization: bool = True) -> None:
+        self.latest_localization = latest_localization
         self.runtime = yunlink.Runtime(
             yunlink.RuntimeConfig(
                 "bridge.fake",
@@ -42,6 +43,8 @@ class FakeBridge:
         self.attach_requests = 0
         self.reject_actions = False
         self.hold_actions = False
+        self.acceleration_samples: list[tuple[float, float, float]] = []
+        self._acceleration = None
         self._closed = False
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
@@ -62,6 +65,11 @@ class FakeBridge:
     def _run(self) -> None:
         self._seen_peer_ids: set[str] = set()
         while not self._closed:
+            if self._acceleration is not None:
+                event, deadline = self._acceleration
+                if time.monotonic() >= deadline:
+                    self._action_update(event, yunlink.ActionPhase.EXPIRED, "input expired", 8)
+                    self._acceleration = None
             try:
                 event = self.runtime.events.get(timeout=0.1)
             except queue.Empty:
@@ -140,6 +148,9 @@ class FakeBridge:
                 self._action_update(event, yunlink.ActionPhase.FAILED, "rejected", result_code=5)
                 return
             self._action_update(event, yunlink.ActionPhase.RUNNING, "running")
+            if event.type_ref.type_name == "UavAccelerationCompensationGoal":
+                self._accept_acceleration(event)
+                return
             if event.type_ref.type_name == "UavNavGoal":
                 goal = sunray_pb2.UavNavGoal.FromString(event.payload)
                 self._publish_odometry(event, goal.position_m.x, goal.position_m.y, goal.position_m.z)
@@ -161,7 +172,15 @@ class FakeBridge:
                 goal = sunray_pb2.UgvMovePointGoal.FromString(event.payload)
                 self._publish_ugv_odometry(event, goal.point_m.x, goal.point_m.y)
             self._action_update(event, yunlink.ActionPhase.SUCCEEDED, "completed")
+        elif (event.family == yunlink.Family.ACTION and event.operation == 2
+              and event.type_ref.type_name == "UavAccelerationCompensationGoal"):
+            if self._acceleration is not None:
+                self._accept_acceleration(event)
+                self._action_update(event, yunlink.ActionPhase.RUNNING, "sample received",
+                                    correlation_id=event.correlation_id)
         elif event.family == yunlink.Family.ACTION and event.operation == 3:
+            if event.type_ref.type_name == "UavAccelerationCompensationGoal":
+                self._acceleration = None
             self._action_update(
                 event, yunlink.ActionPhase.CANCELLED, "cancelled", correlation_id=event.correlation_id
             )
@@ -178,6 +197,15 @@ class FakeBridge:
                     response.SerializeToString(),
                 )
 
+    def _accept_acceleration(self, event) -> None:
+        goal = sunray_pb2.UavAccelerationCompensationGoal.FromString(event.payload)
+        ned = goal.acceleration_ned_mps2
+        self.acceleration_samples.append((ned.x, ned.y, ned.z))
+        if self._acceleration is None:
+            self._acceleration = (event, time.monotonic() + 0.3)
+        else:
+            self._acceleration = (self._acceleration[0], time.monotonic() + 0.3)
+
     def _action_update(self, event, phase, detail, result_code=0, correlation_id=None) -> None:
         update = yunlink.ActionUpdate(phase, result_code, 100 if phase.terminal else 20, detail)
         self._reply(
@@ -190,6 +218,11 @@ class FakeBridge:
         )
 
     def _stream_descriptors(self):
+        if self.latest_localization:
+            yield yunlink.StreamDescriptor(
+                "uav1.localization", yunlink.TypeRef("com.yundrone.sunray", 2, "LocalizationState", 9),
+                "protobuf",
+            )
         yield yunlink.StreamDescriptor(
             "uav1.odometry", yunlink.TypeRef("org.yunlink.mobility", 1, "Odometry"), "protobuf"
         )
@@ -226,7 +259,9 @@ class FakeBridge:
         )
 
     def _publish_initial_sample(self, event, stream_uid: str) -> None:
-        if stream_uid.endswith(".odometry"):
+        if stream_uid.endswith(".localization"):
+            self._publish_odometry(event, 0.0, 0.0, 0.0)
+        elif stream_uid.endswith(".odometry"):
             if stream_uid.startswith("ugv1."):
                 self._publish_ugv_odometry(event, 0.0, 0.0)
             else:
@@ -276,7 +311,14 @@ class FakeBridge:
                 angular=mobility_pb2.Vector3(x=0.01, y=0.02, z=0.03),
             ),
         )
-        self._publish_sample(event, "uav1.odometry", message.SerializeToString())
+        if self.latest_localization:
+            localization = sunray_pb2.LocalizationState(
+                status=sunray_pb2.LOCALIZATION_VALID, source_id=5, input_rate_hz=120,
+                local_odometry=message, reason="sim",
+            )
+            self._publish_sample(event, "uav1.localization", localization.SerializeToString())
+        else:
+            self._publish_sample(event, "uav1.odometry", message.SerializeToString())
 
     def _publish_ugv_odometry(self, event, x: float, y: float) -> None:
         message = mobility_pb2.Odometry(

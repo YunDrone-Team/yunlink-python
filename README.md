@@ -27,8 +27,9 @@ MATLAB 用户请用 **R2022b 或更新**。R2022a 官方只支持 Python 3.8/3.9
 
 ## 安装
 
-当前 SDK 版本为 `1.3.0`。两个包目前都不在 PyPI。`yunlink` 含平台原生库，请先装
-[yunlink v2.0.2](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.2)
+当前 SDK 版本为 `1.5.0`，要求 `yunlink>=2.0.4`。两个包目前都不在 PyPI。
+`yunlink` 含平台原生库，请先装
+[yunlink v2.0.4](https://github.com/YunDrone-Team/yunlink/releases/tag/v2.0.4)
 里匹配本机的预编译 wheel，不必编译 C++。
 
 按文件名选择：`cp310`/`cp311`/`cp312`/`cp313` 对应 Python 3.10 到 3.13；
@@ -37,7 +38,7 @@ MATLAB 用户请用 **R2022b 或更新**。R2022a 官方只支持 Python 3.8/3.9
 
 ```bash
 python -m pip install \
-  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.2/yunlink-2.0.1-cp313-cp313-macosx_11_0_arm64.whl
+  https://github.com/YunDrone-Team/yunlink/releases/download/v2.0.4/yunlink-2.0.4-cp313-cp313-macosx_11_0_arm64.whl
 
 git clone https://github.com/YunDrone-Team/yunlink-python.git
 cd yunlink-python
@@ -52,6 +53,9 @@ python -m pip install --no-deps -e .
 
 完整中文使用手册见 [`docs/USAGE_GUIDE_CN.md`](docs/USAGE_GUIDE_CN.md)，公开方法对照见
 [`docs/API_CN.md`](docs/API_CN.md)，文档索引见 [`docs/README.md`](docs/README.md)。
+
+加速度补偿使用独立通道，支持世界 NED、m/s²、不含重力的算法输出，详见
+[`docs/ACCELERATION_CN.md`](docs/ACCELERATION_CN.md)。MATLAB 包装层将在后续接入。
 
 ## 第一个完整流程
 

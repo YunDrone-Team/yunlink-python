@@ -16,6 +16,7 @@ from yunlink.profiles import (
     validate_emergency_kill_goal,
     validate_land_goal,
     validate_takeoff_goal,
+    validate_uav_acceleration_compensation_goal,
     validate_uav_direct_control_goal,
     validate_uav_nav_goal,
     validate_uav_waypoint_mission_goal,
@@ -27,7 +28,7 @@ from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
 
 MOBILITY = yunlink.Profile("org.yunlink.mobility", 1, 0, "mobility-v1")
 TELEMETRY = yunlink.Profile("org.yunlink.telemetry", 1, 0, "telemetry-summary-v1")
-SUNRAY = yunlink.Profile("com.yundrone.sunray", 2, 8, "sunray-v2.8")
+SUNRAY = yunlink.Profile("com.yundrone.sunray", 2, 20, "sunray-v2.20")
 OFFERED_PROFILES = (MOBILITY, TELEMETRY, SUNRAY)
 REQUIRED_PROFILES = (MOBILITY, SUNRAY)
 
@@ -44,6 +45,7 @@ RETURN_HOME = type_ref("UavReturnHomeGoal")
 NAV_GOAL = type_ref("UavNavGoal", 3)
 WAYPOINT_MISSION = type_ref("UavWaypointMissionGoal", 2)
 UAV_DIRECT_CONTROL = type_ref("UavDirectControlGoal")
+ACCELERATION_COMPENSATION = type_ref("UavAccelerationCompensationGoal", 20)
 UGV_MOVE_POINT = type_ref("UgvMovePointGoal", 5)
 UGV_VELOCITY = type_ref("UgvVelocityGoal", 5)
 UGV_HOLD = type_ref("UgvHoldGoal", 5)
@@ -74,6 +76,14 @@ def _lease_ms(value: int) -> int:
     if not 250 <= lease <= 2000:
         raise ValueError("lease_ms must be between 250 and 2000")
     return lease
+
+
+def acceleration_compensation_payload(ax: float, ay: float, az: float) -> bytes:
+    message = sunray_pb2.UavAccelerationCompensationGoal(
+        acceleration_ned_mps2=mobility_pb2.Vector3(x=ax, y=ay, z=az)
+    )
+    validate_uav_acceleration_compensation_goal(message)
+    return message.SerializeToString()
 
 
 def takeoff_payload(height_m: float, max_velocity_mps: float = 0.0) -> bytes:

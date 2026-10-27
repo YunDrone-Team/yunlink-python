@@ -217,13 +217,14 @@ class Transport:
             self._reconnecting = False
 
     def _publish(self, family: yunlink.Family, operation: int, target: yunlink.Target,
-                 type_ref: yunlink.TypeRef, payload: bytes = b"", correlation_id: int = 0):
+                 type_ref: yunlink.TypeRef, payload: bytes = b"", correlation_id: int = 0,
+                 *, ttl_ms: int = 5000):
         with self._condition:
             if not self._connected or self._peer is None:
                 raise DisconnectedError("YunLink session is not connected")
             peer, session_id = self._peer, self._session_id
         return self.runtime.publish(peer, session_id, family, operation, target, type_ref, payload,
-                                    correlation_id=correlation_id, ttl_ms=5000)
+                                    correlation_id=correlation_id, ttl_ms=ttl_ms)
 
     def request(self, family: yunlink.Family, operation: int, response_operation: int,
                 target: yunlink.Target, type_ref: yunlink.TypeRef, payload: bytes = b"",
@@ -297,6 +298,7 @@ class Transport:
         payload: bytes,
         *,
         authority_scope: str | None = None,
+        ttl_ms: int = 5000,
     ) -> ActionHandle:
         with self._condition:
             peer, session_id = self._peer, self._session_id
@@ -307,7 +309,8 @@ class Transport:
                 f"Bridge does not support {type_ref.profile_id}@{type_ref.major}.{type_ref.minor}"
             )
         self.claim_authority(entity_uid, authority_scope or type_ref.profile_id)
-        message = self._publish(yunlink.Family.ACTION, 1, yunlink.Target.entity(entity_uid), type_ref, payload)
+        message = self._publish(yunlink.Family.ACTION, 1, yunlink.Target.entity(entity_uid),
+                                type_ref, payload, ttl_ms=ttl_ms)
         handle = ActionHandle(message.message_id, lambda: self.cancel_action(entity_uid, type_ref, message.message_id))
         with self._condition:
             update = self._action_updates.pop(message.message_id, None)
@@ -353,6 +356,13 @@ class Transport:
             payload,
             correlation_id=correlation_id,
         )
+
+    def update_action(
+        self, entity_uid: str, type_ref: yunlink.TypeRef, payload: bytes,
+        action_id: int, *, ttl_ms: int = 5000,
+    ) -> None:
+        self._publish(yunlink.Family.ACTION, 2, yunlink.Target.entity(entity_uid), type_ref,
+                      payload, correlation_id=action_id, ttl_ms=ttl_ms)
 
     def cancel_action(self, entity_uid: str, type_ref: yunlink.TypeRef, action_id: int) -> None:
         self._publish(yunlink.Family.ACTION, 3, yunlink.Target.entity(entity_uid), type_ref,

@@ -12,6 +12,7 @@ from yunlink.profiles.com.yundrone.sunray.v2 import sunray_pb2
 from yunlink.profiles.org.yunlink.mobility.v1 import mobility_pb2
 from yunlink.profiles.org.yunlink.telemetry.v1 import telemetry_pb2
 
+from .acceleration import AccelerationControl
 from .actions import ActionHandle, ActionResult
 from .errors import ActionFailedError, ConnectionError, TimeoutError
 from .mapping import MappingState, mapping_state_from_sample, start_mapping, stop_mapping
@@ -52,8 +53,12 @@ class Vehicle:
         transport.attach(uid)
         self._mapping_state: MappingState | None = None
         self._mapping_watching = False
-        self._subscribe("odometry", self._on_odometry)
-        self._subscribe("odom_status", self._on_odom_status)
+        streams = {item.stream_uid for item in transport.catalog().streams}
+        if f"{uid}.localization" in streams:
+            self._subscribe("localization", self._on_localization)
+        else:
+            self._subscribe("odometry", self._on_odometry)
+            self._subscribe("odom_status", self._on_odom_status)
         self._subscribe("flight_control_state", self._on_flight_state)
         self._subscribe("uav_planning_state", self._on_planning_state)
         self._subscribe("status_summary", self._on_status_summary)
@@ -72,6 +77,16 @@ class Vehicle:
         self, height_m: float = 1.5, timeout: float = 30.0, *, wait: bool = True
     ) -> ActionResult | ActionHandle:
         return self._run(TAKEOFF, takeoff_payload(height_m), timeout, wait)
+
+    def acceleration_compensation(
+        self, ax: float = 0.0, ay: float = 0.0, az: float = 0.0,
+    ) -> AccelerationControl:
+        """Open a sample-driven world NED, gravity-free acceleration channel.
+
+        Requires SunrayPosController in HOVER/MOVE. The returned channel has
+        update()/cancel(); vehicle.cancel() remains the motion-task cancel API.
+        """
+        return AccelerationControl(self._transport, self.uid, ax, ay, az)
 
     def hover(self, timeout: float = 15.0, *, wait: bool = True) -> ActionResult | ActionHandle:
         return self._run(HOVER, hover_payload(), timeout, wait)
@@ -373,6 +388,22 @@ class Vehicle:
     def _on_odometry(self, _event, sample) -> None:
         message = mobility_pb2.Odometry()
         message.ParseFromString(sample.data)
+        self._apply_odometry(message)
+
+    def _on_localization(self, _event, sample) -> None:
+        message = sunray_pb2.LocalizationState.FromString(sample.data)
+        localization = LocalizationState(
+            valid=message.status == sunray_pb2.LOCALIZATION_VALID,
+            source=message.source_id,
+            update_hz=message.input_rate_hz,
+            message=message.reason,
+        )
+        if localization.valid and message.HasField("local_odometry"):
+            self._apply_odometry(message.local_odometry, localization=localization)
+        else:
+            self._state.update(frame_id="", localization=localization)
+
+    def _apply_odometry(self, message, **changes) -> None:
         orientation = message.pose.orientation
         self._state.update(
             frame_id=message.frame_id,
@@ -384,6 +415,7 @@ class Vehicle:
                 message.twist.angular.y,
                 message.twist.angular.z,
             ),
+            **changes,
         )
 
     def _on_odom_status(self, _event, sample) -> None:

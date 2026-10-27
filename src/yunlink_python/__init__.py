@@ -1,5 +1,6 @@
 """Simple Python control for Sunray vehicles through YunLink."""
 
+from .acceleration import AccelerationControl
 from .actions import ActionHandle, ActionResult
 from .client import (
     Client,
@@ -35,6 +36,7 @@ from .ugv import Ugv
 from .vehicle import Vehicle
 
 __all__ = [
+    "AccelerationControl",
     "ActionFailedError",
     "ActionHandle",
     "ActionResult",
@@ -71,4 +73,4 @@ __all__ = [
     "vehicle_key",
 ]
 
-__version__ = "1.3.0"
+__version__ = "1.5.0"

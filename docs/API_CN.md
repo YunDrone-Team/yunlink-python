@@ -77,6 +77,7 @@ with connect("192.168.10.10:9696") as client:
 | `move_to(x,y,z)` | `yunlink_move_to` | 60 s | Planner 单目标，等到达 |
 | `waypoint` / `waypoints` | `yunlink_waypoint` / `yunlink_waypoints` | 120 s | |
 | `cancel()` | `yunlink_cancel` | 15 s | 取消当前动作或 Planner |
+| `acceleration_compensation(ax=0,ay=0,az=0)` | 下一阶段 | — | 独立 NED 加速度补偿通道，返回 `AccelerationControl` |
 | `command(kind, **kw)` | `yunlink_command` | 视 kind | takeoff/position/velocity/hover/return_home/land/emergency_lock |
 
 `VehicleState` 常用字段：`connected`、`fresh`、`position`、`velocity`、`attitude`、`armed`、`landed`、`battery_percent`、`px4_mode`、`control_mode_name`、`movement_mode`、`localization`、`planner`。MATLAB 结构体用 camelCase（`batteryPercent`、`movementMode`）。

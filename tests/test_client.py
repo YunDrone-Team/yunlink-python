@@ -47,6 +47,22 @@ def test_vehicle_and_ugv_accept_display_names():
         bridge.close()
 
 
+def test_vehicle_still_accepts_old_localization_catalog():
+    import time
+
+    bridge = FakeBridge(latest_localization=False)
+    try:
+        with connect(f"127.0.0.1:{bridge.port}") as client:
+            vehicle = client.vehicle()
+            deadline = time.monotonic() + 2
+            while not vehicle.state.localization.valid and time.monotonic() < deadline:
+                time.sleep(0.01)
+            assert vehicle.state.frame_id == "world"
+            assert vehicle.state.localization.valid
+    finally:
+        bridge.close()
+
+
 def test_bridge_uid_is_remote_endpoint_without_attaching():
     bridge = FakeBridge()
     try:
