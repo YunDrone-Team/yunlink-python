@@ -1,6 +1,6 @@
 # MATLAB 封装函数
 
-请先按 [`../examples/README.md`](../examples/README.md) 运行 `ex00`–`ex12`，再查阅本章。用户安装见 [../README.md](../README.md)。Python 对照见 [../../docs/API_CN.md](../../docs/API_CN.md)。行为以 Python SDK 为准，这里只写 MATLAB 怎么调。
+请先按 [`../examples/README.md`](../examples/README.md) 运行 `ex00`–`ex13`，再查阅本章。用户安装见 [../README.md](../README.md)。Python 对照见 [../../docs/API_CN.md](../../docs/API_CN.md)。行为以 Python SDK 为准，这里只写 MATLAB 怎么调。
 
 逐步说明书（Typst，可编译为 PDF）见 [`../docs/README.md`](../docs/README.md)。
 
@@ -118,6 +118,21 @@ hist = yunlink_monitor(uav, 10, struct('print', false, 'period_s', 0.5))
 | `yunlink_emergency_lock` | `yunlink_emergency_lock(uav, true)` 第二参必须为 true | 20 s |
 | `yunlink_move_to` | `yunlink_move_to(uav, x, y, z)` | 60 s |
 | `yunlink_waypoint` | `yunlink_waypoint(uav, x, y, z)` | 120 s |
+
+### 加速度补偿（会飞）
+
+加速度补偿是附加输入，不替代起飞、降落、位置或速度控制。输入为世界 NED、m/s²、不含重力；建议算法循环约 100 Hz 更新。
+
+```matlab
+channel = yunlink_acceleration_compensation(uav);
+for k = 1:100
+    yunlink_acceleration_update(channel, 0.05, 0.02, 0.0);
+    pause(0.01);
+end
+yunlink_acceleration_cancel(channel);
+```
+
+300 ms 没有新样本会自动过期。取消、过期、断线或失去权限只清除补偿，不调用 Hover，也不取消原有飞行任务。完整可运行示例见 `ex13_acceleration_compensation.m`。
 | `yunlink_waypoints` | `yunlink_waypoints(uav, [x1 y1 z1; x2 y2 z2])` | 120 s |
 | `yunlink_position_control` | `yunlink_position_control(uav, x, y, z, yaw_rad)` | 120 s |
 | `yunlink_translate` | `yunlink_translate(uav, "forward")`；方向 `forward/backward/left/right/up/down` | 15 s |

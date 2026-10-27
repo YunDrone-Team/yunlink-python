@@ -161,7 +161,7 @@
   description: "YunLink Sunray MATLAB Support 的安装、示例与接口说明。",
   authors: "YunDrone Team",
   url: "https://github.com/YunDrone-Team/yunlink-python",
-  version: "1.4.5",
+  version: "1.5.0",
   date: datetime(year: 2026, month: 9, day: 17),
   license: "Apache-2.0",
   abstract: [

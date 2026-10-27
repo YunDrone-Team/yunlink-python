@@ -19,7 +19,7 @@ YunLink Sunray MATLAB Support（以下简称本工具箱）使 MATLAB 能够通�
 + 第 3 章：下载发布包并安装 `.mltbx`。
 + 第 4 章：运行 `yunlink_examples` 与 `ex00_setup`，填写 `yunlink.env`。
 + 第 5 章：理解搜索所用的 UDP 9697 与连接所用的 TCP 9696。
-+ 第 6 章：按编号运行 `ex00` 至 `ex12`。
++ 第 6 章：按编号运行 `ex00` 至 `ex13`。
 + 第 7、8 章：在能够独立编写脚本时查阅连接模型与函数参考。
 + 第 9 章：出现报错时按现象检索。
 
@@ -36,5 +36,5 @@ YunLink Sunray MATLAB Support（以下简称本工具箱）使 MATLAB 能够通�
 ]
 
 #warning-alert[
-  `ex04`、`ex05`、`ex06`、`ex12` 以及 `basic_flight_demo` 会发出真实控制。请仅在仿真环境或已清空周围障碍的场地运行，并确认现场人员已知晓。
+  `ex04`、`ex05`、`ex06`、`ex12`、`ex13` 以及 `basic_flight_demo` 会发出真实控制。请仅在仿真环境或已清空周围障碍的场地运行，并确认现场人员已知晓。
 ]

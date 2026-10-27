@@ -4,7 +4,7 @@
 
 日常入门请先运行 `examples/` 中的脚本，接口说明见 [`../developer/API.md`](../developer/API.md)。本文供需要更细步骤时编译阅读。
 
-仓库**不存放**编译后的 PDF。GitHub Release `matlab-1.4.5` 提供 `yunlink-matlab-manual.pdf`。本机编译：
+仓库**不存放**编译后的 PDF。GitHub Release `matlab-1.5.0` 提供 `yunlink-matlab-manual.pdf`。本机编译：
 
 ```bash
 typst compile matlab/docs/yunlink-matlab-manual.typ matlab/docs/yunlink-matlab-manual.pdf

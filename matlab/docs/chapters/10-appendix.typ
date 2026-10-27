@@ -4,9 +4,9 @@
 
 == 发布包
 
-当前用户包版本为 MATLAB *1.4.5*。下载地址：
+当前用户包版本为 MATLAB *1.5.0*。下载地址：
 
-#link("https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip")[yunlink-sunray-matlab-1.4.5-bundle.zip]
+#link("https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.5.0/yunlink-sunray-matlab-1.5.0-bundle.zip")[yunlink-sunray-matlab-1.5.0-bundle.zip]
 
 更新时请重新安装 `.mltbx`，并再次运行 `ex00_setup`，将 `bundleDir` 指向新的解压目录。
 

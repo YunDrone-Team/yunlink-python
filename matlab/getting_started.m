@@ -1,13 +1,13 @@
 %% YunLink MATLAB 快速开始
 % 下载发布包即可，不必克隆代码仓库：
 %
-%   https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip
+%   https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.5.0/yunlink-sunray-matlab-1.5.0-bundle.zip
 %
 % 用 MATLAB 学本工具箱：按编号跑 examples，不要先抄函数。
 
 %% 安装 Toolbox
 % 不要在 Add-On Explorer 中搜索。解压发布包后，在资源管理器、Finder
-% 或文件管理器中双击 yunlink-sunray-matlab-1.4.5.mltbx，点击 Install。
+% 或文件管理器中双击 yunlink-sunray-matlab-1.5.0.mltbx，点击 Install。
 % Add Package Repository 不是 .mltbx 安装入口。
 
 %% 准备 Python
@@ -33,6 +33,7 @@
 %   ex08  多 Bridge 时按 Bridge ID 选
 %   ex09–ex11  多机只读 / 刷遥测
 %   ex12  现场全量检查（会飞）
+%   ex13  起飞后发送 NED 加速度补偿，再取消并降落（会飞）
 % 完整表格见 examples/README.md。目标写在 yunlink.env。
 % 自己写脚本时查阅 API.md。逐步说明书 Typst 源码见 docs/README.md，Release 提供 PDF。
 

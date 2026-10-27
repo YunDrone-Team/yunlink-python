@@ -1,4 +1,4 @@
-1.4.5：主线示例连续编号 ex00–ex12；全量检查为 ex12。Release 附带 Typst 编译的使用指南 PDF。
+1.5.0：新增 MATLAB 加速度补偿包装与 ex13 示例；统一 SDK 1.5.0、YunLink 2.0.4，Release 附带 Typst 编译的使用指南 PDF。
 
 1.4.4：主线示例重新排成连续的 ex00–ex08。全量检查是 ex08。验收不覆盖 Planner。
 

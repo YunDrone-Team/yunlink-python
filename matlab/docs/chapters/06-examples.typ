@@ -31,6 +31,7 @@
     [10], [`ex10_multi_device_state.m`], [否], [连续打印多设备状态约 8 秒],
     [11], [`ex11_observe_live.m`], [否], [命令窗口刷新遥测],
     [12], [`ex12_live_check.m`], [会飞/会走], [现场全量检查],
+    [13], [`ex13_acceleration_compensation.m`], [会飞], [发送世界 NED 加速度补偿],
     [—], [`read_state_demo.m`], [否], [`ex03` 的短版],
     [—], [`basic_flight_demo.m`], [会飞], [`ex04` 的短版],
   ),
@@ -157,6 +158,21 @@ Bridge ID 是 `ex01` 打印的`endpoint_uid` 短字符串。未填写且仅发�
 #info-alert[
   验收主线不覆盖 Planner 航点。`yunlink_waypoints` 等函数仍可在第 8 章查阅，但 `ex12` 不会调用它们。
 ]
+
+== ex13 加速度补偿
+
+*目的*：在已有位置/速度参考上叠加世界 NED 加速度输入，不替代起飞、降落或位置控制。
+
+```matlab
+channel = yunlink_acceleration_compensation(uav);
+for k = 1:100
+    yunlink_acceleration_update(channel, 0.05, 0.02, 0.0);
+    pause(0.01);
+end
+yunlink_acceleration_cancel(channel);
+```
+
+输入单位是 m/s²，不含重力。建议约 100 Hz 更新；300 ms 没有新样本时通道自动过期。
 
 == 两个短版脚本
 

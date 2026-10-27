@@ -6,7 +6,7 @@
 
 请使用浏览器打开下列地址，下载当前用户包：
 
-#link("https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip")[yunlink-sunray-matlab-1.4.5-bundle.zip]
+#link("https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.5.0/yunlink-sunray-matlab-1.5.0-bundle.zip")[yunlink-sunray-matlab-1.5.0-bundle.zip]
 
 不必克隆源代码仓库。本仓库的 GitHub Release 仅用于 MATLAB 用户包。
 
@@ -14,9 +14,9 @@
 
 解压后通常包含：
 
-- `yunlink-sunray-matlab-1.4.5.mltbx`：MATLAB 工具箱安装器。
+- `yunlink-sunray-matlab-1.5.0.mltbx`：MATLAB 工具箱安装器。
 - `wheels/`：按操作系统与 Python 版本提供的 `yunlink` 原生绑定。
-- `yunlink_python-1.3.0-py3-none-any.whl`：MATLAB 调用的 Python SDK。
+- `yunlink_python-1.5.0-py3-none-any.whl`：MATLAB 调用的 Python SDK。
 - `INSTALL.txt`、`README.md`：简要说明。
 - 若存在 `yunlink-matlab-manual.pdf`，即为本文的编译版本。
 
@@ -24,12 +24,12 @@
 
 本工具箱通过本地 `.mltbx` 安装。Add-On Explorer 检索 MathWorks 商店，其中不含本工具箱。安装入口为双击 `.mltbx`，或使用下面的 `matlab.addons.install`。
 
-+ 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.4.5.mltbx`。
++ 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.5.0.mltbx`。
 + MATLAB 将打开 Toolbox 安装器。请确认名称为 *YunLink Sunray MATLAB Support*，然后点击 Install。
 + 若双击未能唤起 MATLAB，请先启动 MATLAB，在命令窗口执行：
 
 ```matlab
-matlab.addons.install("完整路径/yunlink-sunray-matlab-1.4.5.mltbx")
+matlab.addons.install("完整路径/yunlink-sunray-matlab-1.5.0.mltbx")
 ```
 
 请将引号中的路径替换为本机实际路径。Windows 使用反斜杠或正斜杠均可。

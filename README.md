@@ -194,7 +194,7 @@ result = handle.wait(timeout=30)
 
 MATLAB 用户从 GitHub Release 下载打包好的 Toolbox，不必克隆本仓库：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.5.0/yunlink-sunray-matlab-1.5.0-bundle.zip
 
 请先安装 `.mltbx`，运行 `yunlink_examples` 与 `ex00_setup`，再按编号跑 example。熟悉之后查阅 [`matlab/developer/API.md`](matlab/developer/API.md)。逐步说明书的 Typst 源码在 [`matlab/docs`](matlab/docs/README.md)，可自行编译 PDF；Release 同时提供 `yunlink-matlab-manual.pdf`。
 

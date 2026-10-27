@@ -4,7 +4,7 @@
 
 发布包：
 
-https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-sunray-matlab-1.4.5-bundle.zip
+https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.5.0/yunlink-sunray-matlab-1.5.0-bundle.zip
 
 ## 从哪里开始
 
@@ -12,9 +12,9 @@ https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/y
 
 1. 解压发布包，双击 `.mltbx` 安装。命令窗口运行 `yunlink_examples`。
 2. 打开并运行 `ex00_setup.m`，填写本机 Python 3.10–3.13 与 zip 解压目录。
-3. 按编号运行 `ex01` 至 `ex12`。打开脚本阅读注释。目标写在 `examples/yunlink.env`。完整表格见 [`examples/README.md`](examples/README.md)。
+3. 按编号运行 `ex01` 至 `ex13`。打开脚本阅读注释。目标写在 `examples/yunlink.env`。完整表格见 [`examples/README.md`](examples/README.md)。
 4. 需要自己写脚本时，查阅 MATLAB 封装说明 [`developer/API.md`](developer/API.md)（安装进 Toolbox 后同目录也有 `API.md`）。Python 对照见仓库 [`docs/API_CN.md`](../docs/API_CN.md)。
-5. 需要从安装 MATLAB、打开命令窗口讲起的逐步说明书时，使用 Typst 源码 [`docs/`](docs/README.md)。Release 提供已编译的 [`yunlink-matlab-manual.pdf`](https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.4.5/yunlink-matlab-manual.pdf)。仓库不存放 PDF；本机编译：
+5. 需要从安装 MATLAB、打开命令窗口讲起的逐步说明书时，使用 Typst 源码 [`docs/`](docs/README.md)。Release 提供已编译的 [`yunlink-matlab-manual.pdf`](https://github.com/YunDrone-Team/yunlink-python/releases/download/matlab-1.5.0/yunlink-matlab-manual.pdf)。仓库不存放 PDF；本机编译：
 
 ```bash
 typst compile matlab/docs/yunlink-matlab-manual.typ matlab/docs/yunlink-matlab-manual.pdf
@@ -26,8 +26,8 @@ MATLAB 通过本机 Python 调用 YunLink。通信对端为正在运行的 **Yun
 
 发布包已经包含预编译的通信库。用户需要本机安装 Python 3.10–3.13，但不需要克隆或编译 `yunlink` C++ 仓库。`ex00_setup.m` 会把包内的两个 Python wheel 装进该 Python：
 
-1. `yunlink-2.0.1-*.whl`：按操作系统和 Python 版本提供的原生绑定
-2. `yunlink_python-1.3.0-*.whl`：MATLAB 调用的 SDK
+1. `yunlink-2.0.4-*.whl`：按操作系统和 Python 版本提供的原生绑定
+2. `yunlink_python-1.5.0-*.whl`：MATLAB 调用的 SDK
 
 MATLAB 本身不内置可用的 3.10–3.13 解释器，所以仍要指定系统里的 Python 可执行文件。通信库不在 MATLAB 里现场编译。
 
@@ -87,12 +87,12 @@ Linux:      python3 --version
 本工具箱通过本地 `.mltbx` 安装。Add-On Explorer 检索 MathWorks 商店，其中不含本工具箱。**Add Package Repository** 用于其他场景，与本 `.mltbx` 无关。
 
 1. 下载并解压发布包。不要在压缩包内部直接操作。
-2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.4.5.mltbx`。
+2. 在资源管理器、Finder 或文件管理器中双击 `yunlink-sunray-matlab-1.5.0.mltbx`。
 3. MATLAB 打开 Toolbox 安装器后，确认名称为 **YunLink Sunray MATLAB Support**，点击 Install。
 4. 若双击没有唤起 MATLAB，可在命令窗口执行：
 
 ```matlab
-matlab.addons.install("完整路径/yunlink-sunray-matlab-1.4.5.mltbx")
+matlab.addons.install("完整路径/yunlink-sunray-matlab-1.5.0.mltbx")
 ```
 
 路径按本机实际情况填写。Windows 使用反斜杠或正斜杠均可。
@@ -131,7 +131,7 @@ pyenv
 yunlink_examples
 ```
 
-然后按编号：`ex00_setup` → `ex01_discover` → `ex02_connect_and_inspect` → `ex03_watch_state`。控制从 `ex04_flight_basics` 开始。一次验收跑 `ex12_live_check`。
+然后按编号：`ex00_setup` → `ex01_discover` → `ex02_connect_and_inspect` → `ex03_watch_state`。控制从 `ex04_flight_basics` 开始，加速度补偿跑 `ex13_acceleration_compensation`。
 
 每个脚本做什么、会不会飞，见 [`examples/README.md`](examples/README.md) 的表格。目标写在 `examples/yunlink.env`，不要改脚本中间的变量。填 **entity_uid**（例如 `e-f97f96-2-1`），不要填显示名 `uav1`。
 
@@ -187,6 +187,10 @@ yunlink_close(client);
 | `yunlink_monitor` | 监视状态一段时间 |
 | `yunlink_close` | 关闭连接 |
 | `yunlink_update` | 更新依赖 |
+
+加速度补偿使用 `yunlink_acceleration_compensation` 打开通道、
+`yunlink_acceleration_update` 发送世界 NED（m/s²、不含重力）样本，
+`yunlink_acceleration_cancel` 清零并关闭通道。建议约 100 Hz 更新，300 ms 无新样本会过期；完整流程见 `ex13_acceleration_compensation`。
 
 返航和紧急上锁需要明确调用。紧急上锁必须确认：
 

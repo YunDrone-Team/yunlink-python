@@ -1,6 +1,6 @@
 # YunLink MATLAB 示例（这就是教程）
 
-装好 Toolbox 之后，请先按编号跑 `ex00` 到 `ex12`，对着脚本里的注释看每一行在干什么。熟悉示例后再查阅 [`../developer/API.md`](../developer/API.md)。
+装好 Toolbox 之后，请先按编号跑 `ex00` 到 `ex13`，对着脚本里的注释看每一行在干什么。熟悉示例后再查阅 [`../developer/API.md`](../developer/API.md)。
 
 从安装 MATLAB 与打开命令窗口讲起的逐步说明书：Typst 源码见 [`../docs/README.md`](../docs/README.md)，可自行编译 PDF；GitHub Release 提供已编译的 `yunlink-matlab-manual.pdf`。
 
@@ -11,7 +11,7 @@
 1. 命令窗口输入 `yunlink_examples`（不要带 `.m`）。左侧会打开本目录。
 2. 打开 `ex00_setup.m`，点绿色 **Run**。配 Python 3.10–3.13 和 zip 包。
 3. 运行 `ex01_discover`。把打印的 **连接地址** 写入 `YUNLINK_ADDRESS=`，把表里 **entity_uid** 那一列写入 `YUNLINK_UAV=` 或 `YUNLINK_UGV=`。不要填 `uav1`。
-4. 按编号往下。`ex03` 只读；`ex04` 起会飞。一次跑完用 `ex12_live_check`。
+4. 按编号往下。`ex03` 只读；`ex04` 起会飞。加速度通道见 `ex13_acceleration_compensation`。
 
 `yunlink_connect` 只连 Bridge。`yunlink_entities` 只读目录。只有 `yunlink_vehicle` / `yunlink_ugv` 才会 attach。地面站已经连上并控制设备时，MATLAB 仍可只读遥测，不必申请控制权。起飞、平移、Hold 才会发控制。
 
@@ -32,6 +32,7 @@
 | 10 | `ex10_multi_device_state.m` | 否 | 连续打印多设备状态，约 8 秒 |
 | 11 | `ex11_observe_live.m` | 否 | 命令窗口刷新遥测，桌面 Ctrl-C 结束 |
 | 12 | `ex12_live_check.m` | **会飞/会走** | 现场全量检查：搜索、连接、起飞、平移、降落 |
+| 13 | `ex13_acceleration_compensation.m` | **会飞** | 起飞后以 100 Hz 发送世界 NED 加速度补偿，再取消并降落 |
 | — | `read_state_demo.m` | 否 | `ex03` 的短版 |
 | — | `basic_flight_demo.m` | **会飞** | `ex04` 的短版 |
 
